@@ -3,22 +3,36 @@ import { useUI } from '../stores/uiStore';
 import { resetSave } from '../systems/SaveSystem';
 import { QUEST_MAIN } from '../data/gameData';
 
+function Icon({ d }: { d: string }) {
+  return (
+    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+      {d.split('|').map((p, i) => <path key={i} d={p} />)}
+    </svg>
+  );
+}
+const ICONS = {
+  book: 'M4 5a1 1 0 0 1 1-1h5v16H5a1 1 0 0 1-1-1z|M20 5a1 1 0 0 0-1-1h-5v16h5a1 1 0 0 0 1-1z',
+  map: 'M9 4 3 6v14l6-2 6 2 6-2V4l-6 2z|M9 4v14|M15 6v14',
+  cam: 'M4 8h3l2-2h6l2 2h3v11H4z|M12 16.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z',
+  pause: 'M9 5v14|M15 5v14',
+  gem: 'M12 3l7 9-7 9-7-9z',
+};
+
 export function HUD({ onPause }: { onPause: () => void }) {
-  const { displayName } = useProfile();
   const { spiritFragments, solvedPuzzles } = useProgress();
-  const { setShowJournal, setShowMap, setPhotoMode, toast } = useUI();
+  const { setShowJournal, setShowMap, setPhotoMode, toast, showJournal, showMap, photoMode } = useUI();
   const step = Math.min(solvedPuzzles.length, QUEST_MAIN.steps.length - 1);
   return (
     <>
-      <div className="hud topbar">
-        <span className="chip" aria-label="current objective">◈ {QUEST_MAIN.steps[solvedPuzzles.length === 0 ? 0 : Math.min(step + 0, 4)]} </span>
-        <span className="chip" aria-label="fragment counter">✦ {spiritFragments}/3 · {displayName}</span>
-        <span className="panel" style={{ display: 'flex', gap: 6 }}>
-          <button onClick={() => setShowJournal(true)} aria-label="Open quest journal">Journal</button>
-          <button onClick={() => setShowMap(true)} aria-label="Open world map">Map</button>
-          <button onClick={() => setPhotoMode(true)} aria-label="Open photo mode">Photo</button>
-          <button onClick={onPause} aria-label="Pause game">II</button>
-        </span>
+      <div className="hud quest-tracker" aria-label="current objective">
+        <div className="qt-line"><span className="qt-icon" aria-hidden>◈</span><span>{QUEST_MAIN.steps[step]}</span></div>
+        <div className="qt-frag" aria-label="fragment counter"><Icon d={ICONS.gem} />{spiritFragments}/3 Spirit Fragments</div>
+      </div>
+      <div className="hud hud-tools">
+        <button className={`tool-btn${showJournal ? ' on' : ''}`} onClick={() => setShowJournal(true)} aria-label="Open quest journal (J)" title="Journal (J)"><Icon d={ICONS.book} /></button>
+        <button className={`tool-btn${showMap ? ' on' : ''}`} onClick={() => setShowMap(true)} aria-label="Open world map (M)" title="Map (M)"><Icon d={ICONS.map} /></button>
+        <button className={`tool-btn${photoMode ? ' on' : ''}`} onClick={() => setPhotoMode(true)} aria-label="Open photo mode" title="Photo"><Icon d={ICONS.cam} /></button>
+        <button className="tool-btn" onClick={onPause} aria-label="Pause game (Esc)" title="Pause (Esc)"><Icon d={ICONS.pause} /></button>
       </div>
       {toast && <div className="toast" role="status">{toast}</div>}
     </>

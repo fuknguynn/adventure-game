@@ -32,9 +32,36 @@ export function GameCanvas({ onExit, onEnding }: { onExit: () => void; onEnding:
   const [puzzle, setPuzzle] = useState<string | null>(null);
   const [paused, setPaused] = useState(false);
   const [dayT, setDayT] = useState(0.35);
+  const [near, setNear] = useState<string | null>(null);
+  const [showHint, setShowHint] = useState(() => {
+    try { return !localStorage.getItem('eldergrove.hintSeen'); } catch { return true; }
+  });
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => attachKeyboard(), []);
+  // Contextual prompt: label of whatever is in interact range (same radii as interact())
+  useEffect(() => {
+    const R = (v: THREE.Vector3, r = 4.5) => playerPos.distanceTo(new THREE.Vector3(v.x, playerPos.y, v.z)) < r;
+    let raf = 0, last = '';
+    const tick = () => {
+      const label =
+        R(SPOTS.npc) || R(SPOTS.spirit) ? 'Talk' :
+        R(SPOTS.grove, 5) || R(SPOTS.lake, 6) || R(SPOTS.ruins, 5) ? 'Inspect' :
+        R(SPOTS.tree, 6) ? 'Touch the Tree' : '';
+      if (label !== last) { last = label; setNear(label || null); }
+      raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, []);
+  useEffect(() => {
+    if (!showHint) return;
+    const t = setTimeout(() => {
+      setShowHint(false);
+      try { localStorage.setItem('eldergrove.hintSeen', '1'); } catch { /* private mode */ }
+    }, 7000);
+    return () => clearTimeout(t);
+  }, [showHint]);
   useEffect(() => {
     if (reducedMotion) return;
     const id = setInterval(() => setDayT((t) => (t + 0.004) % 1), 500);
@@ -102,9 +129,9 @@ export function GameCanvas({ onExit, onEnding }: { onExit: () => void; onEnding:
       {paused && <PauseView onResume={() => setPaused(false)} onQuit={onExit} />}
       <PuzzlePanels active={puzzle} onClose={() => setPuzzle(null)} />
       {photoMode && (
-        <div className="hud topbar">
+        <div className="hud photo-bar">
           <span className="chip">Photo mode — HUD hidden</span>
-          <span className="panel" style={{ display: 'flex', gap: 6 }}>
+          <span style={{ display: 'flex', gap: 6 }}>
             <button onClick={() => {
               const c = document.querySelector('canvas');
               if (c) { const a = document.createElement('a'); a.download = 'eldergrove.png'; a.href = c.toDataURL('image/png'); a.click(); }
@@ -113,10 +140,13 @@ export function GameCanvas({ onExit, onEnding }: { onExit: () => void; onEnding:
           </span>
         </div>
       )}
-      {!photoMode && (
+      {!photoMode && showHint && (
         <div className="hud kb-hint">
-          <span className="chip">WASD move · drag orbit · Space jump · E interact · M map</span>
+          <span className="chip">WASD Move · Mouse Look · Space Jump · E Interact</span>
         </div>
+      )}
+      {!photoMode && near && !paused && !puzzle && (
+        <div className="hud interact-prompt" role="status"><span className="key">E</span> {near}</div>
       )}
       <Canvas ref={canvasRef} shadows dpr={dpr} gl={{ preserveDrawingBuffer: true, antialias: true }} camera={{ fov: 55, near: 0.1, far: 220 }} style={{ touchAction: 'none' }}>
         <color attach="background" args={[sun.fog]} />

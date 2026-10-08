@@ -63,11 +63,11 @@ export function TouchControls({ onInteract }: { onInteract: () => void }) {
 
   return (
     <div id="touchzone" style={{ position: 'fixed', inset: 0, zIndex: 5, pointerEvents: 'none' }}>
-      <div style={{ position: 'absolute', left: 14, bottom: 'calc(18px + env(safe-area-inset-bottom))', pointerEvents: 'auto', display: 'flex', gap: 10 }}>
+      <div className="touch-ui touch-ui-left">
         <button className="touch-btn" aria-label="Jump" onTouchStart={() => { touchFlags.jump = true; }} onClick={() => { touchFlags.jump = true; }}>⤒</button>
         <button className="touch-btn" aria-label="Sprint toggle" onClick={() => { touchFlags.sprint = !touchFlags.sprint; }}>»</button>
       </div>
-      <div style={{ position: 'absolute', right: 14, bottom: 'calc(18px + env(safe-area-inset-bottom))', pointerEvents: 'auto', display: 'flex', gap: 10 }}>
+      <div className="touch-ui touch-ui-right">
         <button className="touch-btn" aria-label="Spirit ability" onClick={onInteract}>✦</button>
         <button className="touch-btn" aria-label="Interact" onClick={onInteract}>E</button>
       </div>

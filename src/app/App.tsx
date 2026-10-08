@@ -53,6 +53,7 @@ export function App() {
       if (e.code === 'Escape' && phase === 'PLAYING') setPhase('PAUSED');
       else if (e.code === 'Escape' && phase === 'PAUSED') setPhase('PLAYING');
       if (e.code === 'KeyM' && phase === 'PLAYING') useUI.getState().setShowMap(!useUI.getState().showMap);
+      if (e.code === 'KeyJ' && phase === 'PLAYING') useUI.getState().setShowJournal(true);
     };
     window.addEventListener('keydown', h);
     return () => window.removeEventListener('keydown', h);
