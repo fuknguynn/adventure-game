@@ -303,6 +303,38 @@
       "usage": "ruins gate",
       "optimizedBytes": 32078,
       "verified": true
+    },
+    {
+      "id": "anim-general",
+      "category": "character",
+      "repository": "https://github.com/GeorgeQLe/assets-kaykit-3d-characters",
+      "sourcePath": "assets/kaykit/adventurers-2.0/Animations/gltf/Rig_Medium/Rig_Medium_General.glb",
+      "localPath": "public/models/anim/Rig_Medium_General.glb",
+      "format": "glb",
+      "license": "CC0-1.0",
+      "licenseEvidencePath": "public/licenses/KayKit-CC0-License.txt",
+      "author": "Kay Lousberg (KayKit)",
+      "scale": 1,
+      "animations": [],
+      "usage": "shared idle/interact clips (retargeted by bone name)",
+      "optimizedBytes": 828240,
+      "verified": true
+    },
+    {
+      "id": "anim-move",
+      "category": "character",
+      "repository": "https://github.com/GeorgeQLe/assets-kaykit-3d-characters",
+      "sourcePath": "assets/kaykit/adventurers-2.0/Animations/gltf/Rig_Medium/Rig_Medium_MovementBasic.glb",
+      "localPath": "public/models/anim/Rig_Medium_MovementBasic.glb",
+      "format": "glb",
+      "license": "CC0-1.0",
+      "licenseEvidencePath": "public/licenses/KayKit-CC0-License.txt",
+      "author": "Kay Lousberg (KayKit)",
+      "scale": 1,
+      "animations": [],
+      "usage": "shared walk/run/jump clips (retargeted by bone name)",
+      "optimizedBytes": 689624,
+      "verified": true
     }
   ],
   "notes": [

@@ -18,6 +18,8 @@ const BY = 'Kay Lousberg (KayKit)';
 const FILES = [
   // Selectable characters (verified GLBs)
   ['knight', RAW.chars, 'assets/kaykit/adventurers-2.0/Characters/gltf/Knight.glb', 'public/models/characters/Knight.glb', 'selectable player character', 341688],
+  ['anim-general', RAW.chars, 'assets/kaykit/adventurers-2.0/Animations/gltf/Rig_Medium/Rig_Medium_General.glb', 'public/models/anim/Rig_Medium_General.glb', 'shared idle/interact clips (retargeted by bone name)', 828240],
+  ['anim-move', RAW.chars, 'assets/kaykit/adventurers-2.0/Animations/gltf/Rig_Medium/Rig_Medium_MovementBasic.glb', 'public/models/anim/Rig_Medium_MovementBasic.glb', 'shared walk/run/jump clips (retargeted by bone name)', 689624],
   ['mage', RAW.chars, 'assets/kaykit/adventurers-2.0/Characters/gltf/Mage.glb', 'public/models/characters/Mage.glb', 'selectable player character', 352472],
   ['rogue', RAW.chars, 'assets/kaykit/adventurers-2.0/Characters/gltf/Rogue.glb', 'public/models/characters/Rogue.glb', 'selectable player character', 409188],
   // Forest Nature Pack: trees / foliage / ground (glTF + bin pairs; upstream has 0 native GLB)

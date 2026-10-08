@@ -4,6 +4,8 @@ import { RigidBody, CuboidCollider, type RapierRigidBody } from '@react-three/ra
 import { GLTFLoader } from 'three-stdlib';
 import * as THREE from 'three';
 import { keys, joyMove, touchFlags, camOrbit } from './input';
+import { loco } from './locomotion';
+import { useLocomotion, debugLoco } from './useLocomotion';
 import { useProfile } from '../stores/stores';
 import { CHARACTERS } from '../data/gameData';
 import { sfx } from '../systems/AudioSystem';
@@ -30,7 +32,11 @@ export function Player({ onInteract }: { onInteract: () => void }) {
     return s;
   }, [gltf]);
   const yaw = useRef(0);
+  const visualYaw = useRef(0);
+  const visualRef = useRef<THREE.Group>(null);
   const stepAcc = useRef(0);
+  useLocomotion(model);
+  if (typeof window !== 'undefined') (window as unknown as { __eldergrove?: unknown }).__eldergrove = { loco, debugLoco, playerPos };
 
   useFrame((_, dt) => {
     const body = rb.current;
@@ -51,11 +57,22 @@ export function Player({ onInteract }: { onInteract: () => void }) {
     body.setLinvel({ x: wx, y: vy, z: wz }, true);
     const p = body.translation();
     playerPos.set(p.x, p.y, p.z);
+    // locomotion signals from ACTUAL physics state (stalls read as idle).
+    // Dual-condition airborne test (no physics changes): rising/falling fast
+    // means airborne even before y clears the rest height; apex is caught by y.
+    loco.speed = Math.hypot(v.x, v.z);
+    loco.grounded = p.y < 1.05 && Math.abs(vy) < 1.0;
     if (len > 0.05) {
       yaw.current = Math.atan2(wx, wz);
       stepAcc.current += step * speed;
       if (stepAcc.current > 2.2) { stepAcc.current = 0; sfx.step(); }
     }
+    // face movement direction (visual only — physics untouched)
+    let d = yaw.current - visualYaw.current;
+    while (d > Math.PI) d -= Math.PI * 2;
+    while (d < -Math.PI) d += Math.PI * 2;
+    visualYaw.current += d * (1 - Math.exp(-10 * Math.min(dt, 0.05)));
+    if (visualRef.current) visualRef.current.rotation.y = visualYaw.current;
     if (touchFlags.jump) {
       touchFlags.jump = false;
       if (p.y < 1.3) body.applyImpulse({ x: 0, y: 3.2, z: 0 }, true);
@@ -70,7 +87,9 @@ export function Player({ onInteract }: { onInteract: () => void }) {
     <RigidBody ref={rb} colliders={false} position={SPAWNS.village_entrance} enabledRotations={[false, false, false]} linearDamping={8}>
       <CuboidCollider args={[0.45, 0.9, 0.45]} position={[0, 0, 0]} />
       <group>
-        <primitive object={model} position={[0, -0.9, 0]} />
+        <group ref={visualRef}>
+          <primitive object={model} position={[0, -0.9, 0]} />
+        </group>
         {/* heading indicator (reads with model yaw) */}
         <group rotation={[0, 0, 0]}>
           <mesh position={[0, 1.35, 0]}>
