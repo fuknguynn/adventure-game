@@ -1,7 +1,7 @@
 import { useMemo, useRef } from 'react';
 import { useFrame, useLoader } from '@react-three/fiber';
 import { RigidBody, CuboidCollider, type RapierRigidBody } from '@react-three/rapier';
-import { GLTFLoader } from 'three-stdlib';
+import { GLTFLoader, SkeletonUtils } from 'three-stdlib';
 import * as THREE from 'three';
 import { keys, joyMove, touchFlags, camOrbit } from './input';
 import { loco } from './locomotion';
@@ -27,7 +27,10 @@ export function Player({ onInteract }: { onInteract: () => void }) {
   const gltf = useLoader(GLTFLoader, def.file);
   const rb = useRef<RapierRigidBody>(null);
   const model = useMemo(() => {
-    const s = gltf.scene.clone();
+    // SkeletonUtils (not Object3D.clone): a plain clone leaves SkinnedMeshes
+    // bound to the template skeleton, so mixer-driven bones never reach the
+    // mesh and the character is stuck in bind T-pose while 'animating'.
+    const s = SkeletonUtils.clone(gltf.scene);
     s.traverse((o) => { if ((o as THREE.Mesh).isMesh) { o.castShadow = true; } });
     return s;
   }, [gltf]);
