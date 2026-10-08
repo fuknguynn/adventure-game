@@ -5,7 +5,7 @@ import { mkdirSync, unlinkSync } from 'node:fs';
 mkdirSync('shots', { recursive: true });
 const errors = [];
 const browser = await puppeteer.launch({
-  executablePath: 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe',
+  executablePath: process.env.EDGE || 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe',
   headless: 'new',
   args: ['--no-sandbox', '--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--disable-dev-shm-usage', '--window-size=1440,900'],
 });
@@ -36,15 +36,15 @@ async function check(tag, ms) {
   return r;
 }
 await page.goto('http://localhost:5177/', { waitUntil: 'networkidle0', timeout: 60000 });
-await page.evaluate(() => {
+await page.evaluate((charId) => {
   localStorage.setItem('eldergrove.save.v1', JSON.stringify({
     schemaVersion: 1,
-    profile: { displayName: 'Ray', characterId: 'knight' },
+    profile: { displayName: 'Ray', characterId: charId },
     progress: { regionId: 'forest_village', spawnId: 'village_entrance', completedQuests: [], solvedPuzzles: [], spiritFragments: 0, worldRestored: false },
     settings: { quality: 'low', musicVolume: 0, sfxVolume: 0, reducedMotion: false },
     updatedAt: new Date().toISOString(),
   }));
-});
+}, process.env.CHAR || 'knight');
 await page.reload({ waitUntil: 'networkidle0' });
 await sleep(2000);
 await page.click('text/Continue Adventure');
@@ -53,10 +53,18 @@ await page.waitForFunction(
   () => { const g = window.__eldergrove; return g && g.debugBody && g.debugBody().body !== null; },
   { timeout: 90000 },
 );
+// key-delivery check: does the page itself see keydown?
+await page.evaluate(() => {
+  window.__keysSeen = [];
+  window.addEventListener('keydown', (e) => window.__keysSeen.push(e.code));
+  window.addEventListener('keyup', (e) => window.__keysSeen.push('up:' + e.code));
+});
 await check('spawn', 1000);
 await snap('detach-00-spawn.png');
 await page.keyboard.down('KeyW');
 await check('walk 2s', 2000);
+const keysSeen = await page.evaluate(() => window.__keysSeen);
+console.log('keydown events delivered to page: ' + JSON.stringify(keysSeen));
 await check('walk 5s', 3000);
 await snap('detach-01-walk.png');
 await page.keyboard.down('KeyA');

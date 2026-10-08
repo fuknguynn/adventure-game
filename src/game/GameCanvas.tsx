@@ -7,6 +7,7 @@ import { CameraRig } from './CameraRig';
 import { Regions } from '../regions/Regions';
 import { Spirit, NPC } from '../entities/Actors';
 import { TouchControls } from './TouchControls';
+import { DebugPhysSampler } from '../ui/DebugKeys';
 import { PuzzlePanels } from '../puzzles/PuzzlePanels';
 import { HUD, DialogueView, JournalView, MapView, PauseView } from '../ui/HudScreens';
 import { useProgress, useSettings } from '../stores/stores';
@@ -117,6 +118,7 @@ export function GameCanvas({ onExit, onEnding }: { onExit: () => void; onEnding:
         <Suspense fallback={null}>
           <Physics gravity={[0, -18, 0]} timeStep={1 / 60}>
             <GroundBounds />
+            {typeof window !== 'undefined' && window.location.search.includes('debugKeys') && <DebugPhysSampler />}
             <Player onInteract={interact} />
           </Physics>
           <Regions />

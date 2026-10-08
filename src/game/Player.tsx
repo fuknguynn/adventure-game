@@ -5,6 +5,7 @@ import { GLTFLoader } from 'three-stdlib';
 import * as THREE from 'three';
 import { keys, joyMove, touchFlags, camOrbit } from './input';
 import { loco } from './locomotion';
+import { debugBodyHandle } from '../ui/DebugKeys';
 import { useLocomotion, debugLoco } from './useLocomotion';
 import { useProfile } from '../stores/stores';
 import { CHARACTERS } from '../data/gameData';
@@ -55,6 +56,7 @@ export function Player({ onInteract }: { onInteract: () => void }) {
   useFrame((_, dt) => {
     const body = rb.current;
     if (!body) return;
+    debugBodyHandle.current = body;
     const step = Math.min(dt, 1 / 30);
     // input direction in camera space
     let ix = (keys.right ? 1 : 0) - (keys.left ? 1 : 0) + joyMove.x;

@@ -49,8 +49,6 @@ export function useLocomotion(model: THREE.Object3D | null) {
       }
       (a as THREE.AnimationAction & { __name?: string }).__name = k;
     }
-    actions.idle?.reset().fadeIn(FADE).play();
-    current.current = actions.idle ?? null;
     const onFinished = (e: { action: THREE.AnimationAction }) => {
       if ((e.action as THREE.AnimationAction & { __name?: string }).__name === 'jumpStart' && state.current === 'jump') {
         current.current?.fadeOut(0.12);
@@ -62,9 +60,17 @@ export function useLocomotion(model: THREE.Object3D | null) {
     return { mixer, actions };
   }, [model, gen, mov]);
 
-  useEffect(() => () => {
-    rig?.mixer.stopAllAction();
-    rig?.mixer.uncacheRoot(rig.mixer.getRoot());
+  // Lifecycle owns playback; cleanup only stops. Never uncache: the memoized
+  // actions must survive StrictMode/HMR effect re-runs, and play() re-binds.
+  useEffect(() => {
+    if (!rig) return;
+    current.current?.fadeOut(0.1);
+    rig.actions.idle?.reset().fadeIn(FADE).play();
+    current.current = rig.actions.idle ?? null;
+    state.current = 'idle';
+    return () => {
+      rig.mixer.stopAllAction();
+    };
   }, [rig]);
 
   useFrame((_, rawDt) => {
