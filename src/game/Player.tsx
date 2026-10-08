@@ -5,8 +5,7 @@ import { GLTFLoader } from 'three-stdlib';
 import * as THREE from 'three';
 import { keys, joyMove, touchFlags, camOrbit } from './input';
 import { loco } from './locomotion';
-import { debugBodyHandle } from '../ui/DebugKeys';
-import { useLocomotion, debugLoco } from './useLocomotion';
+import { useLocomotion } from './useLocomotion';
 import { useProfile } from '../stores/stores';
 import { CHARACTERS } from '../data/gameData';
 import { sfx } from '../systems/AudioSystem';
@@ -37,26 +36,9 @@ export function Player({ onInteract }: { onInteract: () => void }) {
   const visualRef = useRef<THREE.Group>(null);
   const stepAcc = useRef(0);
   useLocomotion(model);
-  if (typeof window !== 'undefined') {
-    (window as unknown as { __eldergrove?: unknown }).__eldergrove = {
-      loco,
-      debugLoco,
-      playerPos,
-      debugBody: () => {
-        const b = rb.current;
-        const v = visualRef.current;
-        const out: Record<string, [number, number, number] | null> = { body: null, visual: null };
-        if (b) { const t = b.translation(); out.body = [+t.x.toFixed(3), +t.y.toFixed(3), +t.z.toFixed(3)]; }
-        if (v) { const p = new THREE.Vector3(); v.getWorldPosition(p); out.visual = [+p.x.toFixed(3), +p.y.toFixed(3), +p.z.toFixed(3)]; }
-        return out;
-      },
-    };
-  }
-
   useFrame((_, dt) => {
     const body = rb.current;
     if (!body) return;
-    debugBodyHandle.current = body;
     const step = Math.min(dt, 1 / 30);
     // input direction in camera space
     let ix = (keys.right ? 1 : 0) - (keys.left ? 1 : 0) + joyMove.x;

@@ -7,7 +7,6 @@ import { Welcome, IntroCinematic } from '../ui/Onboarding';
 import { CharacterCreation } from '../ui/CharacterCreation';
 import { SettingsView, EndingView } from '../ui/HudScreens';
 import { GameCanvas } from '../game/GameCanvas';
-import { DebugKeys } from '../ui/DebugKeys';
 
 export function App() {
   const { phase, setPhase } = useUI();
@@ -71,7 +70,6 @@ export function App() {
 
   return (
     <>
-      <DebugKeys />
       {phase === 'WELCOME' && (
         <Welcome
           onNew={() => setPhase('CREATION')}

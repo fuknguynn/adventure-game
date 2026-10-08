@@ -5,9 +5,9 @@ import * as THREE from 'three';
 import { Player, GroundBounds, playerPos } from './Player';
 import { CameraRig } from './CameraRig';
 import { Regions } from '../regions/Regions';
+import { LAMP_LIGHTS } from '../regions/villageLayout';
 import { Spirit, NPC } from '../entities/Actors';
 import { TouchControls } from './TouchControls';
-import { DebugPhysSampler } from '../ui/DebugKeys';
 import { PuzzlePanels } from '../puzzles/PuzzlePanels';
 import { HUD, DialogueView, JournalView, MapView, PauseView } from '../ui/HudScreens';
 import { useProgress, useSettings } from '../stores/stores';
@@ -80,9 +80,17 @@ export function GameCanvas({ onExit, onEnding }: { onExit: () => void; onEnding:
   }, [paused, puzzle, completedQuests, solvedPuzzles, setDialogue, setProgress, setToast, onEnding]);
 
   const dpr = quality === 'low' ? 0.75 : quality === 'high' ? 2 : 1.25;
+  const shadowSize = quality === 'low' ? 512 : quality === 'high' ? 2048 : 1024;
   const sun = useMemo(() => {
-    const ang = dayT * Math.PI * 2;
-    return { intensity: 1.1 + Math.sin(ang) * 0.5, color: dayT > 0.25 && dayT < 0.7 ? '#fff2d0' : '#9db8ff', fog: dayT > 0.25 && dayT < 0.7 ? '#1e3027' : '#101c26' };
+    // dayT 0.5 = noon: daylight peaks at 1, night floors at 0
+    const daylight = Math.max(0, Math.sin((dayT - 0.25) * Math.PI * 2));
+    const isDay = daylight > 0.02;
+    return {
+      daylight, isDay,
+      intensity: 0.35 + daylight * 2.3,
+      color: isDay ? '#fff2d0' : '#9db8ff',
+      fog: isDay ? '#2e4d3a' : '#101c26',
+    };
   }, [dayT]);
 
   return (
@@ -106,22 +114,28 @@ export function GameCanvas({ onExit, onEnding }: { onExit: () => void; onEnding:
         </div>
       )}
       {!photoMode && (
-        <div className="hud" style={{ bottom: 'calc(18px + env(safe-area-inset-bottom))', left: 12 }}>
+        <div className="hud kb-hint">
           <span className="chip">WASD move · drag orbit · Space jump · E interact · M map</span>
         </div>
       )}
       <Canvas ref={canvasRef} shadows dpr={dpr} gl={{ preserveDrawingBuffer: true, antialias: true }} camera={{ fov: 55, near: 0.1, far: 220 }} style={{ touchAction: 'none' }}>
         <color attach="background" args={[sun.fog]} />
-        <fog attach="fog" args={[sun.fog, 30, 110]} />
-        <ambientLight intensity={0.55} />
-        <directionalLight position={[18, 26, 10]} intensity={sun.intensity} color={sun.color} castShadow shadow-mapSize={[1024, 1024]} />
+        <fog attach="fog" args={[sun.fog, 24, 85]} />
+        {/* layered light: cool ambient fill + warm key + cool rim */}
+        <ambientLight intensity={0.28 + sun.daylight * 0.55} color={sun.isDay ? '#c8dcec' : '#7f9fb8'} />
+        <hemisphereLight args={[sun.isDay ? '#bcd9ea' : '#8fb6d8', '#2d3a22', 0.35 + sun.daylight * 0.5]} />
+        <directionalLight position={[18, 26, 10]} intensity={sun.intensity} color={sun.color} castShadow
+          shadow-mapSize={shadowSize} shadow-camera-left={-40} shadow-camera-right={40} shadow-camera-top={40} shadow-camera-bottom={-40} shadow-bias={-0.0004} />
+        <directionalLight position={[-15, 8, -12]} intensity={0.35} color="#9fc4ff" />
+        {LAMP_LIGHTS.map((p, i) => (
+          <pointLight key={`lamp${i}`} position={p} color="#ffce7d" intensity={sun.isDay ? 3 : 14} distance={9} decay={2} />
+        ))}
         <Suspense fallback={null}>
           <Physics gravity={[0, -18, 0]} timeStep={1 / 60}>
             <GroundBounds />
-            {typeof window !== 'undefined' && window.location.search.includes('debugKeys') && <DebugPhysSampler />}
             <Player onInteract={interact} />
+            <Regions />
           </Physics>
-          <Regions />
           <NPC position={[-3, 0, 0]} onTalk={interact} />
           <Spirit guideTarget={guideTarget} />
           {/* interaction markers: shape-coded rings, never color-only */}
@@ -134,7 +148,7 @@ export function GameCanvas({ onExit, onEnding }: { onExit: () => void; onEnding:
       </Canvas>
       <TouchControls onInteract={interact} />
       {!photoMode && (
-        <div className="hud" style={{ bottom: 'calc(18px + env(safe-area-inset-bottom))', right: 12 }}>
+        <div className="hud day-slider">
           <input aria-label="Time of day" type="range" min={0} max={1} step={0.01} value={dayT} onChange={(e) => setDayT(Number(e.target.value))} style={{ width: 110 }} />
         </div>
       )}

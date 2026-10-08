@@ -96,13 +96,7 @@ export function useLocomotion(model: THREE.Object3D | null) {
       rig.actions[next]?.setEffectiveTimeScale(locoTimeScale(next, loco.speed));
     }
     rig.mixer.update(dt);
-    debugLoco.state = state.current;
-    debugLoco.speed = +loco.speed.toFixed(2);
-    debugLoco.grounded = loco.grounded;
   });
 
   return state;
 }
-
-/** Mutable debug snapshot for headless verification (no React state). */
-export const debugLoco = { state: 'idle' as LocoState, speed: 0, grounded: true };
