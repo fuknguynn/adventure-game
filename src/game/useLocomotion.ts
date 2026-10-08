@@ -75,7 +75,10 @@ export function useLocomotion(model: THREE.Object3D | null) {
 
   useFrame((_, rawDt) => {
     if (!rig) return;
-    const dt = Math.min(rawDt, 1 / 20); // clamp tab-switch spikes; no snapping
+    // Real elapsed time (capped only against tab-switch jumps): low-fps machines
+    // must animate at true speed. A 1/20 clamp would slow-motion the skeleton
+    // while Rapier substeps keep the body at full speed.
+    const dt = Math.min(Math.max(rawDt, 0), 0.25);
     const next = nextLocomotionState(state.current, loco.speed, loco.grounded);
     if (next !== state.current) {
       const { actions } = rig;

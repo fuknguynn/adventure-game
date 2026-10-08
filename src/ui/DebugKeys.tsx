@@ -12,6 +12,9 @@ export const debugPhys = { bodies: -1, linvel: 0, sleeping: '?', vy: 0 };
 /** Latest player body handle, published by Player for the sampler. */
 export const debugBodyHandle: { current: { isSleeping: () => boolean; linvel: () => { x: number; y: number; z: number } } | null } = { current: null };
 
+/** rAF rate EMA — distinguishes a frozen skeleton from a starved one. */
+export const fpsEma = { v: 0 };
+
 /** Lives inside <Physics>; samples world step state. Mounted only with ?debugKeys=1. */
 export function DebugPhysSampler() {
   const { world } = useRapier();
@@ -41,8 +44,18 @@ export function DebugKeys() {
   const [, tick] = useState(0);
   useEffect(() => {
     if (!location.search.includes('debugKeys')) return;
+    let last = performance.now();
+    let raf = 0;
+    const loop = () => {
+      const now = performance.now();
+      const dt = (now - last) / 1000;
+      last = now;
+      fpsEma.v = fpsEma.v * 0.9 + (dt > 0 ? 1 / dt : 0) * 0.1;
+      raf = requestAnimationFrame(loop);
+    };
+    raf = requestAnimationFrame(loop);
     const id = setInterval(() => tick((n) => n + 1), 250);
-    return () => clearInterval(id);
+    return () => { clearInterval(id); cancelAnimationFrame(raf); };
   }, []);
   if (!location.search.includes('debugKeys')) return null;
   const dot = (on: boolean) => (on ? '#7df0d4' : '#33463b');
@@ -59,6 +72,7 @@ export function DebugKeys() {
       <div>joy=({joyMove.x.toFixed(1)},{joyMove.z.toFixed(1)}) spd={loco.speed.toFixed(1)} gnd={String(loco.grounded)} anim={debugLoco.state}</div>
       <div>pos=({playerPos.x.toFixed(1)},{playerPos.y.toFixed(1)},{playerPos.z.toFixed(1)})</div>
       <div>bodies={debugPhys.bodies} linvel={debugPhys.linvel} sleep={debugPhys.sleeping} vy={debugPhys.vy.toFixed(1)}</div>
+      <div>fps={fpsEma.v.toFixed(0)}</div>
     </div>
   );
 }
