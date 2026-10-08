@@ -51,8 +51,9 @@ export function Player({ onInteract }: { onInteract: () => void }) {
     const sprint = keys.sprint || touchFlags.sprint;
     const speed = (sprint ? 7.5 : 4.2) * (len > 0.01 ? 1 : 0);
     const cy = Math.cos(camOrbit.yaw), sy = Math.sin(camOrbit.yaw);
-    const wx = (ix * cy - iz * sy) * speed;
-    const wz = (ix * -sy - iz * cy) * speed * -1;
+    // Camera basis (matches CameraRig): forward = (-sin,-cos), right = (cos,-sin); iz<0 = forward
+    const wx = (ix * cy + iz * sy) * speed;
+    const wz = (iz * cy - ix * sy) * speed;
     const v = body.linvel();
     const vy = v.y;
     body.setLinvel({ x: wx, y: vy, z: wz }, true);
