@@ -1,14 +1,28 @@
-import { Suspense, useEffect, useState } from 'react';
+import React, { Suspense, useEffect, useState } from 'react';
 import * as THREE from 'three';
 import { useLoader } from '@react-three/fiber';
 import { GLTFLoader } from 'three-stdlib';
 
+/** One bad scenery file must never crash the game: isolate load failures per model. */
+class ModelErrorBoundary extends React.Component<{ url: string; children: React.ReactNode }, { failed: boolean }> {
+  state = { failed: false };
+  static getDerivedStateFromError() { return { failed: true }; }
+  componentDidCatch(err: unknown) {
+    console.warn(`[Eldergrove] scenery model failed, skipped: ${this.props.url}`, err);
+  }
+  render() {
+    return this.state.failed ? null : this.props.children;
+  }
+}
+
 /** Loads a vendored KayKit glTF/GLB with explicit loading + error states. Never a blank mesh. */
 export function KayKitModel({ url, position = [0, 0, 0], scale = 1, rotationY = 0 }: { url: string; position?: [number, number, number]; scale?: number; rotationY?: number }) {
   return (
-    <Suspense fallback={null}>
-      <Inner url={url} position={position} scale={scale} rotationY={rotationY} />
-    </Suspense>
+    <ModelErrorBoundary url={url}>
+      <Suspense fallback={null}>
+        <Inner url={url} position={position} scale={scale} rotationY={rotationY} />
+      </Suspense>
+    </ModelErrorBoundary>
   );
 }
 
