@@ -1,7 +1,7 @@
 import { useRef } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
 import * as THREE from 'three';
-import { camOrbit } from './input';
+import { camOrbit, JOY_ZONE } from './input';
 import { playerPos } from './Player';
 import { useSettings } from '../stores/stores';
 
@@ -21,7 +21,11 @@ export function CameraRig() {
   useRef(true);
   if (!(gl.domElement as HTMLCanvasElement).dataset.orbitBound) {
     (gl.domElement as HTMLCanvasElement).dataset.orbitBound = '1';
-    gl.domElement.addEventListener('pointerdown', (e) => { dragging.current = true; last.current = [e.clientX, e.clientY]; (e.target as Element).setPointerCapture?.(e.pointerId); });
+    gl.domElement.addEventListener('pointerdown', (e) => {
+      // Left-zone touches belong to the virtual joystick (TouchControls), not orbit.
+      if (e.pointerType === 'touch' && e.clientX < window.innerWidth * JOY_ZONE) return;
+      dragging.current = true; last.current = [e.clientX, e.clientY]; (e.target as Element).setPointerCapture?.(e.pointerId);
+    });
     gl.domElement.addEventListener('pointermove', (e) => {
       if (!dragging.current) return;
       const dx = e.clientX - last.current[0], dy = e.clientY - last.current[1];

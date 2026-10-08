@@ -2,6 +2,9 @@
 export const keys = { fwd: false, back: false, left: false, right: false, sprint: false };
 export const joyMove = { x: 0, z: 0 }; // -1..1
 export const camOrbit = { yaw: 0.6, pitch: 0.35 };
+/** Fraction of screen width owned by the touch joystick; the rest orbits.
+ *  Shared by TouchControls (assignment) and CameraRig (pointer gating). */
+export const JOY_ZONE = 0.45;
 export const touchFlags = { jump: false, interact: false, sprint: false };
 
 export function attachKeyboard() {
