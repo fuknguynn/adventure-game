@@ -1,0 +1,60 @@
+<!doctype html>
+<!-- TEMPORARY upper-body verification rig. Deleted before release. Not part of the game. -->
+<html><head><meta charset="utf-8"><title>anim-lab</title>
+<style>html,body{margin:0;height:100%;background:#101b16;overflow:hidden}canvas{display:block}#inv{position:fixed;left:8px;top:8px;color:#9fb;z-index:10;font:12px monospace;white-space:pre}</style>
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"}}</script>
+</head><body><div id="inv"></div>
+<script type="module">
+import * as THREE from 'three';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+const q = new URLSearchParams(location.search);
+const loader = new GLTFLoader();
+const CHAR_FILE = { knight: 'Knight', mage: 'Mage', rogue: 'Rogue' };
+const get = (u) => new Promise((res, rej) => loader.load(u, res, undefined, rej));
+const [char, gen, mov] = await Promise.all([
+  get('/models/characters/' + (CHAR_FILE[q.get('char')] || 'Knight') + '.glb'),
+  get('/models/anim/Rig_Medium_General.glb'),
+  get('/models/anim/Rig_Medium_MovementBasic.glb'),
+]);
+{
+  const scene = new THREE.Scene();
+  scene.background = new THREE.Color('#101b16');
+  const camera = new THREE.PerspectiveCamera(32, innerWidth / innerHeight, 0.1, 100);
+  const renderer = new THREE.WebGLRenderer({ antialias: true });
+  renderer.setSize(innerWidth, innerHeight);
+  document.body.appendChild(renderer.domElement);
+  scene.add(new THREE.HemisphereLight('#cfe3d4', '#0b1511', 1.1));
+  const key = new THREE.DirectionalLight('#ffe6b8', 2.2); key.position.set(3, 5, 4); scene.add(key);
+  const rim = new THREE.DirectionalLight('#9ff5e8', 1.4); rim.position.set(-2, 4, -5); scene.add(rim);
+  const ground = new THREE.Mesh(new THREE.CircleGeometry(8, 32), new THREE.MeshStandardMaterial({ color: '#1d3a2c' }));
+  ground.rotation.x = -Math.PI / 2; scene.add(ground);
+  const model = char.scene.clone();
+  const box = new THREE.Box3().setFromObject(model);
+  const size = box.getSize(new THREE.Vector3());
+  model.position.y -= box.min.y;
+  scene.add(model);
+  // upper-body closeup: target chest height
+  const tgt = new THREE.Vector3(0, size.y * 0.62, 0);
+  const wide = parseFloat(q.get('wide') || '1');
+  const dist = ((size.y * 0.62) / (2 * Math.tan((32 * Math.PI) / 360))) * 1.5 * wide;
+  const az = ((parseFloat(q.get('az') || '0')) * Math.PI) / 180;
+  camera.position.set(tgt.x + Math.sin(az) * dist, tgt.y + dist * 0.12, tgt.z + Math.cos(az) * dist);
+  camera.lookAt(tgt);
+  const clips = [...gen.animations, ...mov.animations];
+  const clip = clips.find((c) => c.name === q.get('clip')) || clips[0];
+  const mixer = new THREE.AnimationMixer(model);
+  const action = mixer.clipAction(clip);
+  action.play();
+  mixer.setTime(clip.duration * parseFloat(q.get('t') || '0.25'));
+  action.paused = true; // freeze the evaluated pose for inspection renders
+  window.__actionTime = action.time;
+  window.__clipDuration = clip.duration;
+  const ua = [];
+  model.traverse((o) => { if (o.name === 'upperarm.l') ua.push(o); });
+  const wq = new THREE.Quaternion();
+  if (ua[0]) { ua[0].getWorldQuaternion(wq); }
+  window.__boneQ = [wq.x, wq.y, wq.z, wq.w].map((v) => +v.toFixed(4));
+  renderer.render(scene, camera);
+  requestAnimationFrame(() => { renderer.render(scene, camera); window.__ready = true; });
+}
+</script></body></html>

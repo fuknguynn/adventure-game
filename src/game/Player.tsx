@@ -36,7 +36,21 @@ export function Player({ onInteract }: { onInteract: () => void }) {
   const visualRef = useRef<THREE.Group>(null);
   const stepAcc = useRef(0);
   useLocomotion(model);
-  if (typeof window !== 'undefined') (window as unknown as { __eldergrove?: unknown }).__eldergrove = { loco, debugLoco, playerPos };
+  if (typeof window !== 'undefined') {
+    (window as unknown as { __eldergrove?: unknown }).__eldergrove = {
+      loco,
+      debugLoco,
+      playerPos,
+      debugBody: () => {
+        const b = rb.current;
+        const v = visualRef.current;
+        const out: Record<string, [number, number, number] | null> = { body: null, visual: null };
+        if (b) { const t = b.translation(); out.body = [+t.x.toFixed(3), +t.y.toFixed(3), +t.z.toFixed(3)]; }
+        if (v) { const p = new THREE.Vector3(); v.getWorldPosition(p); out.visual = [+p.x.toFixed(3), +p.y.toFixed(3), +p.z.toFixed(3)]; }
+        return out;
+      },
+    };
+  }
 
   useFrame((_, dt) => {
     const body = rb.current;
@@ -89,13 +103,6 @@ export function Player({ onInteract }: { onInteract: () => void }) {
       <group>
         <group ref={visualRef}>
           <primitive object={model} position={[0, -0.9, 0]} />
-        </group>
-        {/* heading indicator (reads with model yaw) */}
-        <group rotation={[0, 0, 0]}>
-          <mesh position={[0, 1.35, 0]}>
-            <sphereGeometry args={[0.09, 12, 12]} />
-            <meshStandardMaterial color="#d8bb78" emissive="#d8bb78" emissiveIntensity={1.2} />
-          </mesh>
         </group>
       </group>
     </RigidBody>
