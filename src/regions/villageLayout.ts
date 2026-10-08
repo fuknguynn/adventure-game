@@ -104,13 +104,13 @@ for (let i = 0; i < 90; i++) {
   PATCHES.push({ pos: [x, 0.008 + rng() * 0.004, z], rotY: rnd(0, Math.PI), scale: rnd(1.6, 4.2), tint: i % 3 === 0 ? 0.8 : 1.15 });
 }
 
-export interface Tree extends Inst { kind: 0 | 1 | 2; collider: boolean; shadow: boolean }
+export interface Tree extends Inst { kind: 0 | 1 | 2 | 3 | 4 | 5; collider: boolean; shadow: boolean }
 export const TREES: Tree[] = [];
-export const TREE_FILES = ['/models/env/Tree_1_A_Color1.gltf', '/models/env/Tree_1_B_Color1.gltf', '/models/env/Tree_1_C_Color1.gltf'];
-const treeNorm = [3.9, 4.6, 7.4]; // authored heights at scale 1
+export const TREE_FILES = ['/models/env/Tree_1_A_Color1.gltf', '/models/env/Tree_1_B_Color1.gltf', '/models/env/Tree_1_C_Color1.gltf', '/models/env/Tree_2_A_Color1.gltf', '/models/env/Tree_3_A_Color1.gltf', '/models/env/Tree_5_B_Color1.gltf'];
+const treeNorm = [3.9, 4.6, 7.4, 4.67, 3.51, 5.87]; // authored heights at scale 1
 
 function addTree(x: number, z: number, s?: number, shadow = true) {
-  const kind = Math.floor(rng() * 3) as 0 | 1 | 2;
+  const kind = Math.floor(rng() * 6) as Tree['kind'];
   const scale = (s ?? rnd(0.9, 1.5)) * 2.3 / treeNorm[kind]; // normalize to ~2.3 unit height at scale 1
   TREES.push({ pos: [x, 0, z], rotY: rnd(0, Math.PI * 2), scale, kind, collider: Math.hypot(x, z) < 32, shadow });
 }
@@ -132,6 +132,16 @@ for (let i = 0; i < 84; i++) {
   if (exitAngles.some((ea) => Math.abs(((a - ea + Math.PI * 3) % (Math.PI * 2)) - Math.PI) < 0.14)) continue;
   addTree(Math.cos(a) * rnd(36, 43), Math.sin(a) * rnd(36, 43), rnd(1.2, 1.8), false);
   if (i % 2 === 0) addTree(Math.cos(a + 0.03) * rnd(44, 52), Math.sin(a + 0.03) * rnd(44, 52), rnd(1.4, 2.1), false);
+}
+
+/** Leafless trees for the dead zones (ruins ridge, lake shore). */
+export const BARE_TREES: Inst[] = [];
+for (const [cx, cz, n, r] of [[32.5, 2.5, 6, 7], [29, 8, 4, 6], [-22, -3, 3, 6]] as const) {
+  for (let i = 0; i < n; i++) {
+    const p = disk(cx, cz, 2, r);
+    if (!p || !keepClear(p[0], p[1], 2.6, 2)) continue;
+    BARE_TREES.push({ pos: [p[0], 0, p[1]], rotY: rnd(0, Math.PI * 2), scale: rnd(1.0, 1.5) });
+  }
 }
 
 export const BUSHES: Inst[] = [];
@@ -159,9 +169,9 @@ for (let i = 0; i < 70; i++) {
 export interface Prop { file: string; pos: [number, number, number]; rotY: number; scale: number; light?: boolean }
 export const PROPS: Prop[] = [
   // Entrance gate + flanking lanterns
-  { file: '/models/env/wall_gated.gltf', pos: [0, 0, 11.2], rotY: 0, scale: 1 },
-  { file: '/models/props/lantern.gltf', pos: [-2.4, 0, 9], rotY: 0.3, scale: 0.72, light: true },
-  { file: '/models/props/lantern.gltf', pos: [2.4, 0, 12.6], rotY: -0.3, scale: 0.72 },
+  { file: '/models/env/wall_gated.gltf', pos: [0, 0, 15.5], rotY: 0, scale: 0.8 },
+  { file: '/models/props/lantern.gltf', pos: [-2.6, 0, 13.6], rotY: 0.3, scale: 0.72, light: true },
+  { file: '/models/props/lantern.gltf', pos: [2.6, 0, 16.6], rotY: -0.3, scale: 0.72 },
   // Path-guiding lanterns: junction, lake path, ruins path
   { file: '/models/props/lantern.gltf', pos: [-2.2, 0, -2.5], rotY: 1.2, scale: 0.72, light: true },
   { file: '/models/props/lantern.gltf', pos: [-9, 0, 3.2], rotY: 0, scale: 0.72 },
@@ -190,6 +200,150 @@ export const PROPS: Prop[] = [
   { file: '/models/props/stone.gltf', pos: [14, 0, -16.5], rotY: 0.4, scale: 0.7 },
 ];
 
+// ---- Village composition overhaul (feat/environment-polish) ----
+// Medieval hexagon pack models are authored ~3x smaller than KayKit world units
+// (house = 0.93u vs barrel = 2u), hence the larger scales below.
+// Houses ring the meeting square at (0,-2); each structure faces the square.
+const faceTo = (px: number, pz: number, tx: number, tz: number) => Math.atan2(tx - px, tz - pz);
+PROPS.push(
+  // Homestead cluster, west of the square
+  { file: '/models/village/home_a.gltf', pos: [-10, 0, -4], rotY: faceTo(-10, -4, 0, -2), scale: 3.5 },
+  { file: '/models/village/home_b.gltf', pos: [-7.5, 0, -10], rotY: faceTo(-7.5, -10, 0, -2), scale: 3 },
+  { file: '/models/village/home_a.gltf', pos: [-14, 0, -3.5], rotY: faceTo(-14, -3.5, 0, -2), scale: 3 },
+  // Craft yard: longhouse + tent + forge, SW quadrant (keeps NE path to grove clear)
+  { file: '/models/village/barracks.gltf', pos: [-15, 0, -11], rotY: faceTo(-15, -11, 0, -2), scale: 3 },
+  { file: '/models/village/tent.gltf', pos: [-11, 0, -13.5], rotY: 2.4, scale: 3.5 },
+  { file: '/models/props/anvil.gltf', pos: [-12.9, 0, -9.4], rotY: -0.8, scale: 0.9 },
+  { file: '/models/props/torch_lit.gltf', pos: [-13.9, 0.45, -10.1], rotY: 0, scale: 1.2, light: true },
+  { file: '/models/props/torch_lit.gltf', pos: [-9.8, 0.45, -12.9], rotY: 0, scale: 1.2, light: true },
+  // Market + watchtower, east side
+  { file: '/models/village/market.gltf', pos: [9, 0, -4], rotY: faceTo(9, -4, 0, -2), scale: 3 },
+  { file: '/models/props/crate_open.gltf', pos: [7.2, 0, -6.2], rotY: 0.5, scale: 3 },
+  { file: '/models/props/crate_open.gltf', pos: [6.2, 0, -6.9], rotY: 2.1, scale: 3 },
+  { file: '/models/props/sack.gltf', pos: [7.9, 0, -5.6], rotY: 1.4, scale: 4 },
+  { file: '/models/props/sack.gltf', pos: [8.6, 0, -6.4], rotY: 2.9, scale: 4 },
+  { file: '/models/village/watchtower.gltf', pos: [19.5, 0, -9], rotY: faceTo(19.5, -9, 0, -2), scale: 4 },
+  // Well + seating + wayfinding anchor the square
+  { file: '/models/village/well.gltf', pos: [4.6, 0, -4.4], rotY: -0.5, scale: 3.5 },
+  ...stoneRing(4.6, -4.4, 2.4, 6),
+  { file: '/models/props/bench.gltf', pos: [3.1, 0, -2.2], rotY: faceTo(3.1, -2.2, 4.6, -4.4), scale: 1.6 },
+  { file: '/models/props/bench.gltf', pos: [-3.4, 0, 10.2], rotY: -1.2, scale: 1.6 },
+  { file: '/models/props/sign_right.gltf', pos: [2.6, 0, -3.6], rotY: faceTo(2.6, -3.6, 9, -14), scale: 1 },
+  { file: '/models/props/sign_left.gltf', pos: [-2.9, 0, -2.6], rotY: faceTo(-2.9, -2.6, -15, 3), scale: 1 },
+  { file: '/models/props/sign_right.gltf', pos: [-1.8, 0, 9.6], rotY: faceTo(-1.8, 9.6, 0, 31), scale: 1 },
+  // Tall lantern posts (drive LAMP_LIGHTS)
+  { file: '/models/props/post_lantern.gltf', pos: [-3.6, 0, 12.3], rotY: 0.4, scale: 1, light: true },
+  { file: '/models/props/post_lantern.gltf', pos: [-2.6, 0, -6.2], rotY: -0.6, scale: 1, light: true },
+  { file: '/models/props/post_lantern.gltf', pos: [6.9, 0, -1.2], rotY: 2.6, scale: 1, light: true },
+);
+
+// ---- Landmark dressing (feat/environment-polish) ----
+// Ruins at (31,5): broken dungeon walls + columns + a small graveyard behind.
+PROPS.push(
+  { file: '/models/env/wall_broken.gltf', pos: [27, 0, -1.5], rotY: 0.4, scale: 1 },
+  { file: '/models/env/wall_broken.gltf', pos: [35.5, 0, 1.5], rotY: 2.2, scale: 1 },
+  { file: '/models/env/wall_archedwindow_open.gltf', pos: [31, 0, 11], rotY: 0, scale: 1 },
+  { file: '/models/env/column.gltf', pos: [29, 0, 2], rotY: 0.3, scale: 2 },
+  { file: '/models/env/column.gltf', pos: [34, 0, 7.5], rotY: 1.1, scale: 2 },
+  { file: '/models/env/rubble_large.gltf', pos: [36.5, 0, 8.5], rotY: 0.7, scale: 0.7 },
+  { file: '/models/props/gravestone.gltf', pos: [28, 0, 1.4], rotY: 0.15, scale: 0.8 },
+  { file: '/models/props/gravestone.gltf', pos: [29.6, 0, 0.8], rotY: -0.1, scale: 0.8 },
+  { file: '/models/props/gravestone.gltf', pos: [31.2, 0, 1.2], rotY: 0.25, scale: 0.8 },
+  { file: '/models/props/grave_a.gltf', pos: [33.2, 0, 0.6], rotY: -0.2, scale: 0.8 },
+  { file: '/models/props/post_skull.gltf', pos: [34.6, 0, 11.2], rotY: 0.5, scale: 1 },
+  // Ancient Tree clearing: stone ring, flanking columns, rubble halo
+  ...stoneRing(0, 31, 7.5, 12),
+  { file: '/models/env/column.gltf', pos: [-2.6, 0, 27], rotY: 0, scale: 2 },
+  { file: '/models/env/column.gltf', pos: [2.6, 0, 27], rotY: 0, scale: 2 },
+  { file: '/models/env/rubble_large.gltf', pos: [-5.5, 0, 33.5], rotY: 2.1, scale: 0.6 },
+  { file: '/models/env/rubble_large.gltf', pos: [5.8, 0, 34], rotY: 0.9, scale: 0.6 },
+  // Lake shore gem cluster (echoes the underwater reward)
+  { file: '/models/props/Gem_Large.gltf', pos: [-24.2, 0, 10.6], rotY: 0.4, scale: 2.4 },
+  { file: '/models/props/Gem_Large.gltf', pos: [-23.4, 0, 11.4], rotY: -0.7, scale: 1.8 },
+  { file: '/models/props/Gem_Large.gltf', pos: [-24.9, 0, 11.6], rotY: 1.9, scale: 1.4 },
+  { file: '/models/props/Gem_Medium.gltf', pos: [-23.9, 0, 12.2], rotY: 0.2, scale: 1.6 },
+);
+
+
+/** Solid-prop half-extents at scale 1 (measured world AABBs), keyed by file.
+ *  Drives cuboid colliders + the footprint sweep below. */
+export const BUILDING_HALF: Record<string, [number, number, number]> = {
+  '/models/village/home_a.gltf': [0.44, 0.93, 0.47],
+  '/models/village/home_b.gltf': [0.44, 1.28, 0.56],
+  '/models/village/market.gltf': [0.9, 0.98, 0.71],
+  '/models/village/barracks.gltf': [0.72, 1.64, 0.85],
+  '/models/village/well.gltf': [0.34, 0.83, 0.38],
+  '/models/village/watchtower.gltf': [0.52, 1.11, 0.52],
+  '/models/village/tent.gltf': [0.26, 0.52, 0.26],
+  '/models/props/bench.gltf': [0.88, 0.5, 0.38],
+  '/models/props/anvil.gltf': [0.9, 0.8, 0.38],
+  '/models/props/sign_left.gltf': [0.96, 2, 0.2],
+  '/models/props/sign_right.gltf': [0.96, 2, 0.2],
+  '/models/props/post_lantern.gltf': [0.32, 3.3, 0.79],
+  '/models/props/post_skull.gltf': [0.41, 3.3, 0.79],
+  '/models/props/gravestone.gltf': [0.7, 1.6, 0.2],
+  '/models/props/grave_a.gltf': [1, 2.13, 0.5],
+  '/models/props/crate_open.gltf': [0.17, 0.2, 0.1],
+  '/models/env/wall_gated.gltf': [2, 4, 0.5],
+  '/models/env/pillar.gltf': [0.75, 4, 0.75],
+  '/models/env/banner_blue.gltf': [0.75, 3.2, 0.16],
+  '/models/env/wall_broken.gltf': [2, 4, 0.5],
+  '/models/env/wall_archedwindow_open.gltf': [2, 4, 0.5],
+  '/models/env/column.gltf': [0.35, 1.4, 0.35],
+};
+
+/** Low garden fences: fence_wood pieces are 1.15u long, runs auto-space by
+ *  that length at the given scale. */
+export const FENCES: Inst[] = [];
+function fenceRun(x0: number, z0: number, x1: number, z1: number, scale = 2) {
+  const rotY = Math.atan2(x1 - x0, z1 - z0);
+  const len = Math.hypot(x1 - x0, z1 - z0);
+  const n = Math.max(2, Math.round(len / (1.15 * scale)) + 1);
+  for (let i = 0; i < n; i++) {
+    const t = i / (n - 1);
+    FENCES.push({ pos: [x0 + (x1 - x0) * t, 0, z0 + (z1 - z0) * t], rotY, scale });
+  }
+}
+fenceRun(-12.6, -5.5, -12.6, -9.8); // home A west yard
+fenceRun(6.2, -1.6, 6.2, -5.4); // market west edge
+
+// Structures are declared after scatter in module order; sweep any
+// vegetation/fence piece that ended up inside a building footprint.
+for (const p of PROPS) {
+  if (!p.file.includes('/village/')) continue;
+  const m = BUILDING_HALF[p.file];
+  if (!m) continue;
+  const r = (m[0] + m[2]) * p.scale; // worst-case rotated footprint
+  const inside = (q: Inst) => Math.abs(q.pos[0] - p.pos[0]) < r && Math.abs(q.pos[2] - p.pos[2]) < r;
+  for (const arr of [TREES, BUSHES, GRASS, ROCKS, BARE_TREES, FENCES] as Inst[][]) {
+    for (let i = arr.length - 1; i >= 0; i--) if (inside(arr[i])) arr.splice(i, 1);
+  }
+}
+
+/** Lake flora: lily pads on the water, reeds along the shore. */
+export const LILIES: Inst[] = [];
+for (let i = 0; i < 14; i++) {
+  const p = disk(-29, 6, 0.5, 5.5);
+  if (p) LILIES.push({ pos: [p[0], 0.03, p[1]], rotY: rnd(0, Math.PI * 2), scale: rnd(6, 10) });
+}
+export const WATERPLANTS: Inst[] = [];
+for (let i = 0; i < 18; i++) {
+  const a = rng() * Math.PI * 2, r = rnd(6.9, 8.4);
+  const x = -29 + Math.cos(a) * r * 1.1, z = 6 + Math.sin(a) * r;
+  if (distToPaths(x, z) < 2) continue;
+  WATERPLANTS.push({ pos: [x, 0.02, z], rotY: rnd(0, Math.PI * 2), scale: rnd(6, 9) });
+}
+
+/** Glowing grove: mushroom caps ringed around the spirit_path POI (teal tint). */
+export const MUSHROOMS: InstC[] = [];
+for (const [cx, cz, n, r0, r1] of [[28, -22, 10, 5, 8], [25.5, -18.5, 4, 1.2, 2.5], [31, -25, 5, 2, 4]] as const) {
+  for (let i = 0; i < n; i++) {
+    const p = disk(cx, cz, r0, r1);
+    if (!p || !keepClear(p[0], p[1], 1.2, 0.8)) continue;
+    MUSHROOMS.push({ pos: [p[0], 0, p[1]], rotY: rnd(0, Math.PI * 2), scale: rnd(1.1, 2.1), tint: rnd(0.5, 0.8) });
+  }
+}
+
 function stoneRing(cx: number, cz: number, r: number, n: number): Prop[] {
   const out: Prop[] = [];
   for (let i = 0; i < n; i++) {
@@ -199,6 +353,9 @@ function stoneRing(cx: number, cz: number, r: number, n: number): Prop[] {
   return out;
 }
 
-/** Lamp point-light positions (pick subset flagged light:true). */
-export const LAMP_LIGHTS: [number, number, number][] = PROPS.filter((p) => p.light).map((p) => [p.pos[0], 2.4, p.pos[2]]);
+/** Lamp light positions; heights differ per model. */
+export const LAMP_LIGHTS: [number, number, number][] = PROPS.filter((p) => p.light).map((p) => {
+  const h = p.file.includes('post_lantern') ? 3.0 : p.file.includes('torch_lit') ? 1.1 : p.file.includes('lantern') ? 3.3 : 1;
+  return [p.pos[0], p.pos[1] + h * p.scale, p.pos[2]];
+});
 

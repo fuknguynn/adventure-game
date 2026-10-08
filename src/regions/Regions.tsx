@@ -51,10 +51,7 @@ export function Regions() {
           <pointLight color="#54e0ff" intensity={e * 4} distance={9} decay={2} position={[0, 1.4, 0]} />
         </group>
       ))}
-      {/* ruins dressing */}
-      <KayKitModel url="/models/env/pillar.gltf" position={[28, 0, 2]} scale={1.4} />
-      <KayKitModel url="/models/env/pillar.gltf" position={[32, 0, 8]} scale={1.4} />
-      <KayKitModel url="/models/env/wall_gated.gltf" position={[34, 0, 5]} rotationY={-0.4} scale={1.2} />
+      {/* ruins puzzle focal stone (grows when light_reflection solved) */}
       <KayKitModel url="/models/props/stone.gltf" position={[30, 0, 5]} scale={ruinsDone ? 1.4 : 1} />
       {/* ancient tree: grand verified tree + shrine + light */}
       <KayKitModel url="/models/env/Tree_1_C_Color1.gltf" position={[0, 0, 34]} scale={4.2} />

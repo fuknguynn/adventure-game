@@ -3,13 +3,13 @@ import * as THREE from 'three';
 import { useLoader } from '@react-three/fiber';
 import { GLTFLoader } from 'three-stdlib';
 import { RigidBody, CylinderCollider, CuboidCollider } from '@react-three/rapier';
-import { TREES, TREE_FILES, BUSHES, GRASS, ROCKS, PATH_DISCS, PEBBLES, PATCHES, PROPS, type Inst, type InstC } from './villageLayout';
+import { TREES, TREE_FILES, BUSHES, GRASS, ROCKS, PATH_DISCS, PEBBLES, PATCHES, PROPS, FENCES, LILIES, WATERPLANTS, MUSHROOMS, BARE_TREES, BUILDING_HALF, type Inst, type InstC } from './villageLayout';
 
 interface Prim { geom: THREE.BufferGeometry; mat: THREE.Material }
 
 /** GLTF asset rendered as one InstancedMesh per primitive; matrices set once. */
-function InstancedAsset({ url, items, castShadow = false, receiveShadow = false, tints }: {
-  url: string; items: Inst[]; castShadow?: boolean; receiveShadow?: boolean; tints?: number[];
+function InstancedAsset({ url, items, castShadow = false, receiveShadow = false, tints, emissive }: {
+  url: string; items: Inst[]; castShadow?: boolean; receiveShadow?: boolean; tints?: number[]; emissive?: string;
 }) {
   const gltf = useLoader(GLTFLoader, url);
   const prims = useMemo<Prim[]>(() => {
@@ -32,17 +32,21 @@ function InstancedAsset({ url, items, castShadow = false, receiveShadow = false,
     <group>
       {prims.map((p, i) => (
         <InstMesh key={i} prim={p} items={items} castShadow={castShadow} receiveShadow={receiveShadow}
-          tints={tints && prims.length === 1 ? tints : undefined} />
+          tints={tints && prims.length === 1 ? tints : undefined} emissive={emissive} />
       ))}
     </group>
   );
 }
 
-function InstMesh({ prim, items, castShadow, receiveShadow, tints }: {
-  prim: Prim; items: Inst[]; castShadow: boolean; receiveShadow: boolean; tints?: number[];
+function InstMesh({ prim, items, castShadow, receiveShadow, tints, emissive }: {
+  prim: Prim; items: Inst[]; castShadow: boolean; receiveShadow: boolean; tints?: number[]; emissive?: string;
 }) {
   const ref = useRef<THREE.InstancedMesh>(null);
-  const mat = useMemo(() => (prim.mat as THREE.MeshStandardMaterial).clone(), [prim]);
+  const mat = useMemo(() => {
+    const m = (prim.mat as THREE.MeshStandardMaterial).clone();
+    if (emissive) { m.emissive = new THREE.Color(emissive); m.emissiveIntensity = 0.9; }
+    return m;
+  }, [prim, emissive]);
   useLayoutEffect(() => {
     const im = ref.current; if (!im) return;
     const d = new THREE.Object3D();
@@ -66,7 +70,7 @@ function tintOf(list: InstC[]) { return list.map((i) => i.tint); }
 
 /** All instanced village scatter. */
 export function VillageScenery() {
-  const treeByKind = [0, 1, 2].map((k) => TREES.filter((t) => t.kind === k));
+  const treeByKind = [0, 1, 2, 3, 4, 5].map((k) => TREES.filter((t) => t.kind === k));
   return (
     <group>
       <Suspense fallback={null}>
@@ -74,9 +78,17 @@ export function VillageScenery() {
         <InstancedAsset url="/models/env/Bush_1_A_Color1.gltf" items={BUSHES} />
         <InstancedAsset url="/models/env/Rock_1_A_Color1.gltf" items={ROCKS} tints={tintOf(ROCKS)} />
         <InstancedAsset url="/models/props/stone.gltf" items={PEBBLES} />
+        <InstancedAsset url="/models/env/fence_wood.gltf" items={FENCES} castShadow />
+        <InstancedAsset url="/models/env/waterlily.gltf" items={LILIES} />
+        <InstancedAsset url="/models/env/waterplant.gltf" items={WATERPLANTS} />
+        <InstancedAsset url="/models/props/mushroom.gltf" items={MUSHROOMS} tints={tintOf(MUSHROOMS)} emissive="#1c6f66" />
         <TreeRow kind={0} items={treeByKind[0]} />
         <TreeRow kind={1} items={treeByKind[1]} />
         <TreeRow kind={2} items={treeByKind[2]} />
+        <TreeRow kind={3} items={treeByKind[3]} />
+        <TreeRow kind={4} items={treeByKind[4]} />
+        <TreeRow kind={5} items={treeByKind[5]} />
+        <InstancedAsset url="/models/env/Tree_Bare_1_A_Color1.gltf" items={BARE_TREES} castShadow />
         <GroundPatches items={PATH_DISCS} color="#5a4a33" />
         <GroundPatches items={PATCHES} color="#2f5c3a" />
       </Suspense>
@@ -123,12 +135,17 @@ export function EnvColliders() {
         <CylinderCollider key={`r${i}`} args={[0.3 * r.scale, 0.5 * r.scale]} position={[r.pos[0], 0.3, r.pos[2]]} />
       ))}
       {PROPS.map((p, i) => {
-        if (p.file.includes('wall_gated')) return <CuboidCollider key={`p${i}`} args={[2, 2, 0.5]} position={[p.pos[0], 2, p.pos[2]]} rotation={[0, p.rotY, 0]} />;
-        if (p.file.includes('pillar')) return <CylinderCollider key={`p${i}`} args={[2 * p.scale, 0.7 * p.scale]} position={[p.pos[0], 2 * p.scale, p.pos[2]]} />;
+        const m = BUILDING_HALF[p.file];
+        if (m) {
+          const [hx, hh, hz] = m;
+          return <CuboidCollider key={`p${i}`} args={[hx * p.scale, (hh * p.scale) / 2, hz * p.scale]} position={[p.pos[0], p.pos[1] + (hh * p.scale) / 2, p.pos[2]]} rotation={[0, p.rotY, 0]} />;
+        }
         if (p.file.includes('shrine')) return <CuboidCollider key={`p${i}`} args={[0.6 * p.scale, 0.45 * p.scale, 0.3 * p.scale]} position={[p.pos[0], 0.45 * p.scale, p.pos[2]]} rotation={[0, p.rotY, 0]} />;
-        if (p.file.includes('banner')) return <CuboidCollider key={`p${i}`} args={[0.12, 1.9 * p.scale, 0.12]} position={[p.pos[0], 1.9 * p.scale, p.pos[2]]} />;
         return null;
       })}
+      {FENCES.map((f, i) => (
+        <CuboidCollider key={`f${i}`} args={[0.05 * f.scale, 0.275 * f.scale, 0.575 * f.scale]} position={[f.pos[0], 0.275 * f.scale, f.pos[2]]} rotation={[0, f.rotY, 0]} />
+      ))}
     </RigidBody>
   );
 }
