@@ -3,7 +3,8 @@ import { useProfile, useProgress, useSettings } from '../stores/stores';
 import { useUI } from '../stores/uiStore';
 import { loadSave, writeSave, collectSave } from '../systems/SaveSystem';
 import { setAudioPrefs, startAmbient } from '../systems/AudioSystem';
-import { Welcome, CharacterCreation, IntroCinematic } from '../ui/Onboarding';
+import { Welcome, IntroCinematic } from '../ui/Onboarding';
+import { CharacterCreation } from '../ui/CharacterCreation';
 import { SettingsView, EndingView } from '../ui/HudScreens';
 import { GameCanvas } from '../game/GameCanvas';
 
