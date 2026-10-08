@@ -1,8 +1,11 @@
 /* Eldergrove character creation — enchanted forest, gold on deep green */
 .creation {
   position: relative;
-  min-height: 100vh;
-  overflow: hidden;
+  height: 100vh;
+  height: 100dvh;
+  overflow-y: auto;
+  overflow-x: hidden;
+  overscroll-behavior: contain;
   background:
     radial-gradient(1100px 600px at 78% 30%, rgba(216, 187, 120, 0.10), transparent 60%),
     radial-gradient(900px 700px at 12% 85%, rgba(79, 227, 193, 0.08), transparent 60%),
@@ -130,7 +133,6 @@
 
 /* mobile: preview stays the visual focus, controls stack below */
 @media (max-width: 900px) {
-  .creation { overflow-y: auto; }
   .creation-inner {
     grid-template-columns: 1fr;
     grid-template-areas: "stage" "panel" "bar";
