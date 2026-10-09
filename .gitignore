@@ -5,3 +5,5 @@ dist/
 Thumbs.db
 shots/
 .tmp-audit/
+
+scripts/walk-current.json
