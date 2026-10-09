@@ -1,0 +1,29 @@
+{
+  "waypoints": [
+    { "x": 0, "z": 6, "label": "spawn" },
+    { "x": 0, "z": 12.5, "label": "gate" },
+    { "x": 0, "z": -1, "label": "plaza" },
+    { "x": 13, "z": -4, "label": "stall-front" },
+    { "x": 15.5, "z": -4.5, "label": "pocket-center" },
+    { "x": 17.5, "z": -6, "label": "tent-front" },
+    { "x": 9, "z": -6.5, "label": "market-circle" },
+    { "x": -2, "z": -6, "label": "plaza-edge" },
+    { "x": -12, "z": -6, "label": "courtyard" },
+    { "x": -13, "z": -9, "label": "between-houses" },
+    { "x": -20.5, "z": -10.5, "label": "longhouse-front" },
+    { "x": -19.5, "z": -20, "label": "longhouse-east" },
+    { "x": -24.5, "z": -24.5, "label": "tower-approach" },
+    { "x": -21, "z": -21.5, "label": "forge-corner" },
+    { "x": -17.5, "z": -13, "label": "forge-road" },
+    { "x": -22.5, "z": -5, "label": "north-road" },
+    { "x": -26, "z": 5, "label": "lake-head" },
+    { "x": 2, "z": 2, "label": "spirit", "sprint": true }
+  ],
+  "probes": [
+    { "x": -27, "z": -14, "label": "inside-barracks", "escape": [-17.5, -13] },
+    { "x": -19.5, "z": -1.5, "label": "inside-home-a", "escape": [-12, -6] },
+    { "x": -31, "z": -30, "label": "inside-tower", "escape": [-24.5, -24.5] },
+    { "x": 17.5, "z": -8.5, "label": "inside-tent", "escape": [17.5, -5.5] }
+  ],
+  "orbit": { "x": 13, "z": -4 }
+}

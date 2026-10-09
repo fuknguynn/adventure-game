@@ -56,7 +56,7 @@ export function Regions() {
       <KayKitModel url="/models/props/stone.gltf" position={[30, 0, 5]} scale={ruinsDone ? 1.4 : 1} />
       {/* ancient tree: grand verified tree + shrine + light */}
       <KayKitModel url="/models/env/Tree_1_C_Color1.gltf" position={[0, 0, 34]} scale={4.2} colorize={FOLIAGE_TINT} />
-      <KayKitModel url="/models/env/shrine_green.gltf" position={[0, 0, 30]} scale={1.4} />
+      <KayKitModel url="/models/env/shrine_green.gltf" position={[0, 0, 30]} scale={2.2} />
       <pointLight color={worldRestored ? '#ffe9a8' : '#9ff5e8'} intensity={worldRestored ? 30 : 10} distance={22} decay={2} position={[0, 5, 32]} />
       <FirefliesPoints restored={worldRestored} />
     </group>

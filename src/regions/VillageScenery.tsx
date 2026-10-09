@@ -3,7 +3,7 @@ import * as THREE from 'three';
 import { useLoader } from '@react-three/fiber';
 import { GLTFLoader } from 'three-stdlib';
 import { RigidBody, CylinderCollider, CuboidCollider } from '@react-three/rapier';
-import { TREES, TREE_FILES, BUSHES, GRASS, ROCKS, PATH_DISCS, PEBBLES, PATCHES, PROPS, FENCES, LILIES, WATERPLANTS, MUSHROOMS, BARE_TREES, BUILDING_HALF, ANCIENT_TREE, type Inst, type InstC } from './villageLayout';
+import { TREES, TREE_FILES, BUSHES, GRASS, ROCKS, PATH_DISCS, PEBBLES, PATCHES, PROPS, FENCES, LILIES, WATERPLANTS, MUSHROOMS, BARE_TREES, BUILDING_HALF, NO_COLLIDE, ANCIENT_TREE, type Inst, type InstC } from './villageLayout';
 
 interface Prim { geom: THREE.BufferGeometry; mat: THREE.Material }
 
@@ -135,14 +135,15 @@ export function EnvColliders() {
   return (
     <RigidBody type="fixed" colliders={false}>
       {TREES.filter((t) => t.collider).map((t, i) => (
-        <CylinderCollider key={`t${i}`} args={[2.2 * t.scale, 0.42 * t.scale]} position={[t.pos[0], 2.2 * t.scale, t.pos[2]]} />
+        <CylinderCollider key={`t${i}`} args={[2.2 * t.scale, 0.3 * t.scale]} position={[t.pos[0], 2.2 * t.scale, t.pos[2]]} />
       ))}
-      {ROCKS.filter((r) => r.scale > 1.7).map((r, i) => (
-        <CylinderCollider key={`r${i}`} args={[0.3 * r.scale, 0.5 * r.scale]} position={[r.pos[0], 0.3, r.pos[2]]} />
+      {ROCKS.filter((r) => r.scale >= 1.4).map((r, i) => (
+        <CylinderCollider key={`r${i}`} args={[0.3 * r.scale, 0.35 * r.scale]} position={[r.pos[0], 0.3 * r.scale, r.pos[2]]} />
       ))}
       {/* Ancient Tree trunk: model rendered by Regions.tsx, no PROPS entry. */}
       <CylinderCollider args={[ANCIENT_TREE.h / 2, ANCIENT_TREE.r]} position={[ANCIENT_TREE.x, ANCIENT_TREE.h / 2, ANCIENT_TREE.z]} />
       {PROPS.map((p, i) => {
+        if (NO_COLLIDE[p.file]) return null;
         // Large shore stones (scale >= 1.2) get a low cylinder bump; small
         // ring stones stay walk-over so puzzle spots stay open.
         if (p.file.endsWith('props/stone.gltf') && p.scale >= 1.2)

@@ -71,9 +71,11 @@ for (const poi of POIS) {
   await shot(poi.name);
 }
 
-// mobile viewport from spawn
+// mobile viewport; --mobile x,z,yaw overrides the spawn shot target
 await p.setViewport({ width: 390, height: 844, isMobile: true, hasTouch: true });
-await teleport([0, 6], 0);
+const mi = process.argv.indexOf('--mobile');
+const [mx, mz, myaw] = mi > 0 ? process.argv[mi + 1].split(',').map(Number) : [0, 6, 0];
+await teleport([mx, mz], myaw);
 await shot('mobile-spawn');
 
 if (errs.length) console.log('PAGE ERRORS:\n' + [...new Set(errs)].join('\n'));
