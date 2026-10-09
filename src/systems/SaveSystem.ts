@@ -5,7 +5,9 @@ export function loadSave(): SaveData | null {
     const raw = localStorage.getItem(SAVE_KEY);
     if (!raw) return null;
     const parsed: unknown = JSON.parse(raw);
-    if (isValidSave(parsed)) return parsed;
+    // migrateSave covers both valid saves (normalizes `muted` missing from
+    // pre-mute-toggle writes) and salvageable legacy shapes, persisting the
+    // upgraded copy.
     const migrated = migrateSave(parsed);
     if (migrated) {
       writeSave(migrated);

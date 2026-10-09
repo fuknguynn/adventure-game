@@ -15,18 +15,20 @@ class ModelErrorBoundary extends React.Component<{ url: string; children: React.
   }
 }
 
-/** Loads a vendored KayKit glTF/GLB with explicit loading + error states. Never a blank mesh. */
-export function KayKitModel({ url, position = [0, 0, 0], scale = 1, rotationY = 0 }: { url: string; position?: [number, number, number]; scale?: number; rotationY?: number }) {
+/** Loads a vendored KayKit glTF/GLB with explicit loading + error states. Never a blank mesh.
+ *  `colorize` (optional) multiplies a hex tint into the model's materials; the
+ *  tinted instance gets private material clones so the shared gltf cache stays pristine. */
+export function KayKitModel({ url, position = [0, 0, 0], scale = 1, rotationY = 0, colorize }: { url: string; position?: [number, number, number]; scale?: number; rotationY?: number; colorize?: string }) {
   return (
     <ModelErrorBoundary url={url}>
       <Suspense fallback={null}>
-        <Inner url={url} position={position} scale={scale} rotationY={rotationY} />
+        <Inner url={url} position={position} scale={scale} rotationY={rotationY} colorize={colorize} />
       </Suspense>
     </ModelErrorBoundary>
   );
 }
 
-function Inner(props: { url: string; position: [number, number, number]; scale: number; rotationY: number }) {
+function Inner(props: { url: string; position: [number, number, number]; scale: number; rotationY: number; colorize?: string }) {
   const [failed, setFailed] = useState(false);
   const [scene, setScene] = useState<THREE.Group | null>(null);
   const gltf = useLoader(GLTFLoader, props.url);
@@ -38,6 +40,17 @@ function Inner(props: { url: string; position: [number, number, number]; scale: 
       clone.scale.setScalar(props.scale);
       clone.rotation.y = props.rotationY;
       clone.traverse((o) => { o.frustumCulled = true; });
+      if (props.colorize) {
+        const tint = new THREE.Color(props.colorize);
+        clone.traverse((o) => {
+          const mesh = o as THREE.Mesh;
+          const m = mesh.material as THREE.Material | THREE.Material[] | undefined;
+          if (!m) return;
+          const list = Array.isArray(m) ? m : [m];
+          const tinted = list.map((mat) => { const c = mat.clone(); const sm = c as THREE.MeshStandardMaterial; if (sm.color) sm.color.multiply(tint); return c; });
+          mesh.material = Array.isArray(m) ? tinted : tinted[0];
+        });
+      }
       if (alive) setScene(clone);
     } catch {
       if (alive) setFailed(true);

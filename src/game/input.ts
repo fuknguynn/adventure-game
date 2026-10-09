@@ -5,10 +5,14 @@ export const camOrbit = { yaw: 0.6, pitch: 0.35 };
 /** Fraction of screen width owned by the touch joystick; the rest orbits.
  *  Shared by TouchControls (assignment) and CameraRig (pointer gating). */
 export const JOY_ZONE = 0.45;
+/** True while PauseView is open; movement/jump sources check this so a
+ *  paused player cannot move (Player.tsx gates too, as a backstop). */
+export const pausedFlag = { v: false };
 export const touchFlags = { jump: false, interact: false, sprint: false };
 
 export function attachKeyboard() {
   const down = (e: KeyboardEvent) => {
+    if (pausedFlag.v) return; // movement/jump/interact inert while paused; keyup still clears stale keys
     if (e.repeat) return;
     switch (e.code) {
       case 'KeyW': case 'ArrowUp': keys.fwd = true; break;

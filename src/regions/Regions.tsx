@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import * as THREE from 'three';
 import { KayKitModel } from '../game/Model';
-import { VillageScenery } from './VillageScenery';
+import { VillageScenery, FOLIAGE_TINT } from './VillageScenery';
 import { PROPS, FIREFLIES } from './villageLayout';
 import { useProgress } from '../stores/stores';
 
@@ -29,17 +29,18 @@ export function Regions() {
       {/* lake: disc + darker shore ring + subtle emissive (kept static per perf rule) */}
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[-29, 0.006, 6]}>
         <circleGeometry args={[7.6, 36]} />
-        <meshStandardMaterial color="#16323b" />
+        <meshStandardMaterial color="#132b33" />
       </mesh>
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[-29, 0.02, 6]}>
         <circleGeometry args={[7, 36]} />
-        <meshStandardMaterial color={lakeDone ? '#5fd4e8' : '#2e7f96'} transparent opacity={0.9} emissive={lakeDone ? '#2fb9d4' : '#0c3542'} emissiveIntensity={lakeDone ? 0.9 : 0.3} />
+        <meshStandardMaterial color={lakeDone ? '#5fd4e8' : '#27718a'} transparent opacity={0.9} emissive={lakeDone ? '#2fb9d4' : '#0a2f3c'} emissiveIntensity={lakeDone ? 0.9 : 0.3} />
       </mesh>
       {/* instanced scatter + ground treatment + colliders */}
       <VillageScenery />
       {/* individual props (storytelling + landmarks) */}
       {PROPS.map((p, i) => (
-        <KayKitModel key={`pr${i}`} url={p.file} position={p.pos} scale={p.scale} rotationY={p.rotY} />
+        <KayKitModel key={`pr${i}`} url={p.file} position={p.pos} scale={p.scale} rotationY={p.rotY}
+          colorize={p.file.includes('Tree_1_C') ? FOLIAGE_TINT : undefined} />
       ))}
       {/* grove: luminous gems */}
       {gems.map(([x, y, z, e], i) => (
@@ -54,7 +55,7 @@ export function Regions() {
       {/* ruins puzzle focal stone (grows when light_reflection solved) */}
       <KayKitModel url="/models/props/stone.gltf" position={[30, 0, 5]} scale={ruinsDone ? 1.4 : 1} />
       {/* ancient tree: grand verified tree + shrine + light */}
-      <KayKitModel url="/models/env/Tree_1_C_Color1.gltf" position={[0, 0, 34]} scale={4.2} />
+      <KayKitModel url="/models/env/Tree_1_C_Color1.gltf" position={[0, 0, 34]} scale={4.2} colorize={FOLIAGE_TINT} />
       <KayKitModel url="/models/env/shrine_green.gltf" position={[0, 0, 30]} scale={1.4} />
       <pointLight color={worldRestored ? '#ffe9a8' : '#9ff5e8'} intensity={worldRestored ? 30 : 10} distance={22} decay={2} position={[0, 5, 32]} />
       <FirefliesPoints restored={worldRestored} />

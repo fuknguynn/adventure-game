@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { joyMove, touchFlags, camOrbit, JOY_ZONE } from '../game/input';
+import { joyMove, touchFlags, camOrbit, JOY_ZONE, pausedFlag } from '../game/input';
 
 export function TouchControls({ onInteract }: { onInteract: () => void }) {
   const baseRef = useRef<HTMLDivElement>(null);
@@ -32,6 +32,9 @@ export function TouchControls({ onInteract }: { onInteract: () => void }) {
       for (const t of Array.from(e.changedTouches)) {
         if (t.identifier === joyId) {
           consumed = true;
+          // Paused: don't feed shared input (Player.tsx also gates; touchend
+          // below always resets, so no stale joystick value survives).
+          if (pausedFlag.v) break;
           joyMove.x = Math.max(-1, Math.min(1, (t.clientX - ox) / 50));
           joyMove.z = Math.max(-1, Math.min(1, (t.clientY - oy) / 50));
           stick(ox, oy, joyMove.x * 28, joyMove.z * 28, true);
@@ -64,7 +67,7 @@ export function TouchControls({ onInteract }: { onInteract: () => void }) {
   return (
     <div id="touchzone" style={{ position: 'fixed', inset: 0, zIndex: 5, pointerEvents: 'none' }}>
       <div className="touch-ui touch-ui-left">
-        <button className="touch-btn" aria-label="Jump" onTouchStart={() => { touchFlags.jump = true; }} onClick={() => { touchFlags.jump = true; }}>⤒</button>
+        <button className="touch-btn" aria-label="Jump" onTouchStart={() => { if (!pausedFlag.v) touchFlags.jump = true; }} onClick={() => { if (!pausedFlag.v) touchFlags.jump = true; }}>⤒</button>
         <button className="touch-btn" aria-label="Sprint toggle" onClick={() => { touchFlags.sprint = !touchFlags.sprint; }}>»</button>
       </div>
       <div className="touch-ui touch-ui-right">

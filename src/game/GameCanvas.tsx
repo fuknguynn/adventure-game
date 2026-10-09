@@ -12,7 +12,7 @@ import { PuzzlePanels } from '../puzzles/PuzzlePanels';
 import { HUD, DialogueView, JournalView, MapView, PauseView } from '../ui/HudScreens';
 import { useProgress, useSettings } from '../stores/stores';
 import { useUI } from '../stores/uiStore';
-import { attachKeyboard } from './input';
+import { attachKeyboard, pausedFlag } from './input';
 import { useEffect } from 'react';
 import { sfx } from '../systems/AudioSystem';
 
@@ -31,7 +31,7 @@ export function GameCanvas({ onExit, onEnding }: { onExit: () => void; onEnding:
   const { quality, reducedMotion } = useSettings();
   const [puzzle, setPuzzle] = useState<string | null>(null);
   const [paused, setPaused] = useState(false);
-  const [dayT, setDayT] = useState(0.35);
+  const [dayT, setDayT] = useState(0.28);
   const [near, setNear] = useState<string | null>(null);
   const [showHint, setShowHint] = useState(() => {
     try { return !localStorage.getItem('eldergrove.hintSeen'); } catch { return true; }
@@ -39,6 +39,7 @@ export function GameCanvas({ onExit, onEnding }: { onExit: () => void; onEnding:
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => attachKeyboard(), []);
+  useEffect(() => { pausedFlag.v = paused; return () => { pausedFlag.v = false; }; }, [paused]);
   // Contextual prompt: label of whatever is in interact range (same radii as interact())
   useEffect(() => {
     const R = (v: THREE.Vector3, r = 4.5) => playerPos.distanceTo(new THREE.Vector3(v.x, playerPos.y, v.z)) < r;
@@ -88,14 +89,32 @@ export function GameCanvas({ onExit, onEnding }: { onExit: () => void; onEnding:
       if (!completedQuests.includes('met_spirit')) setProgress({ completedQuests: [...completedQuests, 'met_spirit'] });
       return;
     }
-    if (near(SPOTS.grove, 5)) { setPuzzle('spirit_path'); return; }
-    if (near(SPOTS.lake, 6)) { setPuzzle('rune_sequence'); return; }
-    if (near(SPOTS.ruins, 5)) { setPuzzle('light_reflection'); return; }
+    // Already-solved spots never reopen: PuzzlePanels fires sfx.fragment +
+    // 'recovered' toast on every in-panel solve, so re-opening a solved puzzle
+    // would replay the reward. Inspecting shows a calm confirmation instead.
+    const openPuzzle = (id: string, name: string) => {
+      if (solvedPuzzles.includes(id)) {
+        setToast(`${name} fragment already recovered ✦`);
+        setTimeout(() => setToast(null), 2000);
+        return;
+      }
+      setPuzzle(id);
+    };
+    if (near(SPOTS.grove, 5)) { openPuzzle('spirit_path', 'Grove'); return; }
+    if (near(SPOTS.lake, 6)) { openPuzzle('rune_sequence', 'Lake'); return; }
+    if (near(SPOTS.ruins, 5)) { openPuzzle('light_reflection', 'Ruins'); return; }
     if (near(SPOTS.tree, 6)) {
       if (solvedPuzzles.length >= 3) {
-        setProgress({ worldRestored: true, completedQuests: [...new Set([...completedQuests, 'the_forest_remembers'])] });
-        sfx.fragment();
-        onEnding();
+        // Reward fires once: re-touching after completion must not replay SFX/ending.
+        if (!completedQuests.includes('the_forest_remembers')) {
+          // Guarded by `!includes` above: plain append cannot duplicate.
+          setProgress({ worldRestored: true, completedQuests: [...completedQuests, 'the_forest_remembers'] });
+          sfx.fragment();
+          onEnding();
+        } else {
+          setToast('The restored grove hums with light ✦');
+          setTimeout(() => setToast(null), 2200);
+        }
       } else {
         setToast(`The Tree sleeps. Fragments: ${solvedPuzzles.length}/3`);
         setTimeout(() => setToast(null), 2200);
@@ -112,11 +131,12 @@ export function GameCanvas({ onExit, onEnding }: { onExit: () => void; onEnding:
     // dayT 0.5 = noon: daylight peaks at 1, night floors at 0
     const daylight = Math.max(0, Math.sin((dayT - 0.25) * Math.PI * 2));
     const isDay = daylight > 0.02;
+    // Dark-fantasy grade: warm amber key, deeper dusk-leaning fog/background.
     return {
       daylight, isDay,
-      intensity: 0.35 + daylight * 2.3,
-      color: isDay ? '#fff2d0' : '#9db8ff',
-      fog: isDay ? '#2e4d3a' : '#101c26',
+      intensity: 0.32 + daylight * 2.35,
+      color: isDay ? '#ffd9a0' : '#9db8ff',
+      fog: isDay ? '#274430' : '#0b151d',
     };
   }, [dayT]);
 
@@ -152,11 +172,11 @@ export function GameCanvas({ onExit, onEnding }: { onExit: () => void; onEnding:
         <color attach="background" args={[sun.fog]} />
         <fog attach="fog" args={[sun.fog, 24, 85]} />
         {/* layered light: cool ambient fill + warm key + cool rim */}
-        <ambientLight intensity={0.28 + sun.daylight * 0.55} color={sun.isDay ? '#c8dcec' : '#7f9fb8'} />
-        <hemisphereLight args={[sun.isDay ? '#bcd9ea' : '#8fb6d8', '#2d3a22', 0.35 + sun.daylight * 0.5]} />
+        <ambientLight intensity={0.26 + sun.daylight * 0.55} color={sun.isDay ? '#bedce4' : '#7f9fb8'} />
+        <hemisphereLight args={[sun.isDay ? '#b6d6e6' : '#8fb6d8', '#26331e', 0.32 + sun.daylight * 0.5]} />
         <directionalLight position={[18, 26, 10]} intensity={sun.intensity} color={sun.color} castShadow
           shadow-mapSize={shadowSize} shadow-camera-left={-40} shadow-camera-right={40} shadow-camera-top={40} shadow-camera-bottom={-40} shadow-bias={-0.0004} />
-        <directionalLight position={[-15, 8, -12]} intensity={0.35} color="#9fc4ff" />
+        <directionalLight position={[-15, 8, -12]} intensity={0.35} color="#8fd0d8" />
         {LAMP_LIGHTS.map((p, i) => (
           <pointLight key={`lamp${i}`} position={p} color="#ffce7d" intensity={sun.isDay ? 3 : 14} distance={9} decay={2} />
         ))}

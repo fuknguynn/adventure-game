@@ -12,7 +12,7 @@ export interface SaveData {
     spiritFragments: number;
     worldRestored: boolean;
   };
-  settings: { quality: 'auto' | 'low' | 'medium' | 'high'; musicVolume: number; sfxVolume: number; reducedMotion: boolean };
+  settings: { quality: 'auto' | 'low' | 'medium' | 'high'; musicVolume: number; sfxVolume: number; reducedMotion: boolean; muted: boolean };
   updatedAt: string;
 }
 
@@ -21,7 +21,7 @@ export function defaultSave(): SaveData {
     schemaVersion: SCHEMA_VERSION,
     profile: { displayName: '', characterId: '' },
     progress: { regionId: 'forest_village', spawnId: 'village_entrance', completedQuests: [], solvedPuzzles: [], spiritFragments: 0, worldRestored: false },
-    settings: { quality: 'auto', musicVolume: 0.5, sfxVolume: 0.7, reducedMotion: false },
+    settings: { quality: 'auto', musicVolume: 0.5, sfxVolume: 0.7, reducedMotion: false, muted: false },
     updatedAt: new Date().toISOString(),
   };
 }
@@ -43,7 +43,12 @@ export function isValidSave(d: unknown): d is SaveData {
 
 /** Migrate older saves; returns null when unrecoverable. */
 export function migrateSave(raw: unknown): SaveData | null {
-  if (isValidSave(raw)) return raw;
+  if (isValidSave(raw)) {
+    // v1 saves written before `muted` existed pass validation with the field
+    // absent; normalize missing/invalid to false — no schema version bump.
+    if (typeof raw.settings.muted !== 'boolean') raw.settings.muted = false;
+    return raw;
+  }
   if (raw && typeof raw === 'object') {
     const s = raw as Record<string, unknown>;
     if (s.schemaVersion === 0 || s.schemaVersion === undefined) {

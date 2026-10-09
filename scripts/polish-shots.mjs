@@ -1,10 +1,10 @@
-// Throwaway: capture environment screenshots from the gameplay camera at each POI.
-// Teleports by flipping phase (GameCanvas remounts Player at mutated SPAWNS entry).
-// Usage: node scripts/env-shots.mjs <outDir>
+// Screenshot runner for the polish pass. Same behavior as env-shots.mjs but
+// resolves app modules by their ACTUAL served URL (performance entries), so
+// imports still hit the live Vite module instances after HMR (?t=) reloads.
 import puppeteer from 'puppeteer-core';
 import { existsSync, mkdirSync, readFileSync } from 'node:fs';
 
-const OUT = process.argv[2] || 'shots/env/before';
+const OUT = process.argv[2] || 'shots/env/polish';
 mkdirSync(OUT, { recursive: true });
 
 const SAVE = {
@@ -15,19 +15,7 @@ const SAVE = {
   updatedAt: new Date().toISOString(),
 };
 
-let POIS = [
-  { name: 'spawn', pos: [0, 6], yaw: 0 },
-  { name: 'village-center', pos: [1, -3], yaw: 1.65 },
-  { name: 'spirit-clearing', pos: [2, 6], yaw: -0.3 },
-  { name: 'gate', pos: [0, 9.5], yaw: 3.14 },
-  { name: 'residential', pos: [-10, 2.5], yaw: 0.5 },
-  { name: 'village-hero', pos: [3, -6.5], yaw: 1.9 },
-  { name: 'ruins', pos: [24, 4], yaw: 0.4 },
-  { name: 'lake', pos: [-22, 5], yaw: -1.35 },
-  { name: 'grove', pos: [22, -18], yaw: 2.3 },
-  { name: 'ancient-tree', pos: [0, 26], yaw: 3.1 },
-];
-if (process.argv[3]) POIS = JSON.parse(existsSync(process.argv[3]) ? readFileSync(process.argv[3], 'utf8') : process.argv[3]); // inline JSON or a .json file
+let POIS = JSON.parse(readFileSync(process.argv[3], 'utf8'));
 
 const browser = await puppeteer.launch({
   executablePath: 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe',
@@ -53,17 +41,26 @@ async function shot(name) {
 }
 
 async function teleport([x, z], yaw) {
+  // Resolve each module to the newest URL the app actually fetched (handles
+  // Vite ?t= cache-busting); mutate THAT instance so the running app sees it.
   await p.evaluate(async ([x, z, yaw]) => {
-    const P = await import('/src/game/Player.tsx');
+    const find = (frag) => performance.getEntriesByType('resource')
+      .map((e) => e.name).filter((n) => n.includes(frag)).pop();
+    const playerUrl = find('/src/game/Player.tsx');
+    const inputUrl = find('/src/game/input.ts');
+    const uiUrl = find('/src/stores/uiStore.ts');
+    if (!playerUrl || !inputUrl || !uiUrl) throw new Error('module url not found');
+    const P = await import(playerUrl);
     P.SPAWNS.village_entrance = [x, 1, z];
-    const inp = await import('/src/game/input.ts');
+    const inp = await import(inputUrl);
     inp.camOrbit.yaw = yaw;
-    const ui = await import('/src/stores/uiStore.ts');
+    const ui = await import(uiUrl);
     ui.useUI.getState().setPhase('WELCOME');
   }, [x, z, yaw]);
   await settle(600);
   await p.evaluate(async () => {
-    const ui = await import('/src/stores/uiStore.ts');
+    const uiUrl = performance.getEntriesByType('resource').map((e) => e.name).filter((n) => n.includes('/src/stores/uiStore.ts')).pop();
+    const ui = await import(uiUrl);
     ui.useUI.getState().setPhase('PLAYING');
   });
   await settle(20000); // remount + GLB cache warm + camera lerp settle

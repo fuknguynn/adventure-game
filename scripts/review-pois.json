@@ -1,0 +1,20 @@
+[
+  { "name": "village-1-gate", "pos": [0, 6], "yaw": 0 },
+  { "name": "village-2-market", "pos": [1, -3], "yaw": 1.65 },
+  { "name": "village-3-residential", "pos": [-7, -1], "yaw": -2.2 },
+  { "name": "spirit-1-front", "pos": [2, 6], "yaw": -0.3 },
+  { "name": "spirit-2-side", "pos": [6, 3], "yaw": 2.6 },
+  { "name": "spirit-3-back", "pos": [-1, 0], "yaw": 1.3 },
+  { "name": "lake-1-entry", "pos": [-22, 5], "yaw": -1.35 },
+  { "name": "lake-2-path", "pos": [-16, 2], "yaw": -2.0 },
+  { "name": "lake-3-farbank", "pos": [-24, 0], "yaw": 0.5 },
+  { "name": "ruins-1-entry", "pos": [24, 4], "yaw": 0.4 },
+  { "name": "ruins-2-corner", "pos": [28, 8], "yaw": 2.4 },
+  { "name": "ruins-3-low", "pos": [26, 0], "yaw": -0.6 },
+  { "name": "grove-1-entry", "pos": [22, -18], "yaw": 2.3 },
+  { "name": "grove-2-shrine", "pos": [26, -14], "yaw": 2.8 },
+  { "name": "grove-3-behind", "pos": [20, -22], "yaw": 0.8 },
+  { "name": "tree-1-entry", "pos": [0, 26], "yaw": 3.1 },
+  { "name": "tree-2-angle", "pos": [4, 22], "yaw": 2.4 },
+  { "name": "tree-3-trunk", "pos": [-5, 28], "yaw": -0.5 }
+]

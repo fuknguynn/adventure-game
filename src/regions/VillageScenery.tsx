@@ -3,13 +3,18 @@ import * as THREE from 'three';
 import { useLoader } from '@react-three/fiber';
 import { GLTFLoader } from 'three-stdlib';
 import { RigidBody, CylinderCollider, CuboidCollider } from '@react-three/rapier';
-import { TREES, TREE_FILES, BUSHES, GRASS, ROCKS, PATH_DISCS, PEBBLES, PATCHES, PROPS, FENCES, LILIES, WATERPLANTS, MUSHROOMS, BARE_TREES, BUILDING_HALF, type Inst, type InstC } from './villageLayout';
+import { TREES, TREE_FILES, BUSHES, GRASS, ROCKS, PATH_DISCS, PEBBLES, PATCHES, PROPS, FENCES, LILIES, WATERPLANTS, MUSHROOMS, BARE_TREES, BUILDING_HALF, ANCIENT_TREE, type Inst, type InstC } from './villageLayout';
 
 interface Prim { geom: THREE.BufferGeometry; mat: THREE.Material }
 
+/** Foliage colorize: multiplicative tint toward dark mossy green with a faint
+ * teal lift in the blue channel (dark-fantasy mood, KayKit Color1 textures). */
+export const FOLIAGE_TINT = '#838fb0';
+const BARE_TINT = '#6f7d78';
+
 /** GLTF asset rendered as one InstancedMesh per primitive; matrices set once. */
-function InstancedAsset({ url, items, castShadow = false, receiveShadow = false, tints, emissive }: {
-  url: string; items: Inst[]; castShadow?: boolean; receiveShadow?: boolean; tints?: number[]; emissive?: string;
+function InstancedAsset({ url, items, castShadow = false, receiveShadow = false, tints, emissive, colorize }: {
+  url: string; items: Inst[]; castShadow?: boolean; receiveShadow?: boolean; tints?: number[]; emissive?: string; colorize?: string;
 }) {
   const gltf = useLoader(GLTFLoader, url);
   const prims = useMemo<Prim[]>(() => {
@@ -32,21 +37,22 @@ function InstancedAsset({ url, items, castShadow = false, receiveShadow = false,
     <group>
       {prims.map((p, i) => (
         <InstMesh key={i} prim={p} items={items} castShadow={castShadow} receiveShadow={receiveShadow}
-          tints={tints && prims.length === 1 ? tints : undefined} emissive={emissive} />
+          tints={tints && prims.length === 1 ? tints : undefined} emissive={emissive} colorize={colorize} />
       ))}
     </group>
   );
 }
 
-function InstMesh({ prim, items, castShadow, receiveShadow, tints, emissive }: {
-  prim: Prim; items: Inst[]; castShadow: boolean; receiveShadow: boolean; tints?: number[]; emissive?: string;
+function InstMesh({ prim, items, castShadow, receiveShadow, tints, emissive, colorize }: {
+  prim: Prim; items: Inst[]; castShadow: boolean; receiveShadow: boolean; tints?: number[]; emissive?: string; colorize?: string;
 }) {
   const ref = useRef<THREE.InstancedMesh>(null);
   const mat = useMemo(() => {
     const m = (prim.mat as THREE.MeshStandardMaterial).clone();
     if (emissive) { m.emissive = new THREE.Color(emissive); m.emissiveIntensity = 0.9; }
+    if (colorize) m.color.multiply(new THREE.Color(colorize));
     return m;
-  }, [prim, emissive]);
+  }, [prim, emissive, colorize]);
   useLayoutEffect(() => {
     const im = ref.current; if (!im) return;
     const d = new THREE.Object3D();
@@ -74,31 +80,31 @@ export function VillageScenery() {
   return (
     <group>
       <Suspense fallback={null}>
-        <InstancedAsset url="/models/env/Grass_1_A_Color1.gltf" items={GRASS} />
-        <InstancedAsset url="/models/env/Bush_1_A_Color1.gltf" items={BUSHES} />
+        <InstancedAsset url="/models/env/Grass_1_A_Color1.gltf" items={GRASS} colorize={FOLIAGE_TINT} />
+        <InstancedAsset url="/models/env/Bush_1_A_Color1.gltf" items={BUSHES} colorize={FOLIAGE_TINT} />
         <InstancedAsset url="/models/env/Rock_1_A_Color1.gltf" items={ROCKS} tints={tintOf(ROCKS)} />
         <InstancedAsset url="/models/props/stone.gltf" items={PEBBLES} />
         <InstancedAsset url="/models/env/fence_wood.gltf" items={FENCES} castShadow />
         <InstancedAsset url="/models/env/waterlily.gltf" items={LILIES} />
         <InstancedAsset url="/models/env/waterplant.gltf" items={WATERPLANTS} />
         <InstancedAsset url="/models/props/mushroom.gltf" items={MUSHROOMS} tints={tintOf(MUSHROOMS)} emissive="#1c6f66" />
-        <TreeRow kind={0} items={treeByKind[0]} />
-        <TreeRow kind={1} items={treeByKind[1]} />
-        <TreeRow kind={2} items={treeByKind[2]} />
-        <TreeRow kind={3} items={treeByKind[3]} />
-        <TreeRow kind={4} items={treeByKind[4]} />
-        <TreeRow kind={5} items={treeByKind[5]} />
-        <InstancedAsset url="/models/env/Tree_Bare_1_A_Color1.gltf" items={BARE_TREES} castShadow />
+        <TreeRow kind={0} items={treeByKind[0]} tint={FOLIAGE_TINT} />
+        <TreeRow kind={1} items={treeByKind[1]} tint={FOLIAGE_TINT} />
+        <TreeRow kind={2} items={treeByKind[2]} tint={FOLIAGE_TINT} />
+        <TreeRow kind={3} items={treeByKind[3]} tint={FOLIAGE_TINT} />
+        <TreeRow kind={4} items={treeByKind[4]} tint={FOLIAGE_TINT} />
+        <TreeRow kind={5} items={treeByKind[5]} tint={FOLIAGE_TINT} />
+        <InstancedAsset url="/models/env/Tree_Bare_1_A_Color1.gltf" items={BARE_TREES} castShadow colorize={BARE_TINT} />
         <GroundPatches items={PATH_DISCS} color="#5a4a33" />
-        <GroundPatches items={PATCHES} color="#2f5c3a" />
+        <GroundPatches items={PATCHES} color="#2c4f43" />
       </Suspense>
       <EnvColliders />
     </group>
   );
 }
 
-function TreeRow({ kind, items }: { kind: number; items: Inst[] }) {
-  return <InstancedAsset url={TREE_FILES[kind]} items={items} castShadow receiveShadow />;
+function TreeRow({ kind, items, tint }: { kind: number; items: Inst[]; tint?: string }) {
+  return <InstancedAsset url={TREE_FILES[kind]} items={items} castShadow receiveShadow colorize={tint} />;
 }
 
 /** Flat instanced discs slightly above ground with per-instance tint (dirt/moss). */
@@ -134,7 +140,13 @@ export function EnvColliders() {
       {ROCKS.filter((r) => r.scale > 1.7).map((r, i) => (
         <CylinderCollider key={`r${i}`} args={[0.3 * r.scale, 0.5 * r.scale]} position={[r.pos[0], 0.3, r.pos[2]]} />
       ))}
+      {/* Ancient Tree trunk: model rendered by Regions.tsx, no PROPS entry. */}
+      <CylinderCollider args={[ANCIENT_TREE.h / 2, ANCIENT_TREE.r]} position={[ANCIENT_TREE.x, ANCIENT_TREE.h / 2, ANCIENT_TREE.z]} />
       {PROPS.map((p, i) => {
+        // Large shore stones (scale >= 1.2) get a low cylinder bump; small
+        // ring stones stay walk-over so puzzle spots stay open.
+        if (p.file.endsWith('props/stone.gltf') && p.scale >= 1.2)
+          return <CylinderCollider key={`p${i}`} args={[1.01 * p.scale, 0.95 * p.scale]} position={[p.pos[0], 1.01 * p.scale, p.pos[2]]} />;
         const m = BUILDING_HALF[p.file];
         // Gate: carve the road open — collide only the two wall piers, not the doorway.
         if (p.file.includes('wall_gated')) {

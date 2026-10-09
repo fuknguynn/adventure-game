@@ -22,7 +22,8 @@ export function App() {
     if (s) {
       useProfile.setState({ displayName: s.profile.displayName, characterId: s.profile.characterId });
       useProgress.setState({ ...s.progress, setProgress: useProgress.getState().setProgress, solvePuzzle: useProgress.getState().solvePuzzle });
-      useSettings.setState({ ...s.settings, muted: (s.settings as { muted?: boolean }).muted ?? false, setSettings: useSettings.getState().setSettings });
+      // `muted` is normalized by loadSave/migrateSave (missing → false).
+      useSettings.setState({ ...s.settings, setSettings: useSettings.getState().setSettings });
     }
     setPhase(s && s.profile.displayName ? 'WELCOME' : 'WELCOME');
     setBooted(true);
@@ -41,7 +42,7 @@ export function App() {
       writeSave(collectSave(
         { displayName: profile.displayName, characterId: profile.characterId },
         { regionId: progress.regionId, spawnId: progress.spawnId, completedQuests: progress.completedQuests, solvedPuzzles: progress.solvedPuzzles, spiritFragments: progress.spiritFragments, worldRestored: progress.worldRestored },
-        { quality: settings.quality, musicVolume: settings.musicVolume, sfxVolume: settings.sfxVolume, reducedMotion: settings.reducedMotion },
+        { quality: settings.quality, musicVolume: settings.musicVolume, sfxVolume: settings.sfxVolume, reducedMotion: settings.reducedMotion, muted: settings.muted },
       ));
     }, 400);
     return () => clearTimeout(t);
@@ -63,7 +64,7 @@ export function App() {
     writeSave(collectSave(
       { displayName: useProfile.getState().displayName, characterId: useProfile.getState().characterId },
       { regionId: useProgress.getState().regionId, spawnId: useProgress.getState().spawnId, completedQuests: useProgress.getState().completedQuests, solvedPuzzles: useProgress.getState().solvedPuzzles, spiritFragments: useProgress.getState().spiritFragments, worldRestored: useProgress.getState().worldRestored },
-      { quality: useSettings.getState().quality, musicVolume: useSettings.getState().musicVolume, sfxVolume: useSettings.getState().sfxVolume, reducedMotion: useSettings.getState().reducedMotion },
+      { quality: useSettings.getState().quality, musicVolume: useSettings.getState().musicVolume, sfxVolume: useSettings.getState().sfxVolume, reducedMotion: useSettings.getState().reducedMotion, muted: useSettings.getState().muted },
     ));
   }, []);
 

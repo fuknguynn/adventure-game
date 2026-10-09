@@ -61,7 +61,7 @@ const POIS: [number, number, number][] = [
   [28, -22, 4], [-28, 6, 6], [31, 5, 4], [0, 31, 5], // puzzle spots + tree
 ];
 
-export function keepClear(x: number, z: number, pathMin: number, propMin = 1.6): boolean {
+export function keepClear(x: number, z: number, pathMin: number, propMin = 2.2): boolean {
   if (distToPaths(x, z) < pathMin) return false;
   for (const [px, pz, r] of POIS) {
     if (Math.hypot(x - px, z - pz) < r + propMin) return false;
@@ -98,10 +98,11 @@ for (const sp of PATH_SAMPLES) {
 
 /** Ground tone patches (moss/dirt variation on the base disc). */
 export const PATCHES: InstC[] = [];
-for (let i = 0; i < 90; i++) {
+for (let i = 0; i < 70; i++) {
   const a = rng() * Math.PI * 2, r = Math.sqrt(rng()) * 34;
   const x = Math.cos(a) * r, z = Math.sin(a) * r;
   if (distToPaths(x, z) < 1.4) continue;
+  if (Math.hypot(x - 0, z - 31) < 10) continue; // keep the ritual clearing floor clean
   PATCHES.push({ pos: [x, 0.008 + rng() * 0.004, z], rotY: rnd(0, Math.PI), scale: rnd(1.6, 4.2), tint: i % 3 === 0 ? 0.8 : 1.15 });
 }
 
@@ -116,14 +117,21 @@ function addTree(x: number, z: number, s?: number, shadow = true) {
   TREES.push({ pos: [x, 0, z], rotY: rnd(0, Math.PI * 2), scale, kind, collider: Math.hypot(x, z) < 32, shadow });
 }
 
-// Framing clusters near entrance + clearing rim
-for (const [x, z] of [[-5, 11], [-6.5, 8], [5.5, 10], [4.5, 13], [-5.5, 3.5], [6, 4.5], [-8, -2], [7.5, -2.5]] as const) addTree(x + rnd(-0.5, 0.5), z + rnd(-0.5, 0.5));
-// POI-adjacent clusters (grove/lake/ruins/tree path heads)
-for (const [cx, cz, n] of [[12, -13, 5], [-19, 1, 5], [25, 0, 4], [-5, 24, 4], [5, 26, 4], [16, -12, 3], [-11, 4, 3]] as const) {
+// Framing clusters near entrance + clearing rim; dropped when they land on a
+// path corridor and capped small so canopies stay off the gameplay frame.
+for (const [x, z] of [[-5, 11], [-6.5, 8], [5.5, 10], [4.5, 13], [-5.5, 3.5], [6, 4.5], [-8, -2], [7.5, -2.5]] as const) {
+  const tx = x + rnd(-0.5, 0.5), tz = z + rnd(-0.5, 0.5);
+  if (distToPaths(tx, tz) < 2.5) continue;
+  addTree(tx, tz, rnd(0.8, 1.15));
+}
+// POI-adjacent clusters (grove/lake/ruins + tree clearing flanks, pulled wide
+// of the clearing so the Ancient Tree approach stays open)
+for (const [cx, cz, n] of [[12, -13, 5], [-19, 1, 5], [25, 0, 4], [-11, 29, 3], [11, 30, 3], [16, -12, 3], [-11, 4, 3]] as const) {
   for (let i = 0; i < n; i++) {
     const p = disk(cx, cz, 1.5, 5);
-    if (!p || !keepClear(p[0], p[1], 2.6, 2.2)) continue;
-    addTree(p[0], p[1]);
+    if (!p || !keepClear(p[0], p[1], 3, 2.5)) continue;
+    if (Math.hypot(p[0], p[1] - 31) < 10.5) continue; // Ancient Tree clearing stays open
+    addTree(p[0], p[1], rnd(0.8, 1.15));
   }
 }
 // Forest wall: dense ring, gap where each path exits; two rows for depth.
@@ -132,8 +140,8 @@ const exitAngles = PATHS.filter((p) => Math.hypot(p[p.length - 1][0], p[p.length
 for (let i = 0; i < 84; i++) {
   const a = (i / 84) * Math.PI * 2 + rnd(-0.02, 0.02);
   if (exitAngles.some((ea) => Math.abs(((a - ea + Math.PI * 3) % (Math.PI * 2)) - Math.PI) < 0.14)) continue;
-  addTree(Math.cos(a) * rnd(36, 43), Math.sin(a) * rnd(36, 43), rnd(1.2, 1.8), false);
-  if (i % 2 === 0) addTree(Math.cos(a + 0.03) * rnd(44, 52), Math.sin(a + 0.03) * rnd(44, 52), rnd(1.4, 2.1), false);
+  addTree(Math.cos(a) * rnd(36, 43), Math.sin(a) * rnd(36, 43), rnd(0.8, 1.2), false);
+  if (i % 2 === 0) addTree(Math.cos(a + 0.03) * rnd(44, 52), Math.sin(a + 0.03) * rnd(44, 52), rnd(0.8, 1.2), false);
 }
 
 /** Leafless trees for the dead zones (ruins ridge, lake shore). */
@@ -149,13 +157,14 @@ for (const [cx, cz, n, r] of [[32.5, 2.5, 6, 7], [29, 8, 4, 6], [-22, -3, 3, 6]]
 export const BUSHES: Inst[] = [];
 export const GRASS: Inst[] = [];
 export const ROCKS: InstC[] = [];
-// Negative space: open plazas around the center square, the residential yard
-// and the gate corridor keep the layout from reading as scattered filler.
-const OPEN: [number, number, number][] = [[0, -1, 5.5], [-13, -7, 4.5], [0, 12.5, 5], [2, 2, 5]];
-for (let i = 0; i < 110; i++) {
+// Negative space: open plazas around the center square, the residential yard,
+// the gate corridor, the spirit ring interior and the Ancient Tree clearing
+// keep the layout from reading as scattered filler.
+const OPEN: [number, number, number][] = [[0, -1, 8], [-13, -7, 4.5], [0, 12.5, 5], [2, 2, 6], [0, 31, 9.5]];
+for (let i = 0; i < 80; i++) {
   const a = rng() * Math.PI * 2, r = 4 + Math.sqrt(rng()) * 30;
   const x = Math.cos(a) * r, z = Math.sin(a) * r;
-  if (!keepClear(x, z, 1.5, 0.4)) continue;
+  if (!keepClear(x, z, 2.2, 0.4)) continue;
   if (OPEN.some(([cx, cz, cr]) => Math.hypot(x - cx, z - cz) < cr)) continue;
   const roll = rng();
   if (roll < 0.3) BUSHES.push({ pos: [x, 0, z], rotY: rnd(0, Math.PI * 2), scale: rnd(2.2, 4.5) });
@@ -208,13 +217,13 @@ const faceTo = (px: number, pz: number, tx: number, tz: number) => Math.atan2(tx
 const YARD: [number, number] = [-13, -7];
 PROPS.push(
   // Zone A hero: big village tree anchoring the plaza (trunk collider via BUILDING_HALF)
-  { file: '/models/env/Tree_1_C_Color1.gltf', pos: [-8, 0, -5.5], rotY: 0.7, scale: 1.7 },
+  { file: '/models/env/Tree_1_C_Color1.gltf', pos: [-8, 0, -5.5], rotY: 0.7, scale: 1.4 },
   // Well + seating + market stall with one goods cluster anchor the square
   { file: '/models/village/well.gltf', pos: [4.6, 0, -4.4], rotY: -0.5, scale: 4 },
   ...stoneRing(4.6, -4.4, 2.6, 6),
-  { file: '/models/village/market.gltf', pos: [9.5, 0, -4.5], rotY: faceTo(9.5, -4.5, 0, -1), scale: 4 },
-  { file: '/models/props/crate_open.gltf', pos: [7.9, 0, -6.6], rotY: 0.5, scale: 3 },
-  { file: '/models/props/sack.gltf', pos: [8.7, 0, -7.2], rotY: 2.9, scale: 4 },
+  { file: '/models/village/market.gltf', pos: [11.5, 0, -6], rotY: faceTo(11.5, -6, 0, -1), scale: 4 },
+  { file: '/models/props/crate_open.gltf', pos: [9.8, 0, -8.4], rotY: 0.5, scale: 3 },
+  { file: '/models/props/sack.gltf', pos: [10.6, 0, -9], rotY: 2.9, scale: 4 },
   { file: '/models/props/bench.gltf', pos: [3.1, 0, -2.2], rotY: faceTo(3.1, -2.2, 4.6, -4.4), scale: 2 },
   { file: '/models/props/bench.gltf', pos: [2.4, 0, -7], rotY: faceTo(2.4, -7, 4.6, -4.4), scale: 2 },
   { file: '/models/props/bench.gltf', pos: [-3.4, 0, 10.2], rotY: -1.2, scale: 1.6 },
@@ -226,18 +235,18 @@ PROPS.push(
   { file: '/models/props/post_lantern.gltf', pos: [-2.6, 0, -6.2], rotY: -0.6, scale: 1, light: true },
   { file: '/models/props/post_lantern.gltf', pos: [6.9, 0, -1.2], rotY: 2.6, scale: 1, light: true },
   // Zone B residential yard: houses share orientation, doors face the yard
-  { file: '/models/village/home_a.gltf', pos: [-18.5, 0, -5.5], rotY: faceTo(-18.5, -5.5, ...YARD), scale: 8 },
-  { file: '/models/village/home_b.gltf', pos: [-16.5, 0, -12.5], rotY: faceTo(-16.5, -12.5, ...YARD), scale: 6.2 },
-  { file: '/models/village/home_a.gltf', pos: [-10, 0, -9.5], rotY: faceTo(-10, -9.5, ...YARD), scale: 7 },
+  { file: '/models/village/home_a.gltf', pos: [-19.5, 0, -4.5], rotY: faceTo(-19.5, -4.5, ...YARD), scale: 8 },
+  { file: '/models/village/home_b.gltf', pos: [-17.5, 0, -14], rotY: faceTo(-17.5, -14, ...YARD), scale: 6.2 },
+  { file: '/models/village/home_a.gltf', pos: [-8, 0, -11], rotY: faceTo(-8, -11, ...YARD), scale: 7 },
   // Craft longhouse + forge at the yard's south edge
-  { file: '/models/village/barracks.gltf', pos: [-20, 0, -12], rotY: faceTo(-20, -12, ...YARD), scale: 4.5 },
-  { file: '/models/village/tent.gltf', pos: [-13.5, 0, -9.5], rotY: 2.4, scale: 5 },
+  { file: '/models/village/barracks.gltf', pos: [-25, 0, -13.5], rotY: faceTo(-25, -13.5, ...YARD), scale: 4.5 },
+  { file: '/models/village/tent.gltf', pos: [-14, 0, -7], rotY: 2.4, scale: 5 },
   { file: '/models/props/anvil.gltf', pos: [-16, 0, -8.3], rotY: -0.8, scale: 0.9 },
   { file: '/models/props/torch_lit.gltf', pos: [-16.9, 0.45, -7.6], rotY: 0, scale: 1.2, light: true },
   { file: '/models/props/torch_lit.gltf', pos: [-15.2, 0.45, -8.9], rotY: 0, scale: 1.2, light: true },
   { file: '/models/props/post_lantern.gltf', pos: [-13.5, 0, -4.8], rotY: 0, scale: 1, light: true },
   // Zone D distant background landmark, off the walking paths
-  { file: '/models/village/watchtower.gltf', pos: [-27, 0, -14], rotY: faceTo(-27, -14, 0, 0), scale: 9 },
+  { file: '/models/village/watchtower.gltf', pos: [-32, 0, -19], rotY: faceTo(-32, -19, 0, 0), scale: 9 },
 );
 
 // ---- Landmark dressing (feat/environment-polish) ----
@@ -254,12 +263,22 @@ PROPS.push(
   { file: '/models/props/gravestone.gltf', pos: [31.2, 0, 1.2], rotY: 0.25, scale: 0.8 },
   { file: '/models/props/grave_a.gltf', pos: [33.2, 0, 0.6], rotY: -0.2, scale: 0.8 },
   { file: '/models/props/post_skull.gltf', pos: [34.6, 0, 11.2], rotY: 0.5, scale: 1 },
-  // Ancient Tree clearing: stone ring, flanking columns, rubble halo
-  ...stoneRing(0, 31, 7.5, 12),
+  // Ancient Tree clearing: grand ritual site — wide stone ring + inner arc
+  // behind the tree, mirrored column pairs, and amber lanterns at the rim.
+  // (The tree model itself lives in Regions.tsx at (0,34) scale 4.2; trunk
+  // collider via ANCIENT_TREE in VillageScenery's EnvColliders.)
+  ...stoneRing(0, 31, 9.5, 14),
+  ...stoneArc(0, 31, 5.5, 0.2 * Math.PI, 0.8 * Math.PI, 5, 0.65),
   { file: '/models/env/column.gltf', pos: [-2.6, 0, 27], rotY: 0, scale: 2 },
   { file: '/models/env/column.gltf', pos: [2.6, 0, 27], rotY: 0, scale: 2 },
-  { file: '/models/env/rubble_large.gltf', pos: [-5.5, 0, 33.5], rotY: 2.1, scale: 0.6 },
-  { file: '/models/env/rubble_large.gltf', pos: [5.8, 0, 34], rotY: 0.9, scale: 0.6 },
+  { file: '/models/env/column.gltf', pos: [-6.2, 0, 37.5], rotY: 0.3, scale: 2 },
+  { file: '/models/env/column.gltf', pos: [6.2, 0, 37.5], rotY: -0.3, scale: 2 },
+  { file: '/models/env/rubble_large.gltf', pos: [-9.5, 0, 36.5], rotY: 2.1, scale: 0.6 },
+  { file: '/models/env/rubble_large.gltf', pos: [10, 0, 36], rotY: 0.9, scale: 0.6 },
+  { file: '/models/props/post_lantern.gltf', pos: [-6.7, 0, 24.3], rotY: 0.7, scale: 1, light: true },
+  { file: '/models/props/post_lantern.gltf', pos: [6.7, 0, 24.3], rotY: -0.7, scale: 1, light: true },
+  { file: '/models/props/post_lantern.gltf', pos: [-6.7, 0, 37.7], rotY: 2.4, scale: 1, light: true },
+  { file: '/models/props/post_lantern.gltf', pos: [6.7, 0, 37.7], rotY: -2.4, scale: 1, light: true },
   // Lake shore gem cluster (echoes the underwater reward)
   { file: '/models/props/Gem_Large.gltf', pos: [-24.2, 0, 10.6], rotY: 0.4, scale: 2.4 },
   { file: '/models/props/Gem_Large.gltf', pos: [-23.4, 0, 11.4], rotY: -0.7, scale: 1.8 },
@@ -295,6 +314,8 @@ export const BUILDING_HALF: Record<string, [number, number, number]> = {
   '/models/env/column.gltf': [0.35, 1.4, 0.35],
   '/models/env/Tree_1_C_Color1.gltf': [0.32, 7.4, 0.32], // village hero trunk
 };
+/** Ancient Tree at (0,31): rendered by Regions.tsx (Tree_1_C_Color1); trunk collider derives from this. */
+export const ANCIENT_TREE = { x: 0, z: 34, r: 0.32 * 4.2, h: 7.4 * 4.2 }; // pos/scale mirrored from Regions.tsx
 
 /** Low garden fences: fence_wood pieces are 1.15u long, runs auto-space by
  *  that length at the given scale. */
@@ -309,9 +330,9 @@ function fenceRun(x0: number, z0: number, x1: number, z1: number, scale = 2) {
   }
 }
 // Residential yard: fence line north (gap for the path spur) + west edge.
-fenceRun(-18.5, -2.5, -12.5, -2.5, 2.5);
+fenceRun(-24, -0.2, -12, -0.2, 2.5);
 fenceRun(-10.6, -3.1, -9, -4.5, 2.5);
-fenceRun(-21.5, -3.2, -21.5, -8.5, 2.5);
+fenceRun(-24, -2.8, -24, -6.5, 2.5);
 
 // Structures are declared after scatter in module order; sweep any
 // vegetation/fence piece that ended up inside a structure footprint. The gate
@@ -357,6 +378,16 @@ function stoneRing(cx: number, cz: number, r: number, n: number): Prop[] {
   for (let i = 0; i < n; i++) {
     const a = (i / n) * Math.PI * 2 + 0.2;
     out.push({ file: '/models/props/stone.gltf', pos: [cx + Math.cos(a) * (r + rnd(-0.4, 0.4)), 0, cz + Math.sin(a) * (r + rnd(-0.4, 0.4))], rotY: rnd(0, Math.PI), scale: rnd(0.55, 0.85) });
+  }
+  return out;
+}
+
+/** Partial stone ring: n stones spaced between angles a0..a1 (radians, 0 = +x). */
+function stoneArc(cx: number, cz: number, r: number, a0: number, a1: number, n: number, s: number): Prop[] {
+  const out: Prop[] = [];
+  for (let i = 0; i < n; i++) {
+    const a = a0 + ((a1 - a0) * i) / (n - 1);
+    out.push({ file: '/models/props/stone.gltf', pos: [cx + Math.cos(a) * r, 0, cz + Math.sin(a) * r], rotY: rnd(0, Math.PI), scale: s });
   }
   return out;
 }

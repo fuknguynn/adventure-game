@@ -3,7 +3,7 @@ import { useFrame, useLoader } from '@react-three/fiber';
 import { RigidBody, CuboidCollider, type RapierRigidBody } from '@react-three/rapier';
 import { GLTFLoader, SkeletonUtils } from 'three-stdlib';
 import * as THREE from 'three';
-import { keys, joyMove, touchFlags, camOrbit } from './input';
+import { keys, joyMove, touchFlags, camOrbit, pausedFlag } from './input';
 import { loco } from './locomotion';
 import { useLocomotion } from './useLocomotion';
 import { useProfile } from '../stores/stores';
@@ -43,9 +43,11 @@ export function Player({ onInteract }: { onInteract: () => void }) {
     const body = rb.current;
     if (!body) return;
     const step = Math.min(dt, 1 / 30);
-    // input direction in camera space
-    let ix = (keys.right ? 1 : 0) - (keys.left ? 1 : 0) + joyMove.x;
-    let iz = (keys.back ? 1 : 0) - (keys.fwd ? 1 : 0) + joyMove.z;
+    // Movement input is inert while paused (PauseView): zero the axes, but keep
+    // the physics body awake and keep updating playerPos/camera follow.
+    const paused = pausedFlag.v;
+    let ix = paused ? 0 : (keys.right ? 1 : 0) - (keys.left ? 1 : 0) + joyMove.x;
+    let iz = paused ? 0 : (keys.back ? 1 : 0) - (keys.fwd ? 1 : 0) + joyMove.z;
     const len = Math.hypot(ix, iz);
     if (len > 1) { ix /= len; iz /= len; }
     const sprint = keys.sprint || touchFlags.sprint;
@@ -76,8 +78,10 @@ export function Player({ onInteract }: { onInteract: () => void }) {
     visualYaw.current += d * (1 - Math.exp(-10 * Math.min(dt, 0.05)));
     if (visualRef.current) visualRef.current.rotation.y = visualYaw.current;
     if (touchFlags.jump) {
+      // Consume even while paused so a press that races the pause never
+      // buffers into a jump on resume.
       touchFlags.jump = false;
-      if (p.y < 1.3) body.applyImpulse({ x: 0, y: 3.2, z: 0 }, true);
+      if (!paused && p.y < 1.3) body.applyImpulse({ x: 0, y: 3.2, z: 0 }, true);
     }
     if (touchFlags.interact) {
       touchFlags.interact = false;
