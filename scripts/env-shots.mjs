@@ -17,9 +17,11 @@ const SAVE = {
 
 const POIS = [
   { name: 'spawn', pos: [0, 6], yaw: 0 },
-  { name: 'village-center', pos: [1, -3], yaw: 2.4 },
+  { name: 'village-center', pos: [1, -3], yaw: 1.65 },
   { name: 'spirit-clearing', pos: [2, 6], yaw: -0.3 },
-  { name: 'junction', pos: [0, -1], yaw: -1.2 },
+  { name: 'gate', pos: [0, 9.5], yaw: 3.14 },
+  { name: 'residential', pos: [-10, 2.5], yaw: 0.5 },
+  { name: 'village-hero', pos: [3, -6.5], yaw: 1.9 },
   { name: 'ruins', pos: [24, 4], yaw: 0.4 },
   { name: 'lake', pos: [-22, 5], yaw: -1.35 },
   { name: 'grove', pos: [22, -18], yaw: 2.3 },

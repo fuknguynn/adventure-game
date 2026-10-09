@@ -136,6 +136,13 @@ export function EnvColliders() {
       ))}
       {PROPS.map((p, i) => {
         const m = BUILDING_HALF[p.file];
+        // Gate: carve the road open — collide only the two wall piers, not the doorway.
+        if (p.file.includes('wall_gated')) {
+          const [hx, hh] = m ?? [2, 4];
+          return [-1.5, 1.5].map((dx, j) => (
+            <CuboidCollider key={`g${i}_${j}`} args={[hx * 0.25 * p.scale, (hh * p.scale) / 2, 0.5 * p.scale]} position={[p.pos[0] + dx * p.scale, p.pos[1] + (hh * p.scale) / 2, p.pos[2]]} />
+          ));
+        }
         if (m) {
           const [hx, hh, hz] = m;
           return <CuboidCollider key={`p${i}`} args={[hx * p.scale, (hh * p.scale) / 2, hz * p.scale]} position={[p.pos[0], p.pos[1] + (hh * p.scale) / 2, p.pos[2]]} rotation={[0, p.rotY, 0]} />;

@@ -21,6 +21,7 @@ export const PATHS: number[][][] = [
   [[0, -1], [2, -8], [9, -14], [18, -19], [28, -22]],           // NE grove
   [[0, -1], [-6, 2], [-15, 3], [-22, 4.5], [-28, 6]],           // W lake
   [[0, -1], [8, 1.5], [17, 3], [25, 4.5], [31, 5]],             // E ruins
+  [[-6, 2], [-9, 0], [-11, -2.5]],                         // lake path -> residential yard spur
   [[0, 6], [0.5, 13], [-0.5, 21], [0, 26], [0, 31]],            // S tree
 ];
 
@@ -126,7 +127,8 @@ for (const [cx, cz, n] of [[12, -13, 5], [-19, 1, 5], [25, 0, 4], [-5, 24, 4], [
   }
 }
 // Forest wall: dense ring, gap where each path exits; two rows for depth.
-const exitAngles = PATHS.map((p) => Math.atan2(p[p.length - 1][1], p[p.length - 1][0]));
+// Only the long exits punch a gap in the forest wall; short yard spurs don't.
+const exitAngles = PATHS.filter((p) => Math.hypot(p[p.length - 1][0], p[p.length - 1][1]) > 25).map((p) => Math.atan2(p[p.length - 1][1], p[p.length - 1][0]));
 for (let i = 0; i < 84; i++) {
   const a = (i / 84) * Math.PI * 2 + rnd(-0.02, 0.02);
   if (exitAngles.some((ea) => Math.abs(((a - ea + Math.PI * 3) % (Math.PI * 2)) - Math.PI) < 0.14)) continue;
@@ -147,13 +149,17 @@ for (const [cx, cz, n, r] of [[32.5, 2.5, 6, 7], [29, 8, 4, 6], [-22, -3, 3, 6]]
 export const BUSHES: Inst[] = [];
 export const GRASS: Inst[] = [];
 export const ROCKS: InstC[] = [];
-for (let i = 0; i < 160; i++) {
+// Negative space: open plazas around the center square, the residential yard
+// and the gate corridor keep the layout from reading as scattered filler.
+const OPEN: [number, number, number][] = [[0, -1, 5.5], [-13, -7, 4.5], [0, 12.5, 5], [2, 2, 5]];
+for (let i = 0; i < 110; i++) {
   const a = rng() * Math.PI * 2, r = 4 + Math.sqrt(rng()) * 30;
   const x = Math.cos(a) * r, z = Math.sin(a) * r;
   if (!keepClear(x, z, 1.5, 0.4)) continue;
+  if (OPEN.some(([cx, cz, cr]) => Math.hypot(x - cx, z - cz) < cr)) continue;
   const roll = rng();
-  if (roll < 0.34) BUSHES.push({ pos: [x, 0, z], rotY: rnd(0, Math.PI * 2), scale: rnd(2.2, 4.5) });
-  else if (roll < 0.82) GRASS.push({ pos: [x, 0, z], rotY: rnd(0, Math.PI * 2), scale: rnd(0.8, 1.6) });
+  if (roll < 0.3) BUSHES.push({ pos: [x, 0, z], rotY: rnd(0, Math.PI * 2), scale: rnd(2.2, 4.5) });
+  else if (roll < 0.84) GRASS.push({ pos: [x, 0, z], rotY: rnd(0, Math.PI * 2), scale: rnd(0.8, 1.6) });
   else ROCKS.push({ pos: [x, 0, z], rotY: rnd(0, Math.PI * 2), scale: rnd(0.6, 1.7), tint: rnd(0.45, 0.7) });
 }
 
@@ -168,27 +174,19 @@ for (let i = 0; i < 70; i++) {
 
 export interface Prop { file: string; pos: [number, number, number]; rotY: number; scale: number; light?: boolean }
 export const PROPS: Prop[] = [
-  // Entrance gate + flanking lanterns
-  { file: '/models/env/wall_gated.gltf', pos: [0, 0, 15.5], rotY: 0, scale: 0.8 },
-  { file: '/models/props/lantern.gltf', pos: [-2.6, 0, 13.6], rotY: 0.3, scale: 0.72, light: true },
-  { file: '/models/props/lantern.gltf', pos: [2.6, 0, 16.6], rotY: -0.3, scale: 0.72 },
-  // Path-guiding lanterns: junction, lake path, ruins path
+  // Zone C — hero village gate: tall wall, open 2-tile road (piers carved in EnvColliders)
+  { file: '/models/env/wall_gated.gltf', pos: [0, 0, 15.5], rotY: 0, scale: 3 },
+  { file: '/models/props/post_lantern.gltf', pos: [-3.9, 0, 13.6], rotY: 0, scale: 1, light: true },
+  { file: '/models/props/post_lantern.gltf', pos: [3.9, 0, 13.6], rotY: 0, scale: 1, light: true },
+  // Junction lantern guiding into the square
   { file: '/models/props/lantern.gltf', pos: [-2.2, 0, -2.5], rotY: 1.2, scale: 0.72, light: true },
-  { file: '/models/props/lantern.gltf', pos: [-9, 0, 3.2], rotY: 0, scale: 0.72 },
-  { file: '/models/props/lantern.gltf', pos: [9, 0, 1.8], rotY: 0, scale: 0.72, light: true },
   // Spirit clearing: ring of stones + shrine facing the spirit
   ...stoneRing(2, 2, 6.8, 9),
   { file: '/models/env/shrine_green.gltf', pos: [6.5, 0, -2.5], rotY: Math.atan2(2 - -2.5, 2 - 6.5) + Math.PI / 2, scale: 1.6 },
-  // Village center storytelling cluster (storage + camp)
-  { file: '/models/props/barrel.gltf', pos: [-5.5, 0, -4.5], rotY: 0.4, scale: 0.72 },
-  { file: '/models/props/barrel.gltf', pos: [-6.3, 0, -5.1], rotY: 1.1, scale: 0.72 },
-  { file: '/models/props/barrel.gltf', pos: [-5.9, 1.44, -4.8], rotY: 2.2, scale: 0.72 },
-  { file: '/models/props/chest.gltf', pos: [-4.6, 0, -5.6], rotY: -0.7, scale: 0.8 },
-  { file: '/models/props/stone.gltf', pos: [-3.9, 0, -3.8], rotY: 0.8, scale: 0.55 },
-  { file: '/models/props/stone.gltf', pos: [-6.8, 0, -3.6], rotY: 2.0, scale: 0.42 },
-  { file: '/models/env/pillar.gltf', pos: [-7.6, 0, -5.8], rotY: 0.5, scale: 0.9 },
-  // Village banner moved off-path, next to the camp
-  { file: '/models/env/banner_blue.gltf', pos: [-3.2, 0, -6.6], rotY: 0.4, scale: 1 },
+  // Small storage group by the well (one clustered set, not scattered clutter)
+  { file: '/models/props/barrel.gltf', pos: [6.1, 0, -5.4], rotY: 0.4, scale: 1.15 },
+  { file: '/models/props/barrel.gltf', pos: [5.4, 0, -6.2], rotY: 1.1, scale: 1.15 },
+  { file: '/models/props/chest.gltf', pos: [6.8, 0, -6.0], rotY: -0.7, scale: 1.1 },
   // Lake shore dressing: cascade banner + rocks around the water
   { file: '/models/env/banner_blue.gltf', pos: [-24.5, 0, 9.5], rotY: -1.1, scale: 1.2 },
   { file: '/models/props/stone.gltf', pos: [-23.5, 0, 3], rotY: 0.6, scale: 1.1 },
@@ -200,41 +198,46 @@ export const PROPS: Prop[] = [
   { file: '/models/props/stone.gltf', pos: [14, 0, -16.5], rotY: 0.4, scale: 0.7 },
 ];
 
-// ---- Village composition overhaul (feat/environment-polish) ----
-// Medieval hexagon pack models are authored ~3x smaller than KayKit world units
-// (house = 0.93u vs barrel = 2u), hence the larger scales below.
-// Houses ring the meeting square at (0,-2); each structure faces the square.
+// ---- Village composition v2: measured scales + four readable zones ----
+// Player renders ~2.5u tall, so houses target 3.0-3.5x player roof peaks
+// (~7.6-8.9u) and the gate reads as a hero entrance. Zones:
+// A center plaza (~0,-1: well, benches, market stall, goods, hero tree)
+// B residential yard NW (4 structures sharing a yard, doors facing inward)
+// C hero gate (top of PROPS)  D distant watchtower, SW background
 const faceTo = (px: number, pz: number, tx: number, tz: number) => Math.atan2(tx - px, tz - pz);
+const YARD: [number, number] = [-13, -7];
 PROPS.push(
-  // Homestead cluster, west of the square
-  { file: '/models/village/home_a.gltf', pos: [-10, 0, -4], rotY: faceTo(-10, -4, 0, -2), scale: 3.5 },
-  { file: '/models/village/home_b.gltf', pos: [-7.5, 0, -10], rotY: faceTo(-7.5, -10, 0, -2), scale: 3 },
-  { file: '/models/village/home_a.gltf', pos: [-14, 0, -3.5], rotY: faceTo(-14, -3.5, 0, -2), scale: 3 },
-  // Craft yard: longhouse + tent + forge, SW quadrant (keeps NE path to grove clear)
-  { file: '/models/village/barracks.gltf', pos: [-15, 0, -11], rotY: faceTo(-15, -11, 0, -2), scale: 3 },
-  { file: '/models/village/tent.gltf', pos: [-11, 0, -13.5], rotY: 2.4, scale: 3.5 },
-  { file: '/models/props/anvil.gltf', pos: [-12.9, 0, -9.4], rotY: -0.8, scale: 0.9 },
-  { file: '/models/props/torch_lit.gltf', pos: [-13.9, 0.45, -10.1], rotY: 0, scale: 1.2, light: true },
-  { file: '/models/props/torch_lit.gltf', pos: [-9.8, 0.45, -12.9], rotY: 0, scale: 1.2, light: true },
-  // Market + watchtower, east side
-  { file: '/models/village/market.gltf', pos: [9, 0, -4], rotY: faceTo(9, -4, 0, -2), scale: 3 },
-  { file: '/models/props/crate_open.gltf', pos: [7.2, 0, -6.2], rotY: 0.5, scale: 3 },
-  { file: '/models/props/crate_open.gltf', pos: [6.2, 0, -6.9], rotY: 2.1, scale: 3 },
-  { file: '/models/props/sack.gltf', pos: [7.9, 0, -5.6], rotY: 1.4, scale: 4 },
-  { file: '/models/props/sack.gltf', pos: [8.6, 0, -6.4], rotY: 2.9, scale: 4 },
-  { file: '/models/village/watchtower.gltf', pos: [19.5, 0, -9], rotY: faceTo(19.5, -9, 0, -2), scale: 4 },
-  // Well + seating + wayfinding anchor the square
-  { file: '/models/village/well.gltf', pos: [4.6, 0, -4.4], rotY: -0.5, scale: 3.5 },
-  ...stoneRing(4.6, -4.4, 2.4, 6),
-  { file: '/models/props/bench.gltf', pos: [3.1, 0, -2.2], rotY: faceTo(3.1, -2.2, 4.6, -4.4), scale: 1.6 },
+  // Zone A hero: big village tree anchoring the plaza (trunk collider via BUILDING_HALF)
+  { file: '/models/env/Tree_1_C_Color1.gltf', pos: [-8, 0, -5.5], rotY: 0.7, scale: 1.7 },
+  // Well + seating + market stall with one goods cluster anchor the square
+  { file: '/models/village/well.gltf', pos: [4.6, 0, -4.4], rotY: -0.5, scale: 4 },
+  ...stoneRing(4.6, -4.4, 2.6, 6),
+  { file: '/models/village/market.gltf', pos: [9.5, 0, -4.5], rotY: faceTo(9.5, -4.5, 0, -1), scale: 4 },
+  { file: '/models/props/crate_open.gltf', pos: [7.9, 0, -6.6], rotY: 0.5, scale: 3 },
+  { file: '/models/props/sack.gltf', pos: [8.7, 0, -7.2], rotY: 2.9, scale: 4 },
+  { file: '/models/props/bench.gltf', pos: [3.1, 0, -2.2], rotY: faceTo(3.1, -2.2, 4.6, -4.4), scale: 2 },
+  { file: '/models/props/bench.gltf', pos: [2.4, 0, -7], rotY: faceTo(2.4, -7, 4.6, -4.4), scale: 2 },
   { file: '/models/props/bench.gltf', pos: [-3.4, 0, 10.2], rotY: -1.2, scale: 1.6 },
+  // Wayfinding at the junction
   { file: '/models/props/sign_right.gltf', pos: [2.6, 0, -3.6], rotY: faceTo(2.6, -3.6, 9, -14), scale: 1 },
   { file: '/models/props/sign_left.gltf', pos: [-2.9, 0, -2.6], rotY: faceTo(-2.9, -2.6, -15, 3), scale: 1 },
   { file: '/models/props/sign_right.gltf', pos: [-1.8, 0, 9.6], rotY: faceTo(-1.8, 9.6, 0, 31), scale: 1 },
-  // Tall lantern posts (drive LAMP_LIGHTS)
-  { file: '/models/props/post_lantern.gltf', pos: [-3.6, 0, 12.3], rotY: 0.4, scale: 1, light: true },
+  // Plaza lamp posts (drive LAMP_LIGHTS)
   { file: '/models/props/post_lantern.gltf', pos: [-2.6, 0, -6.2], rotY: -0.6, scale: 1, light: true },
   { file: '/models/props/post_lantern.gltf', pos: [6.9, 0, -1.2], rotY: 2.6, scale: 1, light: true },
+  // Zone B residential yard: houses share orientation, doors face the yard
+  { file: '/models/village/home_a.gltf', pos: [-18.5, 0, -5.5], rotY: faceTo(-18.5, -5.5, ...YARD), scale: 8 },
+  { file: '/models/village/home_b.gltf', pos: [-16.5, 0, -12.5], rotY: faceTo(-16.5, -12.5, ...YARD), scale: 6.2 },
+  { file: '/models/village/home_a.gltf', pos: [-10, 0, -9.5], rotY: faceTo(-10, -9.5, ...YARD), scale: 7 },
+  // Craft longhouse + forge at the yard's south edge
+  { file: '/models/village/barracks.gltf', pos: [-20, 0, -12], rotY: faceTo(-20, -12, ...YARD), scale: 4.5 },
+  { file: '/models/village/tent.gltf', pos: [-13.5, 0, -9.5], rotY: 2.4, scale: 5 },
+  { file: '/models/props/anvil.gltf', pos: [-16, 0, -8.3], rotY: -0.8, scale: 0.9 },
+  { file: '/models/props/torch_lit.gltf', pos: [-16.9, 0.45, -7.6], rotY: 0, scale: 1.2, light: true },
+  { file: '/models/props/torch_lit.gltf', pos: [-15.2, 0.45, -8.9], rotY: 0, scale: 1.2, light: true },
+  { file: '/models/props/post_lantern.gltf', pos: [-13.5, 0, -4.8], rotY: 0, scale: 1, light: true },
+  // Zone D distant background landmark, off the walking paths
+  { file: '/models/village/watchtower.gltf', pos: [-27, 0, -14], rotY: faceTo(-27, -14, 0, 0), scale: 9 },
 );
 
 // ---- Landmark dressing (feat/environment-polish) ----
@@ -290,6 +293,7 @@ export const BUILDING_HALF: Record<string, [number, number, number]> = {
   '/models/env/wall_broken.gltf': [2, 4, 0.5],
   '/models/env/wall_archedwindow_open.gltf': [2, 4, 0.5],
   '/models/env/column.gltf': [0.35, 1.4, 0.35],
+  '/models/env/Tree_1_C_Color1.gltf': [0.32, 7.4, 0.32], // village hero trunk
 };
 
 /** Low garden fences: fence_wood pieces are 1.15u long, runs auto-space by
@@ -304,17 +308,21 @@ function fenceRun(x0: number, z0: number, x1: number, z1: number, scale = 2) {
     FENCES.push({ pos: [x0 + (x1 - x0) * t, 0, z0 + (z1 - z0) * t], rotY, scale });
   }
 }
-fenceRun(-12.6, -5.5, -12.6, -9.8); // home A west yard
-fenceRun(6.2, -1.6, 6.2, -5.4); // market west edge
+// Residential yard: fence line north (gap for the path spur) + west edge.
+fenceRun(-18.5, -2.5, -12.5, -2.5, 2.5);
+fenceRun(-10.6, -3.1, -9, -4.5, 2.5);
+fenceRun(-21.5, -3.2, -21.5, -8.5, 2.5);
 
 // Structures are declared after scatter in module order; sweep any
-// vegetation/fence piece that ended up inside a building footprint.
+// vegetation/fence piece that ended up inside a structure footprint. The gate
+// and hero trunk are walk-through / narrow, so only their real body
+// (half-width / trunk radius) prunes vegetation, not the full AABB.
 for (const p of PROPS) {
-  if (!p.file.includes('/village/')) continue;
   const m = BUILDING_HALF[p.file];
   if (!m) continue;
-  const r = (m[0] + m[2]) * p.scale; // worst-case rotated footprint
-  const inside = (q: Inst) => Math.abs(q.pos[0] - p.pos[0]) < r && Math.abs(q.pos[2] - p.pos[2]) < r;
+  const trunk = p.file.includes('wall_gated') || p.file.includes('Tree_1_C');
+  const r = (trunk ? m[0] : m[0] + m[2]) * p.scale; // trunk radius vs rotated box
+  const inside = (q: Inst) => Math.hypot(q.pos[0] - p.pos[0], q.pos[2] - p.pos[2]) < r + 1.2;
   for (const arr of [TREES, BUSHES, GRASS, ROCKS, BARE_TREES, FENCES] as Inst[][]) {
     for (let i = arr.length - 1; i >= 0; i--) if (inside(arr[i])) arr.splice(i, 1);
   }
