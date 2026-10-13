@@ -1,0 +1,10 @@
+[
+  { "name": "01-lake-reveal", "pos": [-20, -5.5], "yaw": 2.48 },
+  { "name": "02-shoreline-west", "pos": [-37.5, 6.5], "yaw": -1.9 },
+  { "name": "03-crystal-focal", "pos": [-21.5, 11], "yaw": 1.57 },
+  { "name": "04-beside-crystal", "pos": [-22, 8.5], "yaw": 2.36 },
+  { "name": "05-grove-entry", "pos": [21, -19.5], "yaw": -1.2 },
+  { "name": "06-winding-path", "pos": [24, -20], "yaw": -1.1 },
+  { "name": "07-hero-cluster", "pos": [25.8, -20.8], "yaw": -1.05 },
+  { "name": "08-player-scale", "pos": [24.5, -19], "yaw": -0.85 }
+]

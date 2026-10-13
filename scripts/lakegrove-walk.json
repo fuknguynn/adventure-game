@@ -1,0 +1,901 @@
+{
+  "generatedAt": "2026-10-13T11:50:03.854Z",
+  "base": "http://localhost:5174/",
+  "legTimeoutS": 40,
+  "thresholds": {
+    "reachedR": 0.6,
+    "stuckWindowS": 3,
+    "stuckProgressU": 0.4,
+    "wallDispU": 0.1,
+    "fellY": -3
+  },
+  "legs": [
+    {
+      "kind": "route",
+      "from": "courtyard",
+      "to": "trail",
+      "from_xy": [
+        -12,
+        -6
+      ],
+      "to_xy": [
+        -16.5,
+        -8.5
+      ],
+      "dir": "diagonal",
+      "sprint": false,
+      "spawn_settled_y": 0.9,
+      "start_xy": [
+        -12,
+        -6
+      ],
+      "end_xy": [
+        -16.06,
+        -8.25
+      ],
+      "goal_dist_m": 5.15,
+      "reached": true,
+      "end_dist": 0.51,
+      "traveled": 4.64,
+      "max_disp": 4.64,
+      "elapsed": 4.1,
+      "progress3": 2.98,
+      "stuckY": false,
+      "wall": false,
+      "fell": false,
+      "min_y": 0.9,
+      "fps_est": 4.1,
+      "block_xy": [
+        -15.48,
+        -7.93
+      ]
+    },
+    {
+      "kind": "route",
+      "from": "trail",
+      "to": "trail-bend",
+      "from_xy": [
+        -16.5,
+        -8.5
+      ],
+      "to_xy": [
+        -21.5,
+        -8.4
+      ],
+      "dir": "straight",
+      "sprint": false,
+      "spawn_settled_y": 0.9,
+      "start_xy": [
+        -16.5,
+        -8.5
+      ],
+      "end_xy": [
+        -21.14,
+        -8.41
+      ],
+      "goal_dist_m": 5,
+      "reached": true,
+      "end_dist": 0.36,
+      "traveled": 4.64,
+      "max_disp": 4.64,
+      "elapsed": 4,
+      "progress3": 3.31,
+      "stuckY": false,
+      "wall": false,
+      "fell": false,
+      "min_y": 0.9,
+      "fps_est": 4.3,
+      "block_xy": [
+        -20.48,
+        -8.42
+      ]
+    },
+    {
+      "kind": "route",
+      "from": "trail-bend",
+      "to": "trail-north",
+      "from_xy": [
+        -21.5,
+        -8.4
+      ],
+      "to_xy": [
+        -23.5,
+        -7
+      ],
+      "dir": "diagonal",
+      "sprint": false,
+      "spawn_settled_y": 0.9,
+      "start_xy": [
+        -21.5,
+        -8.4
+      ],
+      "end_xy": [
+        -23.13,
+        -7.26
+      ],
+      "goal_dist_m": 2.44,
+      "reached": true,
+      "end_dist": 0.45,
+      "traveled": 1.99,
+      "max_disp": 1.99,
+      "elapsed": 1.6,
+      "progress3": null,
+      "stuckY": false,
+      "wall": false,
+      "fell": false,
+      "min_y": 0.9,
+      "fps_est": 5.7,
+      "block_xy": [
+        -22.59,
+        -7.64
+      ]
+    },
+    {
+      "kind": "route",
+      "from": "trail-north",
+      "to": "trail-bow",
+      "from_xy": [
+        -23.5,
+        -7
+      ],
+      "to_xy": [
+        -24.8,
+        -5.1
+      ],
+      "dir": "diagonal",
+      "sprint": false,
+      "spawn_settled_y": 0.9,
+      "start_xy": [
+        -23.5,
+        -7
+      ],
+      "end_xy": [
+        -24.62,
+        -5.36
+      ],
+      "goal_dist_m": 2.3,
+      "reached": true,
+      "end_dist": 0.31,
+      "traveled": 1.99,
+      "max_disp": 1.99,
+      "elapsed": 1.8,
+      "progress3": null,
+      "stuckY": false,
+      "wall": false,
+      "fell": false,
+      "min_y": 0.9,
+      "fps_est": 5,
+      "block_xy": [
+        -24.25,
+        -5.91
+      ]
+    },
+    {
+      "kind": "route",
+      "from": "trail-bow",
+      "to": "lake-approach",
+      "from_xy": [
+        -24.8,
+        -5.1
+      ],
+      "to_xy": [
+        -26,
+        -3
+      ],
+      "dir": "diagonal",
+      "sprint": false,
+      "spawn_settled_y": 0.9,
+      "start_xy": [
+        -24.8,
+        -5.1
+      ],
+      "end_xy": [
+        -25.79,
+        -3.37
+      ],
+      "goal_dist_m": 2.42,
+      "reached": true,
+      "end_dist": 0.43,
+      "traveled": 1.99,
+      "max_disp": 1.99,
+      "elapsed": 2,
+      "progress3": null,
+      "stuckY": false,
+      "wall": false,
+      "fell": false,
+      "min_y": 0.9,
+      "fps_est": 4.5,
+      "block_xy": [
+        -25.46,
+        -3.95
+      ]
+    },
+    {
+      "kind": "route",
+      "from": "lake-approach",
+      "to": "lake-east-rim",
+      "from_xy": [
+        -26,
+        -3
+      ],
+      "to_xy": [
+        -22,
+        6
+      ],
+      "dir": "diagonal",
+      "sprint": false,
+      "spawn_settled_y": 0.9,
+      "start_xy": [
+        -26,
+        -3
+      ],
+      "end_xy": [
+        -22.17,
+        5.62
+      ],
+      "goal_dist_m": 9.85,
+      "reached": true,
+      "end_dist": 0.42,
+      "traveled": 9.43,
+      "max_disp": 9.43,
+      "elapsed": 8.1,
+      "progress3": 3.65,
+      "stuckY": false,
+      "wall": false,
+      "fell": false,
+      "min_y": 0.9,
+      "fps_est": 4.1,
+      "block_xy": [
+        -22.42,
+        5.05
+      ]
+    },
+    {
+      "kind": "route",
+      "from": "lake-east-rim",
+      "to": "crystal-focal",
+      "from_xy": [
+        -22,
+        6
+      ],
+      "to_xy": [
+        -24,
+        10.5
+      ],
+      "dir": "diagonal",
+      "sprint": false,
+      "spawn_settled_y": 0.9,
+      "start_xy": [
+        -22,
+        6
+      ],
+      "end_xy": [
+        -23.89,
+        10.24
+      ],
+      "goal_dist_m": 4.92,
+      "reached": true,
+      "end_dist": 0.28,
+      "traveled": 4.64,
+      "max_disp": 4.64,
+      "elapsed": 6,
+      "progress3": 2.65,
+      "stuckY": false,
+      "wall": false,
+      "fell": false,
+      "min_y": 0.9,
+      "fps_est": 2.8,
+      "block_xy": [
+        -23.21,
+        8.73
+      ]
+    },
+    {
+      "kind": "route",
+      "from": "crystal-focal",
+      "to": "rim-return",
+      "from_xy": [
+        -24,
+        10.5
+      ],
+      "to_xy": [
+        -26.2,
+        2
+      ],
+      "dir": "diagonal",
+      "sprint": false,
+      "spawn_settled_y": 0.9,
+      "start_xy": [
+        -24,
+        10.5
+      ],
+      "end_xy": [
+        -26.08,
+        2.48
+      ],
+      "goal_dist_m": 8.78,
+      "reached": true,
+      "end_dist": 0.49,
+      "traveled": 8.29,
+      "max_disp": 8.29,
+      "elapsed": 6.3,
+      "progress3": 3.98,
+      "stuckY": false,
+      "wall": false,
+      "fell": false,
+      "min_y": 0.9,
+      "fps_est": 4.5,
+      "block_xy": [
+        -25.91,
+        3.12
+      ]
+    },
+    {
+      "kind": "route",
+      "from": "rim-return",
+      "to": "trail-return",
+      "from_xy": [
+        -26.2,
+        2
+      ],
+      "to_xy": [
+        -26,
+        -3
+      ],
+      "dir": "diagonal",
+      "sprint": false,
+      "spawn_settled_y": 0.9,
+      "start_xy": [
+        -26.2,
+        2
+      ],
+      "end_xy": [
+        -26.01,
+        -2.64
+      ],
+      "goal_dist_m": 5,
+      "reached": true,
+      "end_dist": 0.36,
+      "traveled": 4.64,
+      "max_disp": 4.64,
+      "elapsed": 3.7,
+      "progress3": 3.65,
+      "stuckY": false,
+      "wall": false,
+      "fell": false,
+      "min_y": 0.9,
+      "fps_est": 4.6,
+      "block_xy": [
+        -26.04,
+        -1.98
+      ]
+    },
+    {
+      "kind": "route",
+      "from": "trail-return",
+      "to": "trail-mid",
+      "from_xy": [
+        -26,
+        -3
+      ],
+      "to_xy": [
+        -22.5,
+        -7.7
+      ],
+      "dir": "diagonal",
+      "sprint": false,
+      "spawn_settled_y": 0.9,
+      "start_xy": [
+        -26,
+        -3
+      ],
+      "end_xy": [
+        -22.83,
+        -7.26
+      ],
+      "goal_dist_m": 5.86,
+      "reached": true,
+      "end_dist": 0.55,
+      "traveled": 5.31,
+      "max_disp": 5.31,
+      "elapsed": 4.4,
+      "progress3": 3.65,
+      "stuckY": false,
+      "wall": false,
+      "fell": false,
+      "min_y": 0.9,
+      "fps_est": 4.3,
+      "block_xy": [
+        -23.23,
+        -6.72
+      ]
+    },
+    {
+      "kind": "route",
+      "from": "trail-mid",
+      "to": "trail-bow",
+      "from_xy": [
+        -22.5,
+        -7.7
+      ],
+      "to_xy": [
+        -14.2,
+        -7.3
+      ],
+      "dir": "diagonal",
+      "sprint": false,
+      "spawn_settled_y": 0.9,
+      "start_xy": [
+        -22.5,
+        -7.7
+      ],
+      "end_xy": [
+        -14.55,
+        -7.32
+      ],
+      "goal_dist_m": 8.31,
+      "reached": true,
+      "end_dist": 0.35,
+      "traveled": 7.96,
+      "max_disp": 7.96,
+      "elapsed": 5.7,
+      "progress3": 3.98,
+      "stuckY": false,
+      "wall": false,
+      "fell": false,
+      "min_y": 0.9,
+      "fps_est": 4.8,
+      "block_xy": [
+        -15.21,
+        -7.35
+      ]
+    },
+    {
+      "kind": "route",
+      "from": "trail-bow",
+      "to": "courtyard-back",
+      "from_xy": [
+        -14.2,
+        -7.3
+      ],
+      "to_xy": [
+        -12,
+        -6
+      ],
+      "dir": "diagonal",
+      "sprint": false,
+      "spawn_settled_y": 0.9,
+      "start_xy": [
+        -14.2,
+        -7.3
+      ],
+      "end_xy": [
+        -12.49,
+        -6.29
+      ],
+      "goal_dist_m": 2.56,
+      "reached": true,
+      "end_dist": 0.57,
+      "traveled": 1.99,
+      "max_disp": 1.99,
+      "elapsed": 1.8,
+      "progress3": null,
+      "stuckY": false,
+      "wall": false,
+      "fell": false,
+      "min_y": 0.9,
+      "fps_est": 4.9,
+      "block_xy": [
+        -13.06,
+        -6.63
+      ]
+    },
+    {
+      "kind": "route",
+      "from": "courtyard-back",
+      "to": "yard-mid",
+      "from_xy": [
+        -12,
+        -6
+      ],
+      "to_xy": [
+        -8,
+        -7.3
+      ],
+      "dir": "diagonal",
+      "sprint": false,
+      "spawn_settled_y": 0.9,
+      "start_xy": [
+        -12,
+        -6
+      ],
+      "end_xy": [
+        -8.53,
+        -7.13
+      ],
+      "goal_dist_m": 4.21,
+      "reached": true,
+      "end_dist": 0.56,
+      "traveled": 3.65,
+      "max_disp": 3.65,
+      "elapsed": 3.1,
+      "progress3": 3.65,
+      "stuckY": false,
+      "wall": false,
+      "fell": false,
+      "min_y": 0.9,
+      "fps_est": 4.5,
+      "block_xy": [
+        -9.16,
+        -6.92
+      ]
+    },
+    {
+      "kind": "route",
+      "from": "yard-mid",
+      "to": "yard-edge",
+      "from_xy": [
+        -8,
+        -7.3
+      ],
+      "to_xy": [
+        -3.5,
+        -6.5
+      ],
+      "dir": "diagonal",
+      "sprint": false,
+      "spawn_settled_y": 0.9,
+      "start_xy": [
+        -8,
+        -7.3
+      ],
+      "end_xy": [
+        -4.08,
+        -6.6
+      ],
+      "goal_dist_m": 4.57,
+      "reached": true,
+      "end_dist": 0.59,
+      "traveled": 3.98,
+      "max_disp": 3.98,
+      "elapsed": 5,
+      "progress3": 2.65,
+      "stuckY": false,
+      "wall": false,
+      "fell": false,
+      "min_y": 0.9,
+      "fps_est": 3,
+      "block_xy": [
+        -4.74,
+        -6.72
+      ]
+    },
+    {
+      "kind": "route",
+      "from": "yard-edge",
+      "to": "plaza",
+      "from_xy": [
+        -3.5,
+        -6.5
+      ],
+      "to_xy": [
+        0,
+        -1
+      ],
+      "dir": "diagonal",
+      "sprint": false,
+      "spawn_settled_y": 0.9,
+      "start_xy": [
+        -3.5,
+        -6.5
+      ],
+      "end_xy": [
+        -0.23,
+        -1.46
+      ],
+      "goal_dist_m": 6.52,
+      "reached": true,
+      "end_dist": 0.51,
+      "traveled": 6.12,
+      "max_disp": 6.01,
+      "elapsed": 13,
+      "progress3": 2.43,
+      "stuckY": false,
+      "wall": false,
+      "fell": false,
+      "min_y": 0.9,
+      "fps_est": 3.9,
+      "block_xy": [
+        -0.54,
+        -2.05
+      ]
+    },
+    {
+      "kind": "route",
+      "from": "plaza",
+      "to": "grove-trail",
+      "from_xy": [
+        0,
+        -1
+      ],
+      "to_xy": [
+        8,
+        -12
+      ],
+      "dir": "diagonal",
+      "sprint": false,
+      "spawn_settled_y": 0.9,
+      "start_xy": [
+        0,
+        -1
+      ],
+      "end_xy": [
+        7.8,
+        -11.73
+      ],
+      "goal_dist_m": 13.6,
+      "reached": true,
+      "end_dist": 0.34,
+      "traveled": 13.26,
+      "max_disp": 13.26,
+      "elapsed": 11.4,
+      "progress3": 2.65,
+      "stuckY": false,
+      "wall": false,
+      "fell": false,
+      "min_y": 0.9,
+      "fps_est": 3.8,
+      "block_xy": [
+        7.41,
+        -11.19
+      ]
+    },
+    {
+      "kind": "route",
+      "from": "grove-trail",
+      "to": "grove-trail-mid",
+      "from_xy": [
+        8,
+        -12
+      ],
+      "to_xy": [
+        13.2,
+        -15.6
+      ],
+      "dir": "diagonal",
+      "sprint": false,
+      "spawn_settled_y": 0.9,
+      "start_xy": [
+        8,
+        -12
+      ],
+      "end_xy": [
+        12.91,
+        -15.4
+      ],
+      "goal_dist_m": 6.32,
+      "reached": true,
+      "end_dist": 0.36,
+      "traveled": 5.97,
+      "max_disp": 5.97,
+      "elapsed": 5.4,
+      "progress3": 2.65,
+      "stuckY": false,
+      "wall": false,
+      "fell": false,
+      "min_y": 0.9,
+      "fps_est": 3.9,
+      "block_xy": [
+        12.36,
+        -15.02
+      ]
+    },
+    {
+      "kind": "route",
+      "from": "grove-trail-mid",
+      "to": "grove-trail-end",
+      "from_xy": [
+        13.2,
+        -15.6
+      ],
+      "to_xy": [
+        18,
+        -19
+      ],
+      "dir": "diagonal",
+      "sprint": false,
+      "spawn_settled_y": 0.9,
+      "start_xy": [
+        13.2,
+        -15.6
+      ],
+      "end_xy": [
+        17.53,
+        -18.67
+      ],
+      "goal_dist_m": 5.88,
+      "reached": true,
+      "end_dist": 0.58,
+      "traveled": 5.31,
+      "max_disp": 5.31,
+      "elapsed": 5.7,
+      "progress3": 2.32,
+      "stuckY": false,
+      "wall": false,
+      "fell": false,
+      "min_y": 0.9,
+      "fps_est": 3.3,
+      "block_xy": [
+        16.99,
+        -18.28
+      ]
+    },
+    {
+      "kind": "route",
+      "from": "grove-trail-end",
+      "to": "grove-entry",
+      "from_xy": [
+        18,
+        -19
+      ],
+      "to_xy": [
+        22.5,
+        -20
+      ],
+      "dir": "diagonal",
+      "sprint": false,
+      "spawn_settled_y": 0.9,
+      "start_xy": [
+        18,
+        -19
+      ],
+      "end_xy": [
+        22,
+        -19.89
+      ],
+      "goal_dist_m": 4.61,
+      "reached": true,
+      "end_dist": 0.51,
+      "traveled": 4.1,
+      "max_disp": 4.1,
+      "elapsed": 6.2,
+      "progress3": 0.99,
+      "stuckY": false,
+      "wall": false,
+      "fell": false,
+      "min_y": 0.9,
+      "fps_est": 2.6,
+      "block_xy": [
+        21.36,
+        -19.75
+      ]
+    },
+    {
+      "kind": "route",
+      "from": "grove-entry",
+      "to": "winding-path",
+      "from_xy": [
+        22.5,
+        -20
+      ],
+      "to_xy": [
+        25.5,
+        -21
+      ],
+      "dir": "diagonal",
+      "sprint": false,
+      "spawn_settled_y": 0.9,
+      "start_xy": [
+        22.5,
+        -20
+      ],
+      "end_xy": [
+        25.13,
+        -20.88
+      ],
+      "goal_dist_m": 3.16,
+      "reached": true,
+      "end_dist": 0.39,
+      "traveled": 2.77,
+      "max_disp": 2.77,
+      "elapsed": 4.5,
+      "progress3": 1.45,
+      "stuckY": false,
+      "wall": false,
+      "fell": false,
+      "min_y": 0.9,
+      "fps_est": 2.9,
+      "block_xy": [
+        24.5,
+        -20.67
+      ]
+    },
+    {
+      "kind": "route",
+      "from": "winding-path",
+      "to": "hero-approach",
+      "from_xy": [
+        25.5,
+        -21
+      ],
+      "to_xy": [
+        27,
+        -21.6
+      ],
+      "dir": "diagonal",
+      "sprint": false,
+      "spawn_settled_y": 0.9,
+      "start_xy": [
+        25.5,
+        -21
+      ],
+      "end_xy": [
+        26.73,
+        -21.49
+      ],
+      "goal_dist_m": 1.62,
+      "reached": true,
+      "end_dist": 0.29,
+      "traveled": 1.33,
+      "max_disp": 1.33,
+      "elapsed": 1.3,
+      "progress3": null,
+      "stuckY": false,
+      "wall": false,
+      "fell": false,
+      "min_y": 0.9,
+      "fps_est": 5.3,
+      "block_xy": [
+        26.12,
+        -21.25
+      ]
+    },
+    {
+      "kind": "inside-prop",
+      "from": "inside-hero-cluster",
+      "to": "escape",
+      "from_xy": [
+        29.4,
+        -24.9
+      ],
+      "to_xy": [
+        29.4,
+        -27
+      ],
+      "spawn_settled_y": 0.9,
+      "start_xy": [
+        30.14,
+        -23.55
+      ],
+      "end_xy": [
+        30.14,
+        -23.55
+      ],
+      "traveled": 0,
+      "max_disp": 0,
+      "elapsed": 40,
+      "leak": false,
+      "min_y": 0.9,
+      "result": "solid"
+    }
+  ],
+  "anomalies": [],
+  "allReached": true,
+  "orbit": {
+    "point": [
+      28,
+      -22
+    ],
+    "shots": [
+      "orbit-0.png",
+      "orbit-1.png",
+      "orbit-2.png",
+      "orbit-3.png",
+      "orbit-4.png",
+      "orbit-5.png",
+      "orbit-6.png",
+      "orbit-7.png"
+    ]
+  },
+  "pageErrors": []
+}

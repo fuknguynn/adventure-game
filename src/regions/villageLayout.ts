@@ -281,9 +281,9 @@ PROPS.push(
   // to the approach so the courtyard reads as one broken space.
   { file: '/models/env/wall_broken.gltf', pos: [33.2, 0, 9.2], rotY: -0.12, scale: 1.2 },
   { file: '/models/env/wall_broken.gltf', pos: [36.9, 0, 4.4], rotY: 1.45, scale: 1.05 },
-  // Asymmetric columns: mid-height broken stub beside the focal stone,
-  // taller background pillar at the NE corner (not twins).
-  { file: '/models/env/column.gltf', pos: [33.6, 0, 4.2], rotY: 0.6, scale: 1.2 },
+  // Broken column beside the focal stone: upright, tent-sized cuboid
+  // footprint pins the capsule; height contrasts the NE pillar (not twins).
+  { file: '/models/env/column.gltf', pos: [33.6, 0, 4.2], rotY: 0, scale: 1.2 },
   { file: '/models/env/pillar.gltf', pos: [37.4, 0, 8.6], rotY: 0.4, scale: 1.45 },
   // Background silhouette: open arch framing the sky behind the courtyard.
   { file: '/models/env/wall_archedwindow_open.gltf', pos: [26.3, 0, 11.8], rotY: 0.15, scale: 1.4 },
@@ -321,10 +321,10 @@ PROPS.push(
   { file: '/models/props/Gem_Large.gltf', pos: [-24.6, 0, 11], rotY: 0.4, scale: 2.4 },
   { file: '/models/props/Gem_Large.gltf', pos: [-23.8, 0, 11.7], rotY: -0.7, scale: 1.4 },
   { file: '/models/props/Gem_Medium.gltf', pos: [-25.2, 0, 11.9], rotY: 1.9, scale: 1.2 },
-  // Grove hero: the glowing cap cluster grows around one mossy stone pillar —
-  // the grove's only solid decor bump (full cuboid footprint pins the capsule,
-  // like the barracks; trunks beyond r32 stay visual-only).
-  { file: '/models/env/column.gltf', pos: [28, 0, -24.35], rotY: 0.9, scale: 4.4 },
+  // Grove hero: the glowing cap cluster rings one mossy stone pillar — the
+  // grove's only solid decor bump (tent-sized cuboid footprint pins the
+  // capsule; trunks beyond r32 stay visual-only).
+  { file: '/models/env/column.gltf', pos: [29.4, 0, -25.6], rotY: 0.5, scale: 4.4 },
 );
 
 
@@ -367,6 +367,7 @@ export const NO_COLLIDE: Record<string, true> = {
   '/models/props/grave_a.gltf': true,
   '/models/props/post_skull.gltf': true,
   '/models/props/torch_lit.gltf': true,
+  '/models/env/wall_archedwindow_open.gltf': true,
 };
 /** Ancient Tree at (0,31): rendered by Regions.tsx (Tree_1_C_Color1); trunk collider derives from this. */
 export const ANCIENT_TREE = { x: 0, z: 34, r: 0.32 * 4.8, h: 7.4 * 4.8 }; // pos/scale mirrored from Regions.tsx

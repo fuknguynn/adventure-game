@@ -1,0 +1,30 @@
+{
+  "waypoints": [
+    { "x": -12, "z": -6, "label": "courtyard" },
+    { "x": -16.5, "z": -8.5, "label": "trail" },
+    { "x": -21.5, "z": -8.4, "label": "trail-bend" },
+    { "x": -23.5, "z": -7, "label": "trail-north" },
+    { "x": -24.8, "z": -5.1, "label": "trail-bow" },
+    { "x": -26, "z": -3, "label": "lake-approach" },
+    { "x": -22, "z": 6, "label": "lake-east-rim" },
+    { "x": -24, "z": 10.5, "label": "crystal-focal" },
+    { "x": -26.2, "z": 2, "label": "rim-return" },
+    { "x": -26, "z": -3, "label": "trail-return" },
+    { "x": -22.5, "z": -7.7, "label": "trail-mid" },
+    { "x": -14.2, "z": -7.3, "label": "trail-bow" },
+    { "x": -12, "z": -6, "label": "courtyard-back" },
+    { "x": -8, "z": -7.3, "label": "yard-mid" },
+    { "x": -3.5, "z": -6.5, "label": "yard-edge" },
+    { "x": 0, "z": -1, "label": "plaza" },
+    { "x": 8, "z": -12, "label": "grove-trail" },
+    { "x": 13.2, "z": -15.6, "label": "grove-trail-mid" },
+    { "x": 18, "z": -19, "label": "grove-trail-end" },
+    { "x": 22.5, "z": -20, "label": "grove-entry" },
+    { "x": 25.5, "z": -21, "label": "winding-path" },
+    { "x": 27, "z": -21.6, "label": "hero-approach" }
+  ],
+  "probes": [
+    { "x": 29.4, "z": -24.9, "label": "inside-hero-cluster", "escape": [29.4, -27] }
+  ],
+  "orbit": { "x": 28, "z": -22 }
+}
