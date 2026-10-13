@@ -71,8 +71,12 @@ for (const poi of POIS) {
   await shot(poi.name);
 }
 
-// mobile viewport; --mobile x,z,yaw overrides the spawn shot target
+// mobile viewport; replay every POI at phone size, then --mobile x,z,yaw spawn shot
 await p.setViewport({ width: 390, height: 844, isMobile: true, hasTouch: true });
+for (const poi of POIS) {
+  await teleport(poi.pos, poi.yaw);
+  await shot('m-' + poi.name);
+}
 const mi = process.argv.indexOf('--mobile');
 const [mx, mz, myaw] = mi > 0 ? process.argv[mi + 1].split(',').map(Number) : [0, 6, 0];
 await teleport([mx, mz], myaw);

@@ -1,0 +1,22 @@
+{
+  "waypoints": [
+    { "x": 0, "z": 6, "label": "spawn" },
+    { "x": 0, "z": -1, "label": "plaza" },
+    { "x": 13, "z": -4, "label": "stall-front", "diag": true },
+    { "x": 15, "z": -2.5, "label": "market-pocket" },
+    { "x": 2, "z": 2, "label": "spirit", "diag": true },
+    { "x": -24, "z": 11, "label": "lake-shore", "diag": true },
+    { "x": 8, "z": -12, "label": "grove-entry", "diag": true, "sprint": true },
+    { "x": 28, "z": -22, "label": "grove-hero", "diag": true },
+    { "x": 30, "z": 5, "label": "ruins-gateway", "diag": true },
+    { "x": 0, "z": 27, "label": "tree-approach", "diag": true },
+    { "x": 0, "z": 31, "label": "tree-ritual" }
+  ],
+  "probes": [
+    { "x": -19.5, "z": -1.5, "label": "inside-home-a", "escape": [-12, -6] },
+    { "x": -27, "z": -14, "label": "inside-barracks", "escape": [-17.5, -13] },
+    { "x": 19, "z": -9.5, "label": "inside-tent", "escape": [19, -7] },
+    { "x": 16, "z": 2.5, "label": "inside-market", "escape": [16, -3] }
+  ],
+  "orbit": { "x": 0, "z": -1 }
+}

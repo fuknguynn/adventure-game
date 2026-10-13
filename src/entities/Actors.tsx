@@ -57,7 +57,6 @@ export function NPC({ position, onTalk }: { position: [number, number, number]; 
         <sphereGeometry args={[0.26, 16, 16]} />
         <meshStandardMaterial color="#f4e9c9" />
       </mesh>
-      <pointLight color="#d8bb78" intensity={3} distance={7} decay={2} position={[0, 2.4, 0]} />
     </group>
   );
 }

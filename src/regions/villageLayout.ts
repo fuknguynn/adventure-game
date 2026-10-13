@@ -195,8 +195,8 @@ export const PROPS: Prop[] = [
   { file: '/models/env/wall_gated.gltf', pos: [0, 0, 15.5], rotY: 0, scale: 2.25 },
   { file: '/models/props/post_lantern.gltf', pos: [-5.6, 0, 13.6], rotY: 0, scale: 1, light: true },
   { file: '/models/props/post_lantern.gltf', pos: [5.6, 0, 13.6], rotY: 0, scale: 1, light: true },
-  // Junction lantern guiding into the square
-  { file: '/models/props/lantern.gltf', pos: [-2.2, 0, -2.5], rotY: 1.2, scale: 0.72, light: true },
+  // Junction marker guiding into the square (lit by the adjacent plaza lamps)
+  { file: '/models/props/lantern.gltf', pos: [-2.2, 0, -2.5], rotY: 1.2, scale: 0.72 },
   // Spirit clearing: entry-gap ring facing the plaza (south opening), one
   // asymmetric framing tree on the NW rim, shrine on the north edge facing
   // the approach. The plaza bench at 2.8,3.8 is the single low accent; the
@@ -223,7 +223,7 @@ const faceTo = (px: number, pz: number, tx: number, tz: number) => Math.atan2(tx
 const COURT: [number, number] = [-12, -6.5];
 PROPS.push(
   // Zone B plaza hero tree (trunk collider via Tree_1_C BUILDING_HALF entry)
-  { file: '/models/env/Tree_1_C_Color1.gltf', pos: [-2.5, 0, -3.5], rotY: 0.7, scale: 1.15 },
+  { file: '/models/env/Tree_1_C_Color1.gltf', pos: [-4.5, 0, -5.5], rotY: 0.7, scale: 1.15 },
   // Well + two benches face each other across the square
   { file: '/models/village/well.gltf', pos: [-5.5, 0, 5.5], rotY: -0.5, scale: 4 },
   ...stoneRing(-5.5, 5.5, 2.4, 4),
@@ -263,7 +263,7 @@ PROPS.push(
   { file: '/models/village/barracks.gltf', pos: [-27, 0, -15], rotY: faceTo(-27, -15, ...COURT), scale: 5 },
   { file: '/models/props/anvil.gltf', pos: [-15, 0, -10.5], rotY: -0.8, scale: 1.5 },
   { file: '/models/props/torch_lit.gltf', pos: [-15.9, 0.45, -11.2], rotY: 0, scale: 1.2, light: true },
-  { file: '/models/props/torch_lit.gltf', pos: [-14.2, 0.45, -11.5], rotY: 0, scale: 1.2, light: true },
+  { file: '/models/props/torch_lit.gltf', pos: [-14.2, 0.45, -11.5], rotY: 0, scale: 1.2 },
   { file: '/models/props/post_lantern.gltf', pos: [-12, 0, -4.5], rotY: 0, scale: 1, light: true },
 );
 // ---- Landmark dressing (feat/environment-polish) ----
@@ -315,7 +315,7 @@ PROPS.push(
   { file: '/models/env/rubble_large.gltf', pos: [-9.5, 0, 36.5], rotY: 2.1, scale: 0.6 },
   { file: '/models/env/rubble_large.gltf', pos: [10, 0, 36], rotY: 0.9, scale: 0.6 },
   { file: '/models/props/post_lantern.gltf', pos: [-6.7, 0, 24.3], rotY: 0.7, scale: 1, light: true },
-  { file: '/models/props/post_lantern.gltf', pos: [6.7, 0, 24.3], rotY: -0.7, scale: 1, light: true },
+  { file: '/models/props/post_lantern.gltf', pos: [6.7, 0, 24.3], rotY: -0.7, scale: 1 },
   // Lake crystal focal: one height-stepped cluster on the NE rim — tall
   // center, low sides — visible from the east approach, nothing scattered elsewhere.
   { file: '/models/props/Gem_Large.gltf', pos: [-24.6, 0, 11], rotY: 0.4, scale: 2.4 },

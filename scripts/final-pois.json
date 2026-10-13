@@ -1,0 +1,16 @@
+[
+  { "name": "plaza-normal", "pos": [0, -1], "yaw": 3.14 },
+  { "name": "plaza-scale", "pos": [-4, 4], "yaw": 2.36 },
+  { "name": "market-normal", "pos": [11.5, -4], "yaw": 3.75 },
+  { "name": "market-scale", "pos": [13.5, -3.5], "yaw": -0.74 },
+  { "name": "spirit-normal", "pos": [2, -5.5], "yaw": 3.14 },
+  { "name": "spirit-scale", "pos": [3.5, 5.5], "yaw": 2.59 },
+  { "name": "lake-normal", "pos": [-24, 11], "yaw": 0.79 },
+  { "name": "lake-scale", "pos": [-22.5, 9], "yaw": 2.5 },
+  { "name": "grove-normal", "pos": [28, -22], "yaw": -0.37 },
+  { "name": "grove-scale", "pos": [25.5, -18.5], "yaw": -0.62 },
+  { "name": "ruins-normal", "pos": [29.5, -1.5], "yaw": 3.14 },
+  { "name": "ruins-scale", "pos": [31.5, 2], "yaw": 0.35 },
+  { "name": "tree-normal", "pos": [0, 27], "yaw": 3.14 },
+  { "name": "tree-scale", "pos": [-3, 29], "yaw": -2.16 }
+]

@@ -52,7 +52,6 @@ export function Regions() {
             <icosahedronGeometry args={[0.35, 0]} />
             <meshStandardMaterial color="#8ef0ff" emissive="#39d7ff" emissiveIntensity={e} />
           </mesh>
-          <pointLight color="#54e0ff" intensity={e * 4} distance={9} decay={2} position={[0, 1.4, 0]} />
         </group>
       ))}
       {/* ruins puzzle focal stone (grows when light_reflection solved) */}
@@ -73,7 +72,6 @@ export function Regions() {
         <meshBasicMaterial color="#5fd4e8" transparent opacity={0.05} depthWrite={false} />
       </mesh>
       <pointLight color="#5fd4e8" intensity={4} distance={8} decay={2} position={[29.6, 1.6, 4.6]} />
-      <pointLight color="#4fbfd8" intensity={3} distance={7} decay={2} position={[33.4, 2.2, 7.4]} />
       {/* ancient tree: hero of the world — biggest, brightest thing from the
           plaza. One concentrated light pool, teal before the restore. */}
       <KayKitModel url="/models/env/Tree_1_C_Color1.gltf" position={[0, 0, 34]} scale={4.8} colorize={FOLIAGE_TINT} />
