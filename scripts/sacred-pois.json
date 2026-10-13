@@ -1,0 +1,7 @@
+[
+  { "name": "01-spirit-entry", "pos": [1, -2.5], "yaw": 3.14 },
+  { "name": "02-spirit-shrine", "pos": [2, 4.5], "yaw": 3.14 },
+  { "name": "03-tree-approach", "pos": [0, 24], "yaw": 3.14 },
+  { "name": "04-tree-wide", "pos": [-7, 26], "yaw": -2.42 },
+  { "name": "05-tree-beside", "pos": [1.6, 33], "yaw": 2.13 }
+]

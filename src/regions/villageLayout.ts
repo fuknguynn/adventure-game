@@ -154,14 +154,21 @@ for (const [cx, cz, n, r] of [[32.5, 2.5, 6, 7], [29, 8, 4, 6], [-22, -3, 3, 6]]
     BARE_TREES.push({ pos: [p[0], 0, p[1]], rotY: rnd(0, Math.PI * 2), scale: rnd(1.0, 1.5) });
   }
 }
+// Crystal Lake east-reveal: a handful of bare silhouettes hugging the north
+// rim (walk-over, no colliders) so the approach reads open water + skeletal
+// shapes instead of a forest wall.
+for (const [x, z, s] of [[-31.8, -1.5, 1.6], [-33.8, 0.5, 1.2], [-28.8, -1, 1.35]] as const) {
+  BARE_TREES.push({ pos: [x, 0, z], rotY: rnd(0, Math.PI * 2), scale: s });
+}
 
 export const BUSHES: Inst[] = [];
 export const GRASS: Inst[] = [];
 export const ROCKS: InstC[] = [];
 // Negative space: open plazas around the center square, the residential yard,
 // the gate corridor, the spirit ring interior and the Ancient Tree clearing
-// keep the layout from reading as scattered filler.
-const OPEN: [number, number, number][] = [[0, -1, 8.5], [-12, -6.5, 5.5], [0, 12.5, 5], [2, 2, 6], [0, 31, 9.5], [-31, -28, 8], [-15, -10.5, 3.5], [15, -2.5, 7]];
+// keep the layout from reading as scattered filler. The lake ring keeps the
+// shoreline itself — curated stones + gems — as the only composition there.
+const OPEN: [number, number, number][] = [[0, -1, 8.5], [-12, -6.5, 5.5], [0, 12.5, 5], [2, 2, 6], [0, 31, 9.5], [-31, -28, 8], [-15, -10.5, 3.5], [15, -2.5, 7], [-29, 6, 10]];
 for (let i = 0; i < 55; i++) {
   const a = rng() * Math.PI * 2, r = 4 + Math.sqrt(rng()) * 30;
   const x = Math.cos(a) * r, z = Math.sin(a) * r;
@@ -174,8 +181,8 @@ for (let i = 0; i < 55; i++) {
 }
 
 export const FIREFLIES: [number, number, number][] = [];
-for (let i = 0; i < 70; i++) {
-  const aroundSpirit = i < 34;
+for (let i = 0; i < 60; i++) {
+  const aroundSpirit = i < 32;
   const cx = aroundSpirit ? 2 : PATH_SAMPLES[0][Math.floor(rng() * PATH_SAMPLES[0].length)][0];
   const cz = aroundSpirit ? 2 : PATH_SAMPLES[0][Math.floor(rng() * PATH_SAMPLES[0].length)][1];
   const p = disk(cx, cz, 0.5, aroundSpirit ? 6.5 : 3.5);
@@ -190,14 +197,19 @@ export const PROPS: Prop[] = [
   { file: '/models/props/post_lantern.gltf', pos: [5.6, 0, 13.6], rotY: 0, scale: 1, light: true },
   // Junction lantern guiding into the square
   { file: '/models/props/lantern.gltf', pos: [-2.2, 0, -2.5], rotY: 1.2, scale: 0.72, light: true },
-  // Spirit clearing: ring of stones + shrine facing the spirit
-  ...stoneRing(2, 2, 6.8, 9),
-  { file: '/models/env/shrine_green.gltf', pos: [7.5, 0, -8.5], rotY: Math.atan2(2 - -8.5, 2 - 7.5) + Math.PI / 2, scale: 1.5 },
-  // Lake shore dressing: rocks around the water (banner_blue removed — it floats)
-  { file: '/models/props/stone.gltf', pos: [-23.5, 0, 3], rotY: 0.6, scale: 1.1 },
-  { file: '/models/props/stone.gltf', pos: [-25.5, 0, 11.5], rotY: 2.4, scale: 0.85 },
-  { file: '/models/props/stone.gltf', pos: [-32, 0, 10.5], rotY: 1.3, scale: 1.3 },
-  { file: '/models/props/stone.gltf', pos: [-33, 0, 1.5], rotY: 0.2, scale: 1.0 },
+  // Spirit clearing: entry-gap ring facing the plaza (south opening), one
+  // asymmetric framing tree on the NW rim, shrine on the north edge facing
+  // the approach. The plaza bench at 2.8,3.8 is the single low accent; the
+  // rest of the ring interior stays empty negative space.
+  ...stoneArc(2, 2, 6.5, -Math.PI / 2 + 0.6, Math.PI * 1.5 - 0.6, 8, 0.7),
+  { file: '/models/env/Tree_1_A_Color1.gltf', pos: [-4.5, 0, 7.5], rotY: 0.6, scale: 1.4 },
+  { file: '/models/env/shrine_green.gltf', pos: [2, 0, 8], rotY: Math.PI, scale: 1.7 },
+  // Lake shore: curated rim arc — four varied stones sweeping west to north so
+  // the east approach stays open and reads as one deliberate shoreline line.
+  { file: '/models/props/stone.gltf', pos: [-36.5, 0, 4], rotY: 0.6, scale: 1.3 },
+  { file: '/models/props/stone.gltf', pos: [-36.8, 0, 8.2], rotY: 2.2, scale: 1 },
+  { file: '/models/props/stone.gltf', pos: [-34, 0, 11.8], rotY: 1.3, scale: 1.5 },
+  { file: '/models/props/stone.gltf', pos: [-31.2, 0, 13.6], rotY: -0.4, scale: 1.1 },
   // Ruins + grove path markers
   { file: '/models/props/stone.gltf', pos: [21, 0, 0.5], rotY: 1.7, scale: 0.8 },
   { file: '/models/props/stone.gltf', pos: [14, 0, -16.5], rotY: 0.4, scale: 0.7 },
@@ -253,30 +265,49 @@ PROPS.push(
   { file: '/models/props/torch_lit.gltf', pos: [-15.9, 0.45, -11.2], rotY: 0, scale: 1.2, light: true },
   { file: '/models/props/torch_lit.gltf', pos: [-14.2, 0.45, -11.5], rotY: 0, scale: 1.2, light: true },
   { file: '/models/props/post_lantern.gltf', pos: [-12, 0, -4.5], rotY: 0, scale: 1, light: true },
-  // Zone E: distant castle-adjacent watchtower silhouette (SW, off all routes)
-  { file: '/models/village/watchtower.gltf', pos: [-31, 0, -30], rotY: faceTo(-31, -30, 0, 0), scale: 6 },
 );
-
 // ---- Landmark dressing (feat/environment-polish) ----
-// Ruins at (31,5): broken dungeon walls + columns + a small graveyard behind.
+// Whispering Ruins (~31,5): a collapsed courtyard around the puzzle focal
+// stone. Hero sequence on the P6 approach: foreground south gateway you walk
+// through -> midground broken courtyard (walls, asymmetric columns, fallen
+// masonry) -> background arched-window silhouette behind it. Heights step
+// down: gate 6u > pillar 5.8 > walls ~5.2 > column 2.8 > low rubble.
 PROPS.push(
-  { file: '/models/env/wall_broken.gltf', pos: [27, 0, -1.5], rotY: 0.4, scale: 1 },
-  { file: '/models/env/wall_broken.gltf', pos: [35.5, 0, 1.5], rotY: 2.2, scale: 1 },
-  { file: '/models/env/wall_archedwindow_open.gltf', pos: [31, 0, 11], rotY: 0, scale: 1 },
-  { file: '/models/env/column.gltf', pos: [29, 0, 2], rotY: 0.3, scale: 2 },
-  { file: '/models/env/column.gltf', pos: [34, 0, 7.5], rotY: 1.1, scale: 2 },
-  { file: '/models/env/rubble_large.gltf', pos: [36.5, 0, 8.5], rotY: 0.7, scale: 0.7 },
-  { file: '/models/props/gravestone.gltf', pos: [28, 0, 1.4], rotY: 0.15, scale: 0.8 },
-  { file: '/models/props/gravestone.gltf', pos: [29.6, 0, 0.8], rotY: -0.1, scale: 0.8 },
-  { file: '/models/props/gravestone.gltf', pos: [31.2, 0, 1.2], rotY: 0.25, scale: 0.8 },
-  { file: '/models/props/grave_a.gltf', pos: [33.2, 0, 0.6], rotY: -0.2, scale: 0.8 },
-  { file: '/models/props/post_skull.gltf', pos: [34.6, 0, 11.2], rotY: 0.5, scale: 1 },
-  // Ancient Tree clearing: grand ritual site — wide stone ring + inner arc
-  // behind the tree, mirrored column pairs, and amber lanterns at the rim.
-  // (The tree model itself lives in Regions.tsx at (0,34) scale 4.2; trunk
-  // collider via ANCIENT_TREE in VillageScenery's EnvColliders.)
-  ...stoneRing(0, 31, 9.5, 14),
-  ...stoneArc(0, 31, 5.5, 0.2 * Math.PI, 0.8 * Math.PI, 5, 0.65),
+  // Foreground gateway: walk THROUGH the carved opening (piers only collide).
+  { file: '/models/env/wall_gated.gltf', pos: [30, 0, 1.6], rotY: 0, scale: 1.5 },
+  // One amber flame on the gate pier; everything else reads teal + dusk.
+  { file: '/models/props/torch_lit.gltf', pos: [32.35, 0.45, 1.6], rotY: 0, scale: 1.1, light: true },
+  // Midground: L of broken walls, unequal scales/rotations, east side open
+  // to the approach so the courtyard reads as one broken space.
+  { file: '/models/env/wall_broken.gltf', pos: [33.2, 0, 9.2], rotY: -0.12, scale: 1.2 },
+  { file: '/models/env/wall_broken.gltf', pos: [36.9, 0, 4.4], rotY: 1.45, scale: 1.05 },
+  // Asymmetric columns: mid-height broken stub beside the focal stone,
+  // taller background pillar at the NE corner (not twins).
+  { file: '/models/env/column.gltf', pos: [33.6, 0, 4.2], rotY: 0.6, scale: 2 },
+  { file: '/models/env/pillar.gltf', pos: [37.4, 0, 8.6], rotY: 0.4, scale: 1.45 },
+  // Background silhouette: open arch framing the sky behind the courtyard.
+  { file: '/models/env/wall_archedwindow_open.gltf', pos: [26.3, 0, 11.8], rotY: 0.15, scale: 1.4 },
+  // Fallen masonry lying at angles between the stones.
+  { file: '/models/env/rubble_large.gltf', pos: [33.9, 0, 2.6], rotY: 0.9, scale: 0.6 },
+  { file: '/models/env/rubble_large.gltf', pos: [27.6, 0, 4.3], rotY: -0.5, scale: 0.45 },
+  { file: '/models/env/rubble_large.gltf', pos: [30.9, 0, 8.9], rotY: 2.4, scale: 0.7 },
+  // Dead grass + scattered footing stones between the masonry (walk-over).
+  { file: '/models/env/Grass_2_A_Color1.gltf', pos: [28.8, 0, 7.3], rotY: 0.3, scale: 0.9 },
+  { file: '/models/env/Grass_2_A_Color1.gltf', pos: [35.0, 0, 3.0], rotY: 1.8, scale: 0.7 },
+  { file: '/models/props/stone.gltf', pos: [29.2, 0, 2.8], rotY: 1.1, scale: 0.6 },
+  { file: '/models/props/stone.gltf', pos: [31.6, 0, 6.6], rotY: 0.4, scale: 0.5 },
+  { file: '/models/props/stone.gltf', pos: [34.6, 0, 3.4], rotY: 2.2, scale: 0.7 },
+  // Small graveyard cluster in the NE corner: three stones, varied tilt and
+  // size, bunched together — never a row.
+  { file: '/models/props/gravestone.gltf', pos: [36.2, 0, 2.2], rotY: 0.35, scale: 0.9 },
+  { file: '/models/props/gravestone.gltf', pos: [37.1, 0, 2.9], rotY: -0.5, scale: 0.65 },
+  { file: '/models/props/grave_a.gltf', pos: [36.6, 0, 1.2], rotY: 1.2, scale: 0.8 },
+  { file: '/models/props/post_skull.gltf', pos: [37.6, 0, 6.0], rotY: 0.6, scale: 1 },
+  // Ancient Tree clearing: grand ritual site. Calm outer ring with a wide
+  // south gap for the plaza approach (P7 runs x~0 from z~27), quiet inner
+  // arc behind the tree, two column pairs only, rubble kept outside the ring.
+  ...stoneArc(0, 31, 9.5, -Math.PI / 2 + 0.55, Math.PI * 1.5 - 0.55, 10, 0.7),
+  ...stoneArc(0, 31, 5.2, 0.25 * Math.PI, 0.75 * Math.PI, 4, 0.6),
   { file: '/models/env/column.gltf', pos: [-2.6, 0, 27], rotY: 0, scale: 2 },
   { file: '/models/env/column.gltf', pos: [2.6, 0, 27], rotY: 0, scale: 2 },
   { file: '/models/env/column.gltf', pos: [-6.2, 0, 37.5], rotY: 0.3, scale: 2 },
@@ -285,13 +316,11 @@ PROPS.push(
   { file: '/models/env/rubble_large.gltf', pos: [10, 0, 36], rotY: 0.9, scale: 0.6 },
   { file: '/models/props/post_lantern.gltf', pos: [-6.7, 0, 24.3], rotY: 0.7, scale: 1, light: true },
   { file: '/models/props/post_lantern.gltf', pos: [6.7, 0, 24.3], rotY: -0.7, scale: 1, light: true },
-  { file: '/models/props/post_lantern.gltf', pos: [-6.7, 0, 37.7], rotY: 2.4, scale: 1, light: true },
-  { file: '/models/props/post_lantern.gltf', pos: [6.7, 0, 37.7], rotY: -2.4, scale: 1, light: true },
-  // Lake shore gem cluster (echoes the underwater reward)
-  { file: '/models/props/Gem_Large.gltf', pos: [-24.2, 0, 10.6], rotY: 0.4, scale: 2.4 },
-  { file: '/models/props/Gem_Large.gltf', pos: [-23.4, 0, 11.4], rotY: -0.7, scale: 1.8 },
-  { file: '/models/props/Gem_Large.gltf', pos: [-24.9, 0, 11.6], rotY: 1.9, scale: 1.4 },
-  { file: '/models/props/Gem_Medium.gltf', pos: [-23.9, 0, 12.2], rotY: 0.2, scale: 1.6 },
+  // Lake crystal focal: one height-stepped cluster on the NE rim — tall
+  // center, low sides — visible from the east approach, nothing scattered elsewhere.
+  { file: '/models/props/Gem_Large.gltf', pos: [-24.6, 0, 11], rotY: 0.4, scale: 2.4 },
+  { file: '/models/props/Gem_Large.gltf', pos: [-23.8, 0, 11.7], rotY: -0.7, scale: 1.4 },
+  { file: '/models/props/Gem_Medium.gltf', pos: [-25.2, 0, 11.9], rotY: 1.9, scale: 1.2 },
 );
 
 
@@ -336,7 +365,7 @@ export const NO_COLLIDE: Record<string, true> = {
   '/models/props/torch_lit.gltf': true,
 };
 /** Ancient Tree at (0,31): rendered by Regions.tsx (Tree_1_C_Color1); trunk collider derives from this. */
-export const ANCIENT_TREE = { x: 0, z: 34, r: 0.32 * 4.2, h: 7.4 * 4.2 }; // pos/scale mirrored from Regions.tsx
+export const ANCIENT_TREE = { x: 0, z: 34, r: 0.32 * 4.8, h: 7.4 * 4.8 }; // pos/scale mirrored from Regions.tsx
 
 /** (Fences dropped with the residential rebuild: the yard reads open.) */
 export const FENCES: Inst[] = [];
@@ -358,25 +387,61 @@ for (const p of PROPS) {
 
 /** Lake flora: lily pads on the water, reeds along the shore. */
 export const LILIES: Inst[] = [];
-for (let i = 0; i < 14; i++) {
-  const p = disk(-29, 6, 0.5, 5.5);
+// Lilies hug the inner ring (rMin keeps the open water center empty); capped count.
+for (let i = 0; i < 8; i++) {
+  const p = disk(-29, 6, 3, 6);
   if (p) LILIES.push({ pos: [p[0], 0.03, p[1]], rotY: rnd(0, Math.PI * 2), scale: rnd(6, 10) });
 }
 export const WATERPLANTS: Inst[] = [];
-for (let i = 0; i < 18; i++) {
+for (let i = 0; i < 12; i++) {
   const a = rng() * Math.PI * 2, r = rnd(6.9, 8.4);
   const x = -29 + Math.cos(a) * r * 1.1, z = 6 + Math.sin(a) * r;
   if (distToPaths(x, z) < 2) continue;
   WATERPLANTS.push({ pos: [x, 0.02, z], rotY: rnd(0, Math.PI * 2), scale: rnd(6, 9) });
 }
 
-/** Glowing grove: mushroom caps ringed around the spirit_path POI (teal tint). */
+/** Mushroom Grove: DENSE + strange — a Tree_2/Tree_3 enclosure ring and an
+ * S-curving corridor of paired trunks flank the winding P5 approach (offset
+ * ~1.9u from the walking line, alternating sides so the trail reads as it
+ * snakes), mid bushes close the middle layer, and a stacked hero cluster of
+ * tallest caps anchors the clearing center. */
+const groveTree = (x: number, z: number, kind: Tree['kind'], s: number) =>
+  TREES.push({ pos: [x, 0, z], rotY: rnd(0, Math.PI * 2), scale: (s * 2.3) / treeNorm[kind], kind, collider: Math.hypot(x, z) < 32, shadow: true });
+// corridor pairs: outer row then inner bow of the S
+for (const [x, z, k] of [[22.9, -17.8, 3], [21.0, -22.4, 4], [25.1, -18.9, 4], [24.4, -23.4, 3], [27.0, -19.5, 3], [26.6, -23.9, 4]] as const) {
+  groveTree(x, z, k, rnd(1.2, 1.7));
+}
+// enclosure ring: taller at the rim, gaps where P5 threads in
+for (let i = 0; i < 12; i++) {
+  const a = (i / 12) * Math.PI * 2 + rnd(-0.15, 0.15);
+  const r = rnd(6.5, 9);
+  const x = 28 + Math.cos(a) * r * 1.15, z = -22 + Math.sin(a) * r;
+  if (!keepClear(x, z, 1.9, 0.6)) continue;
+  groveTree(x, z, i % 2 === 0 ? 3 : 4, rnd(1.2, 1.8));
+}
+// mid-layer bushes between ring and clearing (walk-over)
+for (let i = 0; i < 7; i++) {
+  const a = (i / 7) * Math.PI * 2 + rnd(-0.18, 0.18);
+  const r = rnd(4.8, 6.2);
+  const x = 28 + Math.cos(a) * r, z = -22 + Math.sin(a) * r;
+  if (!keepClear(x, z, 1.6, 0.4)) continue;
+  BUSHES.push({ pos: [x, 0, z], rotY: rnd(0, Math.PI * 2), scale: rnd(2.0, 2.9) });
+}
+// background silhouettes behind the clearing
+for (const [x, z, s] of [[29.6, -24.4, 1.5], [31.3, -23.2, 1.2], [28.2, -25.6, 1.35]] as const) {
+  BARE_TREES.push({ pos: [x, 0, z], rotY: rnd(0, Math.PI * 2), scale: s });
+}
+/** Glowing grove: hero stack of tall caps at the clearing center, brightest
+ * tint, ring scatter stepping down/out from it. */
 export const MUSHROOMS: InstC[] = [];
+for (const [x, z, s, t] of [[28, -22, 3, 0.8], [28.9, -21.5, 2.2, 0.68], [27.2, -22.5, 1.7, 0.58], [28.4, -22.9, 2.4, 0.75]] as const) {
+  MUSHROOMS.push({ pos: [x, 0, z], rotY: rnd(0, Math.PI * 2), scale: s, tint: t });
+}
 for (const [cx, cz, n, r0, r1] of [[28, -22, 10, 5, 8], [25.5, -18.5, 4, 1.2, 2.5], [31, -25, 5, 2, 4]] as const) {
   for (let i = 0; i < n; i++) {
     const p = disk(cx, cz, r0, r1);
     if (!p || !keepClear(p[0], p[1], 1.2, 0.8)) continue;
-    MUSHROOMS.push({ pos: [p[0], 0, p[1]], rotY: rnd(0, Math.PI * 2), scale: rnd(1.1, 2.1), tint: rnd(0.5, 0.8) });
+    MUSHROOMS.push({ pos: [p[0], 0, p[1]], rotY: rnd(0, Math.PI * 2), scale: rnd(1.0, 2.2), tint: rnd(0.5, 0.8) });
   }
 }
 

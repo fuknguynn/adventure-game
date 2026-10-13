@@ -13,7 +13,8 @@ export function Regions() {
   const lakeDone = solvedPuzzles.includes('rune_sequence');
   const ruinsDone = solvedPuzzles.includes('light_reflection');
 
-  const gems: Array<[number, number, number, number]> = [[-28, 0, 4, lakeDone ? 1.6 : 0.7], [-30, 0, 8, lakeDone ? 1.6 : 0.7], [30, 0, -24, groveDone ? 1.8 : 0.8]];
+  // grove accent gem sits right above the hero mushroom cluster so its glow reads on the caps
+  const gems: Array<[number, number, number, number]> = [[-28, 0, 4, lakeDone ? 1.6 : 0.7], [-30, 0, 8, lakeDone ? 1.6 : 0.7], [28.3, 0, -22.1, groveDone ? 1.8 : 0.8]];
 
   return (
     <group>
@@ -35,6 +36,8 @@ export function Regions() {
         <circleGeometry args={[7, 36]} />
         <meshStandardMaterial color={lakeDone ? '#5fd4e8' : '#27718a'} transparent opacity={0.9} emissive={lakeDone ? '#2fb9d4' : '#0a2f3c'} emissiveIntensity={lakeDone ? 0.9 : 0.3} />
       </mesh>
+      {/* faint teal wash over the NE crystal focal; small radius, static */}
+      <pointLight color="#3fd6e0" intensity={4} distance={7} decay={2} position={[-24.5, 2.2, 11.3]} />
       {/* instanced scatter + ground treatment + colliders */}
       <VillageScenery />
       {/* individual props (storytelling + landmarks) */}
@@ -54,10 +57,30 @@ export function Regions() {
       ))}
       {/* ruins puzzle focal stone (grows when light_reflection solved) */}
       <KayKitModel url="/models/props/stone.gltf" position={[30, 0, 5]} scale={ruinsDone ? 1.4 : 1} />
-      {/* ancient tree: grand verified tree + shrine + light */}
-      <KayKitModel url="/models/env/Tree_1_C_Color1.gltf" position={[0, 0, 34]} scale={4.2} colorize={FOLIAGE_TINT} />
+      {/* Whispering Ruins atmosphere: dead-dry ground pad, two low teal
+          pools, and stacked translucent discs faking heavier local haze —
+          fog itself is scene-global so it stays untouched. */}
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[31, 0.012, 4.6]}>
+        <circleGeometry args={[8, 32]} />
+        <meshStandardMaterial color="#4a544b" />
+      </mesh>
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[31, 0.9, 4.6]}>
+        <circleGeometry args={[6.5, 28]} />
+        <meshBasicMaterial color="#5fd4e8" transparent opacity={0.05} depthWrite={false} />
+      </mesh>
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[31.5, 1.7, 5.2]}>
+        <circleGeometry args={[4.5, 24]} />
+        <meshBasicMaterial color="#5fd4e8" transparent opacity={0.05} depthWrite={false} />
+      </mesh>
+      <pointLight color="#5fd4e8" intensity={4} distance={8} decay={2} position={[29.6, 1.6, 4.6]} />
+      <pointLight color="#4fbfd8" intensity={3} distance={7} decay={2} position={[33.4, 2.2, 7.4]} />
+      {/* ancient tree: hero of the world — biggest, brightest thing from the
+          plaza. One concentrated light pool, teal before the restore. */}
+      <KayKitModel url="/models/env/Tree_1_C_Color1.gltf" position={[0, 0, 34]} scale={4.8} colorize={FOLIAGE_TINT} />
       <KayKitModel url="/models/env/shrine_green.gltf" position={[0, 0, 30]} scale={2.2} />
-      <pointLight color={worldRestored ? '#ffe9a8' : '#9ff5e8'} intensity={worldRestored ? 30 : 10} distance={22} decay={2} position={[0, 5, 32]} />
+      <pointLight color={worldRestored ? '#ffe9a8' : '#9ff5e8'} intensity={worldRestored ? 36 : 14} distance={22} decay={2} position={[0, 5, 32]} />
+      {/* spirit clearing: one teal pool on the north-edge shrine */}
+      <pointLight color="#5fd4e8" intensity={10} distance={10} decay={2} position={[2, 1.6, 6.5]} />
       <FirefliesPoints restored={worldRestored} />
     </group>
   );
