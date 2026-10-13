@@ -161,7 +161,7 @@ export const ROCKS: InstC[] = [];
 // Negative space: open plazas around the center square, the residential yard,
 // the gate corridor, the spirit ring interior and the Ancient Tree clearing
 // keep the layout from reading as scattered filler.
-const OPEN: [number, number, number][] = [[0, -1, 8.5], [-12, -6.5, 5.5], [0, 12.5, 5], [2, 2, 6], [0, 31, 9.5], [-31, -28, 8], [-15, -10.5, 3.5], [14, -2, 7]];
+const OPEN: [number, number, number][] = [[0, -1, 8.5], [-12, -6.5, 5.5], [0, 12.5, 5], [2, 2, 6], [0, 31, 9.5], [-31, -28, 8], [-15, -10.5, 3.5], [15, -2.5, 7]];
 for (let i = 0; i < 55; i++) {
   const a = rng() * Math.PI * 2, r = 4 + Math.sqrt(rng()) * 30;
   const x = Math.cos(a) * r, z = Math.sin(a) * r;
@@ -221,28 +221,27 @@ PROPS.push(
   { file: '/models/props/sign_right.gltf', pos: [2.6, 0, -3.6], rotY: faceTo(2.6, -3.6, 9, -14), scale: 1 },
   { file: '/models/props/sign_left.gltf', pos: [-4.6, 0, -1.6], rotY: faceTo(-4.6, -1.6, -15, 3), scale: 1 },
   { file: '/models/props/sign_right.gltf', pos: [-3.6, 0, 9.6], rotY: faceTo(-3.6, 9.6, 0, 31), scale: 1 },
-  { file: '/models/props/sign_right.gltf', pos: [6.5, 0, -3.2], rotY: faceTo(6.5, -3.2, 13, -2), scale: 1 },
+  { file: '/models/props/sign_right.gltf', pos: [6.5, 0, -3.2], rotY: faceTo(6.5, -3.2, 14, -3), scale: 1 },
   // Plaza lamps (drive LAMP_LIGHTS): one plaza edge + one market-side
   { file: '/models/props/post_lantern.gltf', pos: [-6, 0, -3], rotY: -0.6, scale: 1, light: true },
   { file: '/models/props/post_lantern.gltf', pos: [-2.5, 0, 8.5], rotY: 0.8, scale: 1, light: true },
-  // Zone C market: ONE focal stall facing the plaza + ONE secondary tent
-  // vendor across a deliberately empty trading pocket. All goods live in
-  // two compact clusters at the pocket's edges — nothing in the middle.
-  // Barrel/chest are center-origin assets: y offset lifts them onto ground.
-  { file: '/models/village/market.gltf', pos: [14.5, 0, 2.5], rotY: faceTo(14.5, 2.5, 0, -1), scale: 4.5 },
-  { file: '/models/village/tent.gltf', pos: [17.5, 0, -8.5], rotY: faceTo(17.5, -8.5, 14.5, -3), scale: 6 },
+  // Zone C market: ONE hero stall facing the plaza + ONE tent vendor at the
+  // far end of a deliberately empty trading pocket. Goods sit in two small
+  // clusters at the pocket edges with visible gaps between items — never a
+  // heap. Barrel/chest are center-origin assets: y offset lifts them onto
+  // the ground.
+  { file: '/models/village/market.gltf', pos: [16, 0, 2.5], rotY: faceTo(16, 2.5, 0, -1), scale: 5 },
+  { file: '/models/village/tent.gltf', pos: [19, 0, -9.5], rotY: faceTo(19, -9.5, 14.5, -3), scale: 6.5 },
   // Pocket SE corner lamp (drives LAMP_LIGHTS)
-  { file: '/models/props/post_lantern.gltf', pos: [19.6, 0, -2.5], rotY: 0, scale: 1, light: true },
-  // Display cluster — goods staged in front of the main stall counter
-  { file: '/models/props/crate_open.gltf', pos: [15.6, 0, -2.9], rotY: 0.5, scale: 4.5 },
-  { file: '/models/props/crate_open.gltf', pos: [16.4, 0, -2.5], rotY: -0.9, scale: 4 },
-  { file: '/models/props/chest.gltf', pos: [14.8, 0.84, -2.8], rotY: -0.7, scale: 0.8 },
-  { file: '/models/props/barrel.gltf', pos: [17.1, 0.7, -3.1], rotY: 0.2, scale: 0.7 },
-  { file: '/models/props/sack.gltf', pos: [15.2, 0, -3.5], rotY: 2.9, scale: 10 },
-  // Store cluster — NW pocket mouth, beside the plaza road
-  { file: '/models/props/crate_open.gltf', pos: [11.6, 0, -2.6], rotY: -0.6, scale: 4.5 },
-  { file: '/models/props/barrel.gltf', pos: [10.9, 0.7, -3.1], rotY: 0.4, scale: 0.7 },
-  { file: '/models/props/sack.gltf', pos: [12.1, 0, -3.1], rotY: 1.6, scale: 10 },
+  { file: '/models/props/post_lantern.gltf', pos: [20.6, 0, -3.6], rotY: 0, scale: 1, light: true },
+  // Display row — evenly bays along the stall front, clear gaps between items
+  { file: '/models/props/crate_open.gltf', pos: [13.4, 0, -3.3], rotY: 0.5, scale: 4 },
+  { file: '/models/props/chest.gltf', pos: [15.6, 0.84, -3.2], rotY: -0.7, scale: 0.8 },
+  { file: '/models/props/barrel.gltf', pos: [17.4, 0.7, -3.3], rotY: 0.2, scale: 0.7 },
+  // Pocket mouth pair beside the plaza road + one sack anchoring the tent side
+  { file: '/models/props/crate_open.gltf', pos: [12, 0, -2.6], rotY: -0.6, scale: 4 },
+  { file: '/models/props/barrel.gltf', pos: [10.6, 0.7, -3], rotY: 0.4, scale: 0.7 },
+  { file: '/models/props/sack.gltf', pos: [17.8, 0, -6.2], rotY: 2.9, scale: 10 },
   // Zone D residential: 3 houses N/S/W of the courtyard; the east side is
   // left open to the plaza (P3 enters the yard from the market road).
   { file: '/models/village/home_a.gltf', pos: [-19.5, 0, -1.5], rotY: faceTo(-19.5, -1.5, ...COURT), scale: 7 },

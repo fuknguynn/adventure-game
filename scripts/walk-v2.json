@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-09T23:41:36.410Z",
+  "generatedAt": "2026-10-13T08:30:24.596Z",
   "base": "http://localhost:5174/",
   "legTimeoutS": 20,
   "thresholds": {
@@ -31,23 +31,23 @@
       ],
       "end_xy": [
         0,
-        12.18
+        12.16
       ],
       "goal_dist_m": 6.5,
       "reached": true,
-      "end_dist": 0.32,
-      "traveled": 6.18,
-      "max_disp": 6.18,
-      "elapsed": 7,
-      "progress3": 2.32,
+      "end_dist": 0.34,
+      "traveled": 6.16,
+      "max_disp": 6.16,
+      "elapsed": 6.7,
+      "progress3": 3.32,
       "stuckY": false,
       "wall": false,
       "fell": false,
       "min_y": 0.9,
-      "fps_est": 3.3,
+      "fps_est": 3.4,
       "block_xy": [
         0,
-        11.51
+        11.16
       ]
     },
     {
@@ -71,23 +71,23 @@
       ],
       "end_xy": [
         0,
-        -0.56
+        -0.64
       ],
       "goal_dist_m": 13.5,
       "reached": true,
-      "end_dist": 0.44,
-      "traveled": 13.06,
-      "max_disp": 13.06,
-      "elapsed": 14.2,
-      "progress3": 1.79,
+      "end_dist": 0.36,
+      "traveled": 13.14,
+      "max_disp": 13.14,
+      "elapsed": 12.8,
+      "progress3": 2.53,
       "stuckY": false,
       "wall": false,
       "fell": false,
       "min_y": 0.9,
-      "fps_est": 3.1,
+      "fps_est": 3.4,
       "block_xy": [
         0,
-        0.1
+        0.02
       ]
     },
     {
@@ -110,21 +110,21 @@
         -1
       ],
       "end_xy": [
-        12.6,
+        12.59,
         -3.91
       ],
       "goal_dist_m": 13.34,
       "reached": true,
-      "end_dist": 0.41,
-      "traveled": 12.93,
-      "max_disp": 12.93,
-      "elapsed": 12.4,
-      "progress3": 3.32,
+      "end_dist": 0.42,
+      "traveled": 12.92,
+      "max_disp": 12.92,
+      "elapsed": 10,
+      "progress3": 3.65,
       "stuckY": false,
       "wall": false,
       "fell": false,
       "min_y": 0.9,
-      "fps_est": 3.4,
+      "fps_est": 4.2,
       "block_xy": [
         11.95,
         -3.76
@@ -158,13 +158,13 @@
       "end_dist": 0.56,
       "traveled": 1.99,
       "max_disp": 1.99,
-      "elapsed": 2.3,
+      "elapsed": 1.9,
       "progress3": null,
       "stuckY": false,
       "wall": false,
       "fell": false,
       "min_y": 0.9,
-      "fps_est": 3.9,
+      "fps_est": 4.7,
       "block_xy": [
         14.3,
         -4.26
@@ -179,8 +179,8 @@
         -4.5
       ],
       "to_xy": [
-        17.5,
-        -6
+        17.2,
+        -6.8
       ],
       "dir": "diagonal",
       "sprint": false,
@@ -190,24 +190,24 @@
         -4.5
       ],
       "end_xy": [
-        17.09,
-        -5.69
+        16.88,
+        -6.37
       ],
-      "goal_dist_m": 2.5,
+      "goal_dist_m": 2.86,
       "reached": true,
-      "end_dist": 0.51,
-      "traveled": 1.99,
-      "max_disp": 1.99,
-      "elapsed": 2,
+      "end_dist": 0.54,
+      "traveled": 2.32,
+      "max_disp": 2.32,
+      "elapsed": 2.2,
       "progress3": null,
       "stuckY": false,
       "wall": false,
       "fell": false,
       "min_y": 0.9,
-      "fps_est": 4.5,
+      "fps_est": 4.6,
       "block_xy": [
-        16.56,
-        -5.3
+        16.49,
+        -5.83
       ]
     },
     {
@@ -215,8 +215,8 @@
       "from": "tent-front",
       "to": "market-circle",
       "from_xy": [
-        17.5,
-        -6
+        17.2,
+        -6.8
       ],
       "to_xy": [
         9,
@@ -226,28 +226,28 @@
       "sprint": false,
       "spawn_settled_y": 0.9,
       "start_xy": [
-        17.5,
-        -6
+        17.2,
+        -6.8
       ],
       "end_xy": [
-        9.56,
-        -6.47
+        9.58,
+        -6.52
       ],
-      "goal_dist_m": 8.51,
+      "goal_dist_m": 8.21,
       "reached": true,
-      "end_dist": 0.56,
-      "traveled": 7.96,
-      "max_disp": 7.96,
-      "elapsed": 6.3,
-      "progress3": 3.65,
+      "end_dist": 0.58,
+      "traveled": 7.62,
+      "max_disp": 7.62,
+      "elapsed": 5.4,
+      "progress3": 4.31,
       "stuckY": false,
       "wall": false,
       "fell": false,
       "min_y": 0.9,
-      "fps_est": 4.3,
+      "fps_est": 4.8,
       "block_xy": [
-        10.22,
-        -6.43
+        10.24,
+        -6.55
       ]
     },
     {
@@ -278,13 +278,13 @@
       "end_dist": 0.4,
       "traveled": 10.61,
       "max_disp": 10.61,
-      "elapsed": 8.7,
-      "progress3": 2.98,
+      "elapsed": 7.7,
+      "progress3": 4.31,
       "stuckY": false,
       "wall": false,
       "fell": false,
       "min_y": 0.9,
-      "fps_est": 4,
+      "fps_est": 4.6,
       "block_xy": [
         -0.94,
         -6.05
@@ -310,23 +310,23 @@
         -6
       ],
       "end_xy": [
-        -11.62,
+        -11.6,
         -6
       ],
       "goal_dist_m": 10,
       "reached": true,
-      "end_dist": 0.38,
-      "traveled": 9.62,
-      "max_disp": 9.62,
-      "elapsed": 7.2,
+      "end_dist": 0.4,
+      "traveled": 9.6,
+      "max_disp": 9.6,
+      "elapsed": 6.7,
       "progress3": 3.98,
       "stuckY": false,
       "wall": false,
       "fell": false,
       "min_y": 0.9,
-      "fps_est": 4.5,
+      "fps_est": 4.7,
       "block_xy": [
-        -10.95,
+        -10.94,
         -6
       ]
     },
@@ -350,24 +350,24 @@
         -6
       ],
       "end_xy": [
-        -12.84,
-        -8.51
+        -12.83,
+        -8.5
       ],
       "goal_dist_m": 3.16,
       "reached": true,
-      "end_dist": 0.51,
-      "traveled": 2.65,
-      "max_disp": 2.65,
-      "elapsed": 2.3,
+      "end_dist": 0.52,
+      "traveled": 2.64,
+      "max_disp": 2.64,
+      "elapsed": 1.9,
       "progress3": null,
       "stuckY": false,
       "wall": false,
       "fell": false,
       "min_y": 0.9,
-      "fps_est": 4.8,
+      "fps_est": 5.9,
       "block_xy": [
         -12.63,
-        -7.89
+        -7.88
       ]
     },
     {
@@ -390,23 +390,23 @@
         -9
       ],
       "end_xy": [
-        -20.11,
-        -10.42
+        -20.06,
+        -10.41
       ],
       "goal_dist_m": 7.65,
       "reached": true,
-      "end_dist": 0.39,
-      "traveled": 7.25,
-      "max_disp": 7.25,
-      "elapsed": 5,
-      "progress3": 3.97,
+      "end_dist": 0.45,
+      "traveled": 7.2,
+      "max_disp": 7.2,
+      "elapsed": 4.3,
+      "progress3": 4.92,
       "stuckY": false,
       "wall": false,
       "fell": false,
       "min_y": 0.9,
-      "fps_est": 5,
+      "fps_est": 5.8,
       "block_xy": [
-        -19.47,
+        -19.43,
         -10.29
       ]
     },
@@ -430,24 +430,24 @@
         -10.5
       ],
       "end_xy": [
-        -19.54,
-        -19.62
+        -19.55,
+        -19.54
       ],
       "goal_dist_m": 9.55,
       "reached": true,
-      "end_dist": 0.38,
-      "traveled": 9.17,
-      "max_disp": 9.17,
-      "elapsed": 7.5,
-      "progress3": 3.96,
+      "end_dist": 0.46,
+      "traveled": 9.09,
+      "max_disp": 9.09,
+      "elapsed": 5.1,
+      "progress3": 5.19,
       "stuckY": false,
       "wall": false,
       "fell": false,
       "min_y": 0.9,
-      "fps_est": 4.1,
+      "fps_est": 6,
       "block_xy": [
-        -19.61,
-        -18.96
+        -19.62,
+        -18.91
       ]
     },
     {
@@ -470,24 +470,24 @@
         -20
       ],
       "end_xy": [
-        -24.17,
-        -24.2
+        -24.25,
+        -24.28
       ],
       "goal_dist_m": 6.73,
       "reached": true,
-      "end_dist": 0.45,
-      "traveled": 6.28,
-      "max_disp": 6.28,
-      "elapsed": 3.9,
-      "progress3": 4.19,
+      "end_dist": 0.33,
+      "traveled": 6.39,
+      "max_disp": 6.39,
+      "elapsed": 3.2,
+      "progress3": 6.11,
       "stuckY": false,
       "wall": false,
       "fell": false,
       "min_y": 0.9,
-      "fps_est": 5.9,
+      "fps_est": 7.6,
       "block_xy": [
-        -23.73,
-        -23.8
+        -23.82,
+        -23.89
       ]
     },
     {
@@ -510,24 +510,24 @@
         -24.5
       ],
       "end_xy": [
-        -21.24,
-        -21.71
+        -21.38,
+        -21.82
       ],
       "goal_dist_m": 4.61,
       "reached": true,
-      "end_dist": 0.32,
-      "traveled": 4.29,
-      "max_disp": 4.29,
-      "elapsed": 2.3,
+      "end_dist": 0.5,
+      "traveled": 4.11,
+      "max_disp": 4.11,
+      "elapsed": 2,
       "progress3": null,
       "stuckY": false,
       "wall": false,
       "fell": false,
       "min_y": 0.9,
-      "fps_est": 7.4,
+      "fps_est": 8.4,
       "block_xy": [
-        -21.7,
-        -22.1
+        -21.81,
+        -22.2
       ]
     },
     {
@@ -550,24 +550,24 @@
         -21.5
       ],
       "end_xy": [
-        -17.64,
-        -13.33
+        -17.7,
+        -13.49
       ],
       "goal_dist_m": 9.19,
       "reached": true,
-      "end_dist": 0.35,
-      "traveled": 8.84,
-      "max_disp": 8.84,
-      "elapsed": 5.6,
-      "progress3": 4.58,
+      "end_dist": 0.53,
+      "traveled": 8.66,
+      "max_disp": 8.66,
+      "elapsed": 4.7,
+      "progress3": 5.74,
       "stuckY": false,
       "wall": false,
       "fell": false,
       "min_y": 0.9,
-      "fps_est": 5.3,
+      "fps_est": 6.4,
       "block_xy": [
-        -17.89,
-        -13.94
+        -17.95,
+        -14.1
       ]
     },
     {
@@ -590,24 +590,24 @@
         -13
       ],
       "end_xy": [
-        -22.33,
-        -5.27
+        -22.35,
+        -5.23
       ],
       "goal_dist_m": 9.43,
       "reached": true,
-      "end_dist": 0.32,
-      "traveled": 9.11,
-      "max_disp": 9.11,
-      "elapsed": 6.8,
-      "progress3": 3.83,
+      "end_dist": 0.27,
+      "traveled": 9.16,
+      "max_disp": 9.16,
+      "elapsed": 5.3,
+      "progress3": 5.53,
       "stuckY": false,
       "wall": false,
       "fell": false,
       "min_y": 0.9,
-      "fps_est": 4.6,
+      "fps_est": 5.8,
       "block_xy": [
-        -21.98,
-        -5.84
+        -22,
+        -5.79
       ]
     },
     {
@@ -630,24 +630,24 @@
         -5
       ],
       "end_xy": [
-        -25.92,
-        4.69
+        -25.91,
+        4.65
       ],
       "goal_dist_m": 10.59,
       "reached": true,
-      "end_dist": 0.32,
-      "traveled": 10.5,
-      "max_disp": 10.28,
-      "elapsed": 11.6,
-      "progress3": 2.43,
+      "end_dist": 0.36,
+      "traveled": 10.46,
+      "max_disp": 10.24,
+      "elapsed": 9.3,
+      "progress3": 2.51,
       "stuckY": false,
       "wall": false,
       "fell": false,
       "min_y": 0.9,
-      "fps_est": 3.6,
+      "fps_est": 4.6,
       "block_xy": [
-        -25.75,
-        4.05
+        -25.74,
+        4.01
       ]
     },
     {
@@ -670,23 +670,23 @@
         5
       ],
       "end_xy": [
-        1.92,
+        1.91,
         2.01
       ],
       "goal_dist_m": 28.16,
       "reached": true,
-      "end_dist": 0.08,
-      "traveled": 28.08,
-      "max_disp": 28.08,
-      "elapsed": 10.9,
-      "progress3": 6.97,
+      "end_dist": 0.09,
+      "traveled": 28.07,
+      "max_disp": 28.07,
+      "elapsed": 10.5,
+      "progress3": 7.69,
       "stuckY": false,
       "wall": false,
       "fell": false,
       "min_y": 0.9,
-      "fps_est": 3.9,
+      "fps_est": 4.1,
       "block_xy": [
-        1.22,
+        1.21,
         2.08
       ]
     },
@@ -741,7 +741,7 @@
       ],
       "traveled": 0,
       "max_disp": 0,
-      "elapsed": 20.3,
+      "elapsed": 20.1,
       "leak": false,
       "min_y": 0.31,
       "result": "solid"
@@ -769,7 +769,7 @@
       ],
       "traveled": 0,
       "max_disp": 0,
-      "elapsed": 20.1,
+      "elapsed": 20,
       "leak": false,
       "min_y": 0.31,
       "result": "solid"
@@ -779,25 +779,25 @@
       "from": "inside-tent",
       "to": "escape",
       "from_xy": [
-        17.5,
-        -8.5
+        19,
+        -9.5
       ],
       "to_xy": [
-        17.5,
-        -5.5
+        19,
+        -7
       ],
       "spawn_settled_y": 0.33,
       "start_xy": [
-        17.5,
-        -8.5
+        19,
+        -9.5
       ],
       "end_xy": [
-        17.5,
-        -8.5
+        19,
+        -9.5
       ],
       "traveled": 0,
       "max_disp": 0,
-      "elapsed": 20.4,
+      "elapsed": 20.2,
       "leak": false,
       "min_y": 0.31,
       "result": "solid"

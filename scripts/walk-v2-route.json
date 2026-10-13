@@ -5,7 +5,7 @@
     { "x": 0, "z": -1, "label": "plaza" },
     { "x": 13, "z": -4, "label": "stall-front" },
     { "x": 15.5, "z": -4.5, "label": "pocket-center" },
-    { "x": 17.5, "z": -6, "label": "tent-front" },
+    { "x": 17.2, "z": -6.8, "label": "tent-front" },
     { "x": 9, "z": -6.5, "label": "market-circle" },
     { "x": -2, "z": -6, "label": "plaza-edge" },
     { "x": -12, "z": -6, "label": "courtyard" },
@@ -23,7 +23,7 @@
     { "x": -27, "z": -14, "label": "inside-barracks", "escape": [-17.5, -13] },
     { "x": -19.5, "z": -1.5, "label": "inside-home-a", "escape": [-12, -6] },
     { "x": -31, "z": -30, "label": "inside-tower", "escape": [-24.5, -24.5] },
-    { "x": 17.5, "z": -8.5, "label": "inside-tent", "escape": [17.5, -5.5] }
+    { "x": 19, "z": -9.5, "label": "inside-tent", "escape": [19, -7] }
   ],
   "orbit": { "x": 13, "z": -4 }
 }
