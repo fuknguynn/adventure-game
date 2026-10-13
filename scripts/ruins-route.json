@@ -10,7 +10,7 @@
     { "x": 30.8, "z": 5, "label": "beside-focal-stone" }
   ],
   "probes": [
-    { "label": "inside-archway", "x": 33.6, "z": 4.2, "escape": [33.6, -2] }
+    { "label": "inside-pillar", "x": 37.4, "z": 8.6, "escape": [37.4, 3] }
   ],
   "orbit": { "x": 31, "z": 5 }
 }
