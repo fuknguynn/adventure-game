@@ -1,0 +1,16 @@
+{
+  "waypoints": [
+    { "x": 0, "z": -1, "label": "plaza" },
+    { "x": 10.5, "z": 9, "label": "bend" },
+    { "x": 16, "z": 9.5, "label": "approach" },
+    { "x": 25, "z": 6, "label": "ruins-outside" },
+    { "x": 31, "z": 5, "label": "ruins-end" },
+    { "x": 30, "z": -0.6, "label": "gate-front" },
+    { "x": 30.4, "z": 3.5, "label": "through-gate" },
+    { "x": 30.8, "z": 5, "label": "beside-focal-stone" }
+  ],
+  "probes": [
+    { "label": "inside-archway", "x": 33.6, "z": 4.2, "escape": [33.6, -2] }
+  ],
+  "orbit": { "x": 31, "z": 5 }
+}

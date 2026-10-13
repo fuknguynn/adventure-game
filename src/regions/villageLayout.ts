@@ -271,7 +271,7 @@ PROPS.push(
 // stone. Hero sequence on the P6 approach: foreground south gateway you walk
 // through -> midground broken courtyard (walls, asymmetric columns, fallen
 // masonry) -> background arched-window silhouette behind it. Heights step
-// down: gate 6u > pillar 5.8 > walls ~5.2 > column 2.8 > low rubble.
+// down: gate 6u > pillar 5.8 > walls ~4.8 > column stub ~1.7 > low rubble.
 PROPS.push(
   // Foreground gateway: walk THROUGH the carved opening (piers only collide).
   { file: '/models/env/wall_gated.gltf', pos: [30, 0, 1.6], rotY: 0, scale: 1.5 },
@@ -283,7 +283,7 @@ PROPS.push(
   { file: '/models/env/wall_broken.gltf', pos: [36.9, 0, 4.4], rotY: 1.45, scale: 1.05 },
   // Asymmetric columns: mid-height broken stub beside the focal stone,
   // taller background pillar at the NE corner (not twins).
-  { file: '/models/env/column.gltf', pos: [33.6, 0, 4.2], rotY: 0.6, scale: 2 },
+  { file: '/models/env/column.gltf', pos: [33.6, 0, 4.2], rotY: 0.6, scale: 1.2 },
   { file: '/models/env/pillar.gltf', pos: [37.4, 0, 8.6], rotY: 0.4, scale: 1.45 },
   // Background silhouette: open arch framing the sky behind the courtyard.
   { file: '/models/env/wall_archedwindow_open.gltf', pos: [26.3, 0, 11.8], rotY: 0.15, scale: 1.4 },
@@ -321,6 +321,10 @@ PROPS.push(
   { file: '/models/props/Gem_Large.gltf', pos: [-24.6, 0, 11], rotY: 0.4, scale: 2.4 },
   { file: '/models/props/Gem_Large.gltf', pos: [-23.8, 0, 11.7], rotY: -0.7, scale: 1.4 },
   { file: '/models/props/Gem_Medium.gltf', pos: [-25.2, 0, 11.9], rotY: 1.9, scale: 1.2 },
+  // Grove hero: the glowing cap cluster grows around one mossy stone pillar —
+  // the grove's only solid decor bump (full cuboid footprint pins the capsule,
+  // like the barracks; trunks beyond r32 stay visual-only).
+  { file: '/models/env/column.gltf', pos: [28, 0, -24.35], rotY: 0.9, scale: 4.4 },
 );
 
 

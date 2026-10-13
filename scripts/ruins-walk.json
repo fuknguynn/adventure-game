@@ -1,0 +1,341 @@
+{
+  "generatedAt": "2026-10-13T10:25:32.967Z",
+  "base": "http://localhost:5174/",
+  "legTimeoutS": 20,
+  "thresholds": {
+    "reachedR": 0.6,
+    "stuckWindowS": 3,
+    "stuckProgressU": 0.4,
+    "wallDispU": 0.1,
+    "fellY": -3
+  },
+  "legs": [
+    {
+      "kind": "route",
+      "from": "plaza",
+      "to": "bend",
+      "from_xy": [
+        0,
+        -1
+      ],
+      "to_xy": [
+        10.5,
+        9
+      ],
+      "dir": "diagonal",
+      "sprint": false,
+      "spawn_settled_y": 0.9,
+      "start_xy": [
+        0,
+        -1
+      ],
+      "end_xy": [
+        10.08,
+        8.6
+      ],
+      "goal_dist_m": 14.5,
+      "reached": true,
+      "end_dist": 0.57,
+      "traveled": 13.93,
+      "max_disp": 13.93,
+      "elapsed": 14.2,
+      "progress3": 2.98,
+      "stuckY": false,
+      "wall": false,
+      "fell": false,
+      "min_y": 0.9,
+      "fps_est": 3.2,
+      "block_xy": [
+        9.6,
+        8.15
+      ]
+    },
+    {
+      "kind": "route",
+      "from": "bend",
+      "to": "approach",
+      "from_xy": [
+        10.5,
+        9
+      ],
+      "to_xy": [
+        16,
+        9.5
+      ],
+      "dir": "diagonal",
+      "sprint": false,
+      "spawn_settled_y": 0.9,
+      "start_xy": [
+        10.5,
+        9
+      ],
+      "end_xy": [
+        15.45,
+        9.45
+      ],
+      "goal_dist_m": 5.52,
+      "reached": true,
+      "end_dist": 0.55,
+      "traveled": 4.97,
+      "max_disp": 4.97,
+      "elapsed": 6.8,
+      "progress3": 2.32,
+      "stuckY": false,
+      "wall": false,
+      "fell": false,
+      "min_y": 0.9,
+      "fps_est": 2.7,
+      "block_xy": [
+        14.46,
+        9.36
+      ]
+    },
+    {
+      "kind": "route",
+      "from": "approach",
+      "to": "ruins-outside",
+      "from_xy": [
+        16,
+        9.5
+      ],
+      "to_xy": [
+        25,
+        6
+      ],
+      "dir": "diagonal",
+      "sprint": false,
+      "spawn_settled_y": 0.9,
+      "start_xy": [
+        16,
+        9.5
+      ],
+      "end_xy": [
+        24.46,
+        6.21
+      ],
+      "goal_dist_m": 9.66,
+      "reached": true,
+      "end_dist": 0.58,
+      "traveled": 9.07,
+      "max_disp": 9.07,
+      "elapsed": 11.3,
+      "progress3": 2.65,
+      "stuckY": false,
+      "wall": false,
+      "fell": false,
+      "min_y": 0.9,
+      "fps_est": 2.8,
+      "block_xy": [
+        23.84,
+        6.45
+      ]
+    },
+    {
+      "kind": "route",
+      "from": "ruins-outside",
+      "to": "ruins-end",
+      "from_xy": [
+        25,
+        6
+      ],
+      "to_xy": [
+        31,
+        5
+      ],
+      "dir": "diagonal",
+      "sprint": false,
+      "spawn_settled_y": 0.9,
+      "start_xy": [
+        25,
+        6
+      ],
+      "end_xy": [
+        30.56,
+        5.07
+      ],
+      "goal_dist_m": 6.08,
+      "reached": true,
+      "end_dist": 0.45,
+      "traveled": 5.64,
+      "max_disp": 5.64,
+      "elapsed": 7.6,
+      "progress3": 2.32,
+      "stuckY": false,
+      "wall": false,
+      "fell": false,
+      "min_y": 0.9,
+      "fps_est": 2.6,
+      "block_xy": [
+        29.91,
+        5.18
+      ]
+    },
+    {
+      "kind": "route",
+      "from": "ruins-end",
+      "to": "gate-front",
+      "from_xy": [
+        31,
+        5
+      ],
+      "to_xy": [
+        30,
+        -0.6
+      ],
+      "dir": "diagonal",
+      "sprint": false,
+      "spawn_settled_y": 0.9,
+      "start_xy": [
+        31,
+        5
+      ],
+      "end_xy": [
+        30.07,
+        -0.22
+      ],
+      "goal_dist_m": 5.69,
+      "reached": true,
+      "end_dist": 0.38,
+      "traveled": 5.31,
+      "max_disp": 5.31,
+      "elapsed": 6.7,
+      "progress3": 2.32,
+      "stuckY": false,
+      "wall": false,
+      "fell": false,
+      "min_y": 0.9,
+      "fps_est": 2.8,
+      "block_xy": [
+        30.18,
+        0.43
+      ]
+    },
+    {
+      "kind": "route",
+      "from": "gate-front",
+      "to": "through-gate",
+      "from_xy": [
+        30,
+        -0.6
+      ],
+      "to_xy": [
+        30.4,
+        3.5
+      ],
+      "dir": "diagonal",
+      "sprint": false,
+      "spawn_settled_y": 0.9,
+      "start_xy": [
+        30,
+        -0.6
+      ],
+      "end_xy": [
+        30.35,
+        3.03
+      ],
+      "goal_dist_m": 4.12,
+      "reached": true,
+      "end_dist": 0.47,
+      "traveled": 3.65,
+      "max_disp": 3.65,
+      "elapsed": 4,
+      "progress3": 2.98,
+      "stuckY": false,
+      "wall": false,
+      "fell": false,
+      "min_y": 0.9,
+      "fps_est": 3.5,
+      "block_xy": [
+        30.29,
+        2.37
+      ]
+    },
+    {
+      "kind": "route",
+      "from": "through-gate",
+      "to": "beside-focal-stone",
+      "from_xy": [
+        30.4,
+        3.5
+      ],
+      "to_xy": [
+        30.8,
+        5
+      ],
+      "dir": "diagonal",
+      "sprint": false,
+      "spawn_settled_y": 0.9,
+      "start_xy": [
+        30.4,
+        3.5
+      ],
+      "end_xy": [
+        30.66,
+        4.46
+      ],
+      "goal_dist_m": 1.55,
+      "reached": true,
+      "end_dist": 0.56,
+      "traveled": 0.99,
+      "max_disp": 0.99,
+      "elapsed": 1.8,
+      "progress3": null,
+      "stuckY": false,
+      "wall": false,
+      "fell": false,
+      "min_y": 0.9,
+      "fps_est": 3.3,
+      "block_xy": [
+        30.49,
+        3.82
+      ]
+    },
+    {
+      "kind": "inside-prop",
+      "from": "inside-archway",
+      "to": "escape",
+      "from_xy": [
+        33.6,
+        4.2
+      ],
+      "to_xy": [
+        33.6,
+        -2
+      ],
+      "spawn_settled_y": 0.9,
+      "start_xy": [
+        32.57,
+        4.2
+      ],
+      "end_xy": [
+        32.57,
+        4.2
+      ],
+      "traveled": 0,
+      "max_disp": 0,
+      "elapsed": 20,
+      "leak": false,
+      "min_y": 0.9,
+      "result": "solid"
+    }
+  ],
+  "anomalies": [],
+  "allReached": true,
+  "orbit": {
+    "point": [
+      31,
+      5
+    ],
+    "shots": [
+      "orbit-0.png",
+      "orbit-1.png",
+      "orbit-2.png",
+      "orbit-3.png",
+      "orbit-4.png",
+      "orbit-5.png",
+      "orbit-6.png",
+      "orbit-7.png"
+    ]
+  },
+  "pageErrors": []
+}

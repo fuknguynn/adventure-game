@@ -1,0 +1,8 @@
+[
+  { "name": "01-approach-ne", "pos": [16, 9.5], "yaw": -1.1 },
+  { "name": "02-entry-gateway", "pos": [30, -3], "yaw": 3.14 },
+  { "name": "03-courtyard", "pos": [30.5, 3.6], "yaw": 2.73 },
+  { "name": "04-beside-pillar", "pos": [35.5, 7], "yaw": -2.3 },
+  { "name": "05-focal-stone", "pos": [32.5, 5.5], "yaw": 1.1 },
+  { "name": "06-grave-cluster", "pos": [34, 2.5], "yaw": -1.26 }
+]
