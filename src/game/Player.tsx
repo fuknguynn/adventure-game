@@ -9,6 +9,7 @@ import { useLocomotion } from './useLocomotion';
 import { useProfile } from '../stores/stores';
 import { CHARACTERS } from '../data/gameData';
 import { sfx } from '../systems/AudioSystem';
+import { surfaceAt } from '../regions/villageLayout';
 
 export const playerPos = new THREE.Vector3(0, 1, 6);
 
@@ -69,7 +70,7 @@ export function Player({ onInteract }: { onInteract: () => void }) {
     if (len > 0.05) {
       yaw.current = Math.atan2(wx, wz);
       stepAcc.current += step * speed;
-      if (stepAcc.current > 2.2) { stepAcc.current = 0; sfx.step(); }
+      if (stepAcc.current > 2.2) { stepAcc.current = 0; if (loco.grounded && !paused) sfx.step(surfaceAt(p.x, p.z)); }
     }
     // face movement direction (visual only — physics untouched)
     let d = yaw.current - visualYaw.current;

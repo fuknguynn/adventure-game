@@ -477,3 +477,12 @@ export const LAMP_LIGHTS: [number, number, number][] = PROPS.filter((p) => p.lig
   return [p.pos[0], p.pos[1] + h * p.scale, p.pos[2]];
 });
 
+/** Surface under a world (x,z) point, for surface-aware footsteps.
+ *  dirt = on a path, stone = lake shore / ruins clearing, grass = elsewhere. */
+export function surfaceAt(x: number, z: number): 'dirt' | 'grass' | 'stone' {
+  if (distToPaths(x, z) < 2.2) return 'dirt';
+  if (Math.hypot(x + 29, z - 6) < 9) return 'stone'; // lake shore
+  if (Math.hypot(x - 31, z - 5) < 9) return 'stone'; // ruins clearing
+  return 'grass';
+}
+

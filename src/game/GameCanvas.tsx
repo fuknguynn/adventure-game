@@ -1,5 +1,5 @@
 import { Suspense, useCallback, useMemo, useRef, useState } from 'react';
-import { Canvas } from '@react-three/fiber';
+import { Canvas, useFrame } from '@react-three/fiber';
 import { Physics } from '@react-three/rapier';
 import * as THREE from 'three';
 import { Player, GroundBounds, playerPos } from './Player';
@@ -14,7 +14,7 @@ import { useProgress, useSettings } from '../stores/stores';
 import { useUI } from '../stores/uiStore';
 import { attachKeyboard, pausedFlag } from './input';
 import { useEffect } from 'react';
-import { sfx } from '../systems/AudioSystem';
+import { sfx, setRegion, regionAt, updateListener, addPositionalSource, removePositionalSource } from '../systems/AudioSystem';
 
 export const SPOTS = {
   spirit: new THREE.Vector3(2, 0, 2),
@@ -82,6 +82,7 @@ export function GameCanvas({ onExit, onEnding }: { onExit: () => void; onEnding:
     const near = (v: THREE.Vector3, r = 4.5) => playerPos.distanceTo(new THREE.Vector3(v.x, playerPos.y, v.z)) < r;
     sfx.interact();
     if (near(SPOTS.npc) || near(SPOTS.spirit)) {
+      sfx.shrineInteract();
       setDialogue([
         'Elder Mira: “The Tree dreams, little spark. Three fragments scattered — grove, lake, ruins.”',
         'Spirit: “Follow my light. Step where I stepped.” (Quest updated: The Forest Remembers)',
@@ -110,6 +111,7 @@ export function GameCanvas({ onExit, onEnding }: { onExit: () => void; onEnding:
           // Guarded by `!includes` above: plain append cannot duplicate.
           setProgress({ worldRestored: true, completedQuests: [...completedQuests, 'the_forest_remembers'] });
           sfx.fragment();
+          sfx.treeRestore();
           onEnding();
         } else {
           setToast('The restored grove hums with light ✦');
@@ -195,6 +197,7 @@ export function GameCanvas({ onExit, onEnding }: { onExit: () => void; onEnding:
           <Marker pos={SPOTS.tree} label="★" big />
         </Suspense>
         <CameraRig />
+        <AudioDirector />
       </Canvas>
       <TouchControls onInteract={interact} />
       {!photoMode && (
@@ -216,4 +219,61 @@ function Marker({ pos, label, big }: { pos: THREE.Vector3; label: string; big?: 
     </group>
   );
   void label;
+}
+
+/** Per-frame audio director: region detection, listener update, positional sources. */
+function AudioDirector() {
+  const lastRegion = useRef<string>('');
+  const activePositionals = useRef<Record<string, boolean>>({});
+  const forward = useRef(new THREE.Vector3(0, 0, -1));
+
+  // Landmark positional sources: id, position, kind, radius
+  const LANDMARKS: Array<{ id: string; pos: [number, number, number]; kind: 'shrine' | 'tree' | 'lake' | 'ruins'; radius: number }> = [
+    { id: 'shrine_spirit', pos: [2, 1.5, 2], kind: 'shrine', radius: 12 },
+    { id: 'tree_ancient', pos: [0, 3, 34], kind: 'tree', radius: 14 },
+    { id: 'lake_water', pos: [-29, 0.5, 6], kind: 'lake', radius: 12 },
+    { id: 'ruins_stone', pos: [31, 1, 5], kind: 'ruins', radius: 12 },
+  ];
+
+  useFrame((state) => {
+    const p = playerPos;
+    // Update listener position + forward (camera look direction)
+    const cam = state.camera;
+    forward.current.set(0, 0, -1).applyQuaternion(cam.quaternion);
+    updateListener(
+      { x: p.x, y: p.y, z: p.z },
+      { x: forward.current.x, y: forward.current.y, z: forward.current.z },
+    );
+
+    // Region detection (throttled: only when region actually changes)
+    const region = regionAt(p.x, p.z);
+    if (region !== lastRegion.current) {
+      lastRegion.current = region;
+      setRegion(region);
+    }
+
+    // Positional sources: add when in range, remove when out
+    for (const lm of LANDMARKS) {
+      const d = Math.hypot(p.x - lm.pos[0], p.z - lm.pos[2]);
+      const inRange = d < lm.radius;
+      const active = !!activePositionals.current[lm.id];
+      if (inRange && !active) {
+        const id = addPositionalSource(lm.id, lm.pos, lm.kind, 0.4);
+        if (id) activePositionals.current[id] = true;
+      } else if (!inRange && active) {
+        removePositionalSource(lm.id);
+        delete activePositionals.current[lm.id];
+      }
+    }
+  });
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      for (const id of Object.keys(activePositionals.current)) removePositionalSource(id);
+      activePositionals.current = {};
+    };
+  }, []);
+
+  return null;
 }

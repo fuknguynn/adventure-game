@@ -1,0 +1,20 @@
+{
+  "music": {
+    "village": "/audio/music/village.ogg",
+    "spirit": "/audio/music/spirit.ogg",
+    "ruins": "/audio/music/ruins.ogg",
+    "lake": "/audio/music/lake.ogg",
+    "grove": "/audio/music/grove.ogg",
+    "tree": "/audio/music/tree.ogg",
+    "ending": "/audio/music/ending.ogg"
+  },
+  "ambience": {
+    "village": "/audio/ambience/village.ogg",
+    "spirit": "/audio/ambience/spirit.ogg",
+    "ruins": "/audio/ambience/ruins.ogg",
+    "lake": "/audio/ambience/lake.ogg",
+    "grove": "/audio/ambience/grove.ogg",
+    "tree": "/audio/ambience/tree.ogg"
+  },
+  "totalSizeMB": 6.61
+}

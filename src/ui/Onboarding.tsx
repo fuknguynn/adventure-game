@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { loadSave } from '../systems/SaveSystem';
-import { startAmbient } from '../systems/AudioSystem';
+import { initAudio } from '../systems/AudioSystem';
 
 export function Welcome({ onNew, onContinue, onSettings }: { onNew: () => void; onContinue: () => void; onSettings: () => void }) {
   const [hasSave, setHasSave] = useState(false);
@@ -12,7 +12,7 @@ export function Welcome({ onNew, onContinue, onSettings }: { onNew: () => void; 
         <p style={{ letterSpacing: 4, margin: 0 }}>THE LOST REALM</p>
         <p>A stylized forest adventure. Explore, befriend the spirit, recover 3 fragments, restore the Ancient Tree.</p>
         <div style={{ display: 'flex', gap: 10, justifyContent: 'center', flexWrap: 'wrap' }}>
-          <button onClick={() => { startAmbient(false); onNew(); }}>New Adventure</button>
+          <button onClick={() => { initAudio('village'); onNew(); }}>New Adventure</button>
           {hasSave && <button onClick={onContinue}>Continue Adventure</button>}
           <button onClick={onSettings}>Settings</button>
         </div>

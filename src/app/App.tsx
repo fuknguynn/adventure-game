@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { useProfile, useProgress, useSettings } from '../stores/stores';
 import { useUI } from '../stores/uiStore';
 import { loadSave, writeSave, collectSave } from '../systems/SaveSystem';
-import { setAudioPrefs, startAmbient } from '../systems/AudioSystem';
+import { setAudioPrefs, initAudio, stopAllAudio, setRegion } from '../systems/AudioSystem';
 import { Welcome, IntroCinematic } from '../ui/Onboarding';
 import { CharacterCreation } from '../ui/CharacterCreation';
 import { SettingsView, EndingView } from '../ui/HudScreens';
@@ -34,6 +34,11 @@ export function App() {
   useEffect(() => {
     setAudioPrefs({ muted: settings.muted, musicVolume: settings.musicVolume, sfxVolume: settings.sfxVolume });
   }, [settings.muted, settings.musicVolume, settings.sfxVolume]);
+
+  // ending region audio when the world is restored
+  useEffect(() => {
+    if (phase === 'ENDING') setRegion('ending');
+  }, [phase]);
 
   // autosave at checkpoints: whenever progress/profile/settings change mid-game
   useEffect(() => {
@@ -75,15 +80,15 @@ export function App() {
       {phase === 'WELCOME' && (
         <Welcome
           onNew={() => setPhase('CREATION')}
-          onContinue={() => { startAmbient(useProgress.getState().worldRestored); setPhase('PLAYING'); }}
+          onContinue={() => { initAudio('village'); setPhase('PLAYING'); }}
           onSettings={() => setShowSettings(true)}
         />
       )}
-      {phase === 'CREATION' && <CharacterCreation onEnter={() => { persistAll(); startAmbient(false); setPhase('CINEMATIC'); }} />}
+      {phase === 'CREATION' && <CharacterCreation onEnter={() => { persistAll(); initAudio('village'); setPhase('CINEMATIC'); }} />}
       {phase === 'CINEMATIC' && <IntroCinematic onDone={() => setPhase('PLAYING')} />}
       {(phase === 'PLAYING' || phase === 'PAUSED') && (
         <GameCanvas
-          onExit={() => { persistAll(); setPhase('WELCOME'); }}
+          onExit={() => { persistAll(); stopAllAudio(); setPhase('WELCOME'); }}
           onEnding={() => { persistAll(); setPhase('ENDING'); }}
         />
       )}

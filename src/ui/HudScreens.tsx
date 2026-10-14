@@ -2,6 +2,7 @@ import { useProfile, useProgress, useSettings } from '../stores/stores';
 import { useUI } from '../stores/uiStore';
 import { resetSave } from '../systems/SaveSystem';
 import { QUEST_MAIN } from '../data/gameData';
+import { ui, sfx } from '../systems/AudioSystem';
 
 function Icon({ d }: { d: string }) {
   return (
@@ -29,10 +30,10 @@ export function HUD({ onPause }: { onPause: () => void }) {
         <div className="qt-frag" aria-label="fragment counter"><Icon d={ICONS.gem} />{spiritFragments}/3 Spirit Fragments</div>
       </div>
       <div className="hud hud-tools">
-        <button className={`tool-btn${showJournal ? ' on' : ''}`} onClick={() => setShowJournal(true)} aria-label="Open quest journal (J)" title="Journal (J)"><Icon d={ICONS.book} /></button>
-        <button className={`tool-btn${showMap ? ' on' : ''}`} onClick={() => setShowMap(true)} aria-label="Open world map (M)" title="Map (M)"><Icon d={ICONS.map} /></button>
-        <button className={`tool-btn${photoMode ? ' on' : ''}`} onClick={() => setPhotoMode(true)} aria-label="Open photo mode" title="Photo"><Icon d={ICONS.cam} /></button>
-        <button className="tool-btn" onClick={onPause} aria-label="Pause game (Esc)" title="Pause (Esc)"><Icon d={ICONS.pause} /></button>
+        <button className={`tool-btn${showJournal ? ' on' : ''}`} onClick={() => { ui.click(); sfx.journalOpen(); setShowJournal(true); }} onMouseEnter={() => ui.hover()} aria-label="Open quest journal (J)" title="Journal (J)"><Icon d={ICONS.book} /></button>
+        <button className={`tool-btn${showMap ? ' on' : ''}`} onClick={() => { ui.click(); sfx.mapOpen(); setShowMap(true); }} onMouseEnter={() => ui.hover()} aria-label="Open world map (M)" title="Map (M)"><Icon d={ICONS.map} /></button>
+        <button className={`tool-btn${photoMode ? ' on' : ''}`} onClick={() => { ui.click(); sfx.photoMode(); setPhotoMode(true); }} onMouseEnter={() => ui.hover()} aria-label="Open photo mode" title="Photo"><Icon d={ICONS.cam} /></button>
+        <button className="tool-btn" onClick={() => { ui.click(); onPause(); }} onMouseEnter={() => ui.hover()} aria-label="Pause game (Esc)" title="Pause (Esc)"><Icon d={ICONS.pause} /></button>
       </div>
       {toast && <div className="toast" role="status">{toast}</div>}
     </>
