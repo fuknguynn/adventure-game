@@ -2,6 +2,7 @@ import { useProfile, useProgress, useSettings } from '../stores/stores';
 import { useUI } from '../stores/uiStore';
 import { resetSave } from '../systems/SaveSystem';
 import { QUEST_MAIN } from '../data/gameData';
+import { currentObjective } from '../data/depthData';
 import { ui, sfx } from '../systems/AudioSystem';
 
 function Icon({ d }: { d: string }) {
@@ -20,13 +21,13 @@ const ICONS = {
 };
 
 export function HUD({ onPause }: { onPause: () => void }) {
-  const { spiritFragments, solvedPuzzles } = useProgress();
+  const { spiritFragments, solvedPuzzles, miniObjectives } = useProgress();
   const { setShowJournal, setShowMap, setPhotoMode, toast, showJournal, showMap, photoMode } = useUI();
-  const step = Math.min(solvedPuzzles.length, QUEST_MAIN.steps.length - 1);
+  const objective = currentObjective(solvedPuzzles, miniObjectives);
   return (
     <>
       <div className="hud quest-tracker" aria-label="current objective">
-        <div className="qt-line"><span className="qt-icon" aria-hidden>◈</span><span>{QUEST_MAIN.steps[step]}</span></div>
+        <div className="qt-line"><span className="qt-icon" aria-hidden>◈</span><span>{objective}</span></div>
         <div className="qt-frag" aria-label="fragment counter"><Icon d={ICONS.gem} />{spiritFragments}/3 Spirit Fragments</div>
       </div>
       <div className="hud hud-tools">

@@ -8,13 +8,22 @@ import { useProgress } from '../stores/stores';
 /** Hub-and-spoke world. Layout data (villageLayout.ts) drives instanced scenery;
  *  landmarks (gems, ruins, ancient tree) stay individual models. */
 export function Regions() {
-  const { worldRestored, solvedPuzzles } = useProgress();
+  const { worldRestored, solvedPuzzles, spiritFragments } = useProgress();
   const groveDone = solvedPuzzles.includes('spirit_path');
   const lakeDone = solvedPuzzles.includes('rune_sequence');
   const ruinsDone = solvedPuzzles.includes('light_reflection');
+  // World reaction: 0-3 fragment count scales light/emissive/fireflies.
+  // Parameter-only changes — no geometry rebuild.
+  const worldLevel = Math.min(3, spiritFragments);
+  const lightScale = 1 + worldLevel * 0.15;
+  const fireflyColor = useMemo(() => {
+    const cool = new THREE.Color('#cfe9ff');
+    const warm = new THREE.Color('#ffe9a0');
+    return cool.clone().lerp(warm, worldLevel / 3);
+  }, [worldLevel]);
 
   // grove accent gem sits right above the hero mushroom cluster so its glow reads on the caps
-  const gems: Array<[number, number, number, number]> = [[-28, 0, 4, lakeDone ? 1.6 : 0.7], [-30, 0, 8, lakeDone ? 1.6 : 0.7], [28.3, 0, -22.1, groveDone ? 1.8 : 0.8]];
+  const gems: Array<[number, number, number, number]> = [[-28, 0, 4, (lakeDone ? 1.6 : 0.7) + worldLevel * 0.3], [-30, 0, 8, (lakeDone ? 1.6 : 0.7) + worldLevel * 0.3], [28.3, 0, -22.1, (groveDone ? 1.8 : 0.8) + worldLevel * 0.3]];
 
   return (
     <group>
@@ -37,7 +46,7 @@ export function Regions() {
         <meshStandardMaterial color={lakeDone ? '#5fd4e8' : '#27718a'} transparent opacity={0.9} emissive={lakeDone ? '#2fb9d4' : '#0a2f3c'} emissiveIntensity={lakeDone ? 0.9 : 0.3} />
       </mesh>
       {/* faint teal wash over the NE crystal focal; small radius, static */}
-      <pointLight color="#3fd6e0" intensity={4} distance={7} decay={2} position={[-24.5, 2.2, 11.3]} />
+      <pointLight color="#3fd6e0" intensity={4 * lightScale} distance={7} decay={2} position={[-24.5, 2.2, 11.3]} />
       {/* instanced scatter + ground treatment + colliders */}
       <VillageScenery />
       {/* individual props (storytelling + landmarks) */}
@@ -71,21 +80,22 @@ export function Regions() {
         <circleGeometry args={[4.5, 24]} />
         <meshBasicMaterial color="#5fd4e8" transparent opacity={0.05} depthWrite={false} />
       </mesh>
-      <pointLight color="#5fd4e8" intensity={4} distance={8} decay={2} position={[29.6, 1.6, 4.6]} />
+      <pointLight color="#5fd4e8" intensity={4 * lightScale} distance={8} decay={2} position={[29.6, 1.6, 4.6]} />
       {/* ancient tree: hero of the world — biggest, brightest thing from the
           plaza. One concentrated light pool, teal before the restore. */}
       <KayKitModel url="/models/env/Tree_1_C_Color1.gltf" position={[0, 0, 34]} scale={4.8} colorize={FOLIAGE_TINT} />
       <KayKitModel url="/models/env/shrine_green.gltf" position={[0, 0, 30]} scale={2.2} />
-      <pointLight color={worldRestored ? '#ffe9a8' : '#9ff5e8'} intensity={worldRestored ? 36 : 14} distance={22} decay={2} position={[0, 5, 32]} />
+      <pointLight color={worldRestored ? '#ffe9a8' : '#9ff5e8'} intensity={worldRestored ? 36 : worldLevel === 3 ? 22 : 14} distance={22} decay={2} position={[0, 5, 32]} />
       {/* spirit clearing: one teal pool on the north-edge shrine */}
-      <pointLight color="#5fd4e8" intensity={10} distance={10} decay={2} position={[2, 1.6, 6.5]} />
-      <FirefliesPoints restored={worldRestored} />
+      <pointLight color="#5fd4e8" intensity={10 * lightScale} distance={10} decay={2} position={[2, 1.6, 6.5]} />
+      <FirefliesPoints restored={worldRestored} level={worldLevel} color={fireflyColor} />
     </group>
   );
 }
 
-/** Fireflies as a single Points object (was 50-90 meshes = draw-call hell). */
-function FirefliesPoints({ restored }: { restored: boolean }) {
+/** Fireflies as a single Points object (was 50-90 meshes = draw-call hell).
+ *  worldLevel scales opacity + warms the color toward the restore look. */
+function FirefliesPoints({ restored, level, color }: { restored: boolean; level: number; color: THREE.Color }) {
   const geo = useMemo(() => {
     const g = new THREE.BufferGeometry();
     const pts = FIREFLIES.map(([x, y, z]) => [x, y, z] as [number, number, number]);
@@ -102,7 +112,7 @@ function FirefliesPoints({ restored }: { restored: boolean }) {
   }, []);
   return (
     <points geometry={geo}>
-      <pointsMaterial size={0.22} map={tex} color={restored ? '#ffe9a0' : '#cfe9ff'} transparent opacity={0.85} sizeAttenuation depthWrite={false} blending={THREE.AdditiveBlending} />
+      <pointsMaterial size={0.22} map={tex} color={restored ? '#ffe9a0' : color} transparent opacity={restored ? 0.95 : 0.75 + level * 0.07} sizeAttenuation depthWrite={false} blending={THREE.AdditiveBlending} />
     </points>
   );
 }

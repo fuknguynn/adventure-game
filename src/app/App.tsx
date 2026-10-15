@@ -46,7 +46,7 @@ export function App() {
     const t = setTimeout(() => {
       writeSave(collectSave(
         { displayName: profile.displayName, characterId: profile.characterId },
-        { regionId: progress.regionId, spawnId: progress.spawnId, completedQuests: progress.completedQuests, solvedPuzzles: progress.solvedPuzzles, spiritFragments: progress.spiritFragments, worldRestored: progress.worldRestored },
+        { regionId: progress.regionId, spawnId: progress.spawnId, completedQuests: progress.completedQuests, solvedPuzzles: progress.solvedPuzzles, spiritFragments: progress.spiritFragments, worldRestored: progress.worldRestored, miniObjectives: progress.miniObjectives, secrets: progress.secrets, lore: progress.lore, npcDialogueStage: progress.npcDialogueStage },
         { quality: settings.quality, musicVolume: settings.musicVolume, sfxVolume: settings.sfxVolume, reducedMotion: settings.reducedMotion, muted: settings.muted },
       ));
     }, 400);
@@ -68,7 +68,7 @@ export function App() {
   const persistAll = useCallback(() => {
     writeSave(collectSave(
       { displayName: useProfile.getState().displayName, characterId: useProfile.getState().characterId },
-      { regionId: useProgress.getState().regionId, spawnId: useProgress.getState().spawnId, completedQuests: useProgress.getState().completedQuests, solvedPuzzles: useProgress.getState().solvedPuzzles, spiritFragments: useProgress.getState().spiritFragments, worldRestored: useProgress.getState().worldRestored },
+      { regionId: useProgress.getState().regionId, spawnId: useProgress.getState().spawnId, completedQuests: useProgress.getState().completedQuests, solvedPuzzles: useProgress.getState().solvedPuzzles, spiritFragments: useProgress.getState().spiritFragments, worldRestored: useProgress.getState().worldRestored, miniObjectives: useProgress.getState().miniObjectives, secrets: useProgress.getState().secrets, lore: useProgress.getState().lore, npcDialogueStage: useProgress.getState().npcDialogueStage },
       { quality: useSettings.getState().quality, musicVolume: useSettings.getState().musicVolume, sfxVolume: useSettings.getState().sfxVolume, reducedMotion: useSettings.getState().reducedMotion, muted: useSettings.getState().muted },
     ));
   }, []);

@@ -4,7 +4,7 @@ import { useLoader } from '@react-three/fiber';
 import { GLTFLoader } from 'three-stdlib';
 
 /** One bad scenery file must never crash the game: isolate load failures per model. */
-class ModelErrorBoundary extends React.Component<{ url: string; children: React.ReactNode }, { failed: boolean }> {
+export class ModelErrorBoundary extends React.Component<{ url: string; children: React.ReactNode }, { failed: boolean }> {
   state = { failed: false };
   static getDerivedStateFromError() { return { failed: true }; }
   componentDidCatch(err: unknown) {

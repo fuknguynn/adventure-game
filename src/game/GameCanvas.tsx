@@ -7,11 +7,16 @@ import { CameraRig } from './CameraRig';
 import { Regions } from '../regions/Regions';
 import { LAMP_LIGHTS } from '../regions/villageLayout';
 import { Spirit, NPC } from '../entities/Actors';
+import { Population } from '../entities/Population';
+import { DepthDirector } from '../systems/DepthDirector';
+import { MiniObjectiveMarkers, Interactables, Secrets, LoreFragments } from '../entities/DepthMarkers';
+import { POPULATION } from '../regions/population';
 import { TouchControls } from './TouchControls';
 import { PuzzlePanels } from '../puzzles/PuzzlePanels';
 import { HUD, DialogueView, JournalView, MapView, PauseView } from '../ui/HudScreens';
 import { useProgress, useSettings } from '../stores/stores';
 import { useUI } from '../stores/uiStore';
+import { MAIN_NPC_DIALOGUE, REGION_TITLES, MINI_OBJECTIVES, INTERACTABLES } from '../data/depthData';
 import { attachKeyboard, pausedFlag } from './input';
 import { useEffect } from 'react';
 import { sfx, setRegion, regionAt, updateListener, addPositionalSource, removePositionalSource } from '../systems/AudioSystem';
@@ -26,7 +31,7 @@ export const SPOTS = {
 };
 
 export function GameCanvas({ onExit, onEnding }: { onExit: () => void; onEnding: () => void }) {
-  const { solvedPuzzles, completedQuests, setProgress } = useProgress();
+  const { solvedPuzzles, completedQuests, spiritFragments, worldRestored, miniObjectives, setProgress, setNpcDialogueStage } = useProgress();
   const { setDialogue, setToast, photoMode, setPhotoMode } = useUI();
   const { quality, reducedMotion } = useSettings();
   const [puzzle, setPuzzle] = useState<string | null>(null);
@@ -38,17 +43,30 @@ export function GameCanvas({ onExit, onEnding }: { onExit: () => void; onEnding:
   });
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
-  useEffect(() => attachKeyboard(), []);
-  useEffect(() => { pausedFlag.v = paused; return () => { pausedFlag.v = false; }; }, [paused]);
+  // Celebrate pulse: timestamp updated when a puzzle is solved. PuzzlePanels
+  // fires the 'recovered' toast on solve, so the re-render it triggers runs
+  // this effect before the new celebratePulse prop reaches <Spirit/>.
+  const celebrateRef = useRef(0);
+  const prevSolved = useRef(solvedPuzzles.length);
+  useEffect(() => {
+    if (solvedPuzzles.length > prevSolved.current) celebrateRef.current = performance.now() / 1000;
+    prevSolved.current = solvedPuzzles.length;
+  }, [solvedPuzzles.length]);
   // Contextual prompt: label of whatever is in interact range (same radii as interact())
   useEffect(() => {
     const R = (v: THREE.Vector3, r = 4.5) => playerPos.distanceTo(new THREE.Vector3(v.x, playerPos.y, v.z)) < r;
     let raf = 0, last = '';
     const tick = () => {
-      const label =
+      const popLabel = POPULATION.find((e) => e.interactable && e.label && R(new THREE.Vector3(...e.position)))?.label ?? '';
+      const spotLabel =
         R(SPOTS.npc) || R(SPOTS.spirit) ? 'Talk' :
         R(SPOTS.grove, 5) || R(SPOTS.lake, 6) || R(SPOTS.ruins, 5) ? 'Inspect' :
-        R(SPOTS.tree, 6) ? 'Touch the Tree' : '';
+        R(SPOTS.tree, 6) ? 'Touch the Tree' :
+        '';
+      // SPOTS win, then population, then interactables (same order as interact()).
+      const label = spotLabel ||
+        popLabel ||
+        (INTERACTABLES.find((i) => R(new THREE.Vector3(...i.position), 3))?.label ?? '');
       if (label !== last) { last = label; setNear(label || null); }
       raf = requestAnimationFrame(tick);
     };
@@ -77,16 +95,33 @@ export function GameCanvas({ onExit, onEnding }: { onExit: () => void; onEnding:
     return SPOTS.tree;
   }, [solvedPuzzles]);
 
+  // Spirit hint: position of the active region's mini-objective (first step —
+  // the Spirit points at the objective area, not a specific step). Null when
+  // no objective is active or it is already complete / the puzzle is solved.
+  const spiritHint = useMemo(() => {
+    const region = regionAt(playerPos.x, playerPos.z);
+    const obj = MINI_OBJECTIVES.find((o) => o.region === region && !miniObjectives.includes(o.id) && !solvedPuzzles.includes(o.reward.puzzleId));
+    return obj ? new THREE.Vector3(...obj.steps[0].position) : null;
+  }, [miniObjectives, solvedPuzzles]);
+
+  const spiritHintDone = useMemo(() => {
+    const region = regionAt(playerPos.x, playerPos.z);
+    const obj = MINI_OBJECTIVES.find((o) => o.region === region);
+    if (!obj) return false;
+    return miniObjectives.includes(obj.id) || solvedPuzzles.includes(obj.reward.puzzleId);
+  }, [miniObjectives, solvedPuzzles]);
+
   const interact = useCallback(() => {
     if (paused || puzzle) return;
     const near = (v: THREE.Vector3, r = 4.5) => playerPos.distanceTo(new THREE.Vector3(v.x, playerPos.y, v.z)) < r;
     sfx.interact();
     if (near(SPOTS.npc) || near(SPOTS.spirit)) {
       sfx.shrineInteract();
-      setDialogue([
-        'Elder Mira: “The Tree dreams, little spark. Three fragments scattered — grove, lake, ruins.”',
-        'Spirit: “Follow my light. Step where I stepped.” (Quest updated: The Forest Remembers)',
-      ]);
+      // Stage is derived from progress (fragment count, or 4 after the
+      // ending) — not a one-shot counter. Persist so save/load is stable.
+      const stage = worldRestored ? 4 : Math.min(3, spiritFragments);
+      setDialogue(MAIN_NPC_DIALOGUE[stage]);
+      setNpcDialogueStage(stage);
       if (!completedQuests.includes('met_spirit')) setProgress({ completedQuests: [...completedQuests, 'met_spirit'] });
       return;
     }
@@ -101,9 +136,19 @@ export function GameCanvas({ onExit, onEnding }: { onExit: () => void; onEnding:
       }
       setPuzzle(id);
     };
-    if (near(SPOTS.grove, 5)) { openPuzzle('spirit_path', 'Grove'); return; }
-    if (near(SPOTS.lake, 6)) { openPuzzle('rune_sequence', 'Lake'); return; }
-    if (near(SPOTS.ruins, 5)) { openPuzzle('light_reflection', 'Ruins'); return; }
+    // Mini-objectives gate ACCESS, not solving: the puzzle only opens once the
+    // region's objective is complete (DepthDirector completes it via proximity).
+    const gated = (id: string, name: string, objectiveId: string) => {
+      if (!miniObjectives.includes(objectiveId)) {
+        setToast('The Spirit hasn\'t revealed the puzzle yet. Follow the trail ✦');
+        setTimeout(() => setToast(null), 2400);
+        return;
+      }
+      openPuzzle(id, name);
+    };
+    if (near(SPOTS.grove, 5)) { gated('spirit_path', 'Grove', 'grove_trail'); return; }
+    if (near(SPOTS.lake, 6)) { gated('rune_sequence', 'Lake', 'lake_crystals'); return; }
+    if (near(SPOTS.ruins, 5)) { gated('light_reflection', 'Ruins', 'ruins_runes'); return; }
     if (near(SPOTS.tree, 6)) {
       if (solvedPuzzles.length >= 3) {
         // Reward fires once: re-touching after completion must not replay SFX/ending.
@@ -123,9 +168,26 @@ export function GameCanvas({ onExit, onEnding }: { onExit: () => void; onEnding:
       }
       return;
     }
+    // Population NPCs (SPOTS checks above win): distance-based, no colliders.
+    for (const e of POPULATION) {
+      if (!e.interactable || !e.dialogue) continue;
+      if (near(new THREE.Vector3(...e.position))) {
+        sfx.shrineInteract();
+        setDialogue(e.dialogue);
+        return;
+      }
+    }
+    // Environmental interactables (SPOTS + population win): repeatable flavor.
+    for (const i of INTERACTABLES) {
+      if (near(new THREE.Vector3(...i.position), 3)) {
+        sfx.shrineInteract();
+        setDialogue(i.text);
+        return;
+      }
+    }
     setToast('Nothing here — follow the spirit light ✦');
     setTimeout(() => setToast(null), 1500);
-  }, [paused, puzzle, completedQuests, solvedPuzzles, setDialogue, setProgress, setToast, onEnding]);
+  }, [paused, puzzle, completedQuests, solvedPuzzles, spiritFragments, worldRestored, miniObjectives, setDialogue, setProgress, setNpcDialogueStage, setToast, onEnding]);
 
   const dpr = quality === 'low' ? 0.75 : quality === 'high' ? 2 : 1.25;
   const shadowSize = quality === 'low' ? 512 : quality === 'high' ? 2048 : 1024;
@@ -189,8 +251,13 @@ export function GameCanvas({ onExit, onEnding }: { onExit: () => void; onEnding:
             <Regions />
           </Physics>
           <NPC position={[-3, 0, 0]} onTalk={interact} />
-          <Spirit guideTarget={guideTarget} />
-          {/* interaction markers: shape-coded rings, never color-only */}
+          <Spirit guideTarget={guideTarget} hintTarget={spiritHint} hintDone={spiritHintDone} celebratePulse={celebrateRef.current} worldLevel={Math.min(3, spiritFragments)} />
+          <Population />
+          <DepthDirector />
+          <MiniObjectiveMarkers />
+          <Interactables />
+          <Secrets />
+          <LoreFragments />
           <Marker pos={SPOTS.grove} label="?" />
           <Marker pos={SPOTS.lake} label="?" />
           <Marker pos={SPOTS.ruins} label="?" />
@@ -221,6 +288,9 @@ function Marker({ pos, label, big }: { pos: THREE.Vector3; label: string; big?: 
   void label;
 }
 
+// Session-scoped region-title toast dedup: each region toasts at most once.
+const TOASTED_REGIONS = new Set<string>();
+
 /** Per-frame audio director: region detection, listener update, positional sources. */
 function AudioDirector() {
   const lastRegion = useRef<string>('');
@@ -250,6 +320,14 @@ function AudioDirector() {
     if (region !== lastRegion.current) {
       lastRegion.current = region;
       setRegion(region);
+      // Subtle region-entry feedback: one toast per region per session.
+      const title = REGION_TITLES[region];
+      if (title && !TOASTED_REGIONS.has(region)) {
+        TOASTED_REGIONS.add(region);
+        const ui = useUI.getState();
+        ui.setToast(title);
+        setTimeout(() => useUI.getState().setToast(null), 2000);
+      }
     }
 
     // Positional sources: add when in range, remove when out

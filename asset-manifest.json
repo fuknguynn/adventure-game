@@ -927,6 +927,106 @@
       "usage": "mushroom grove cap",
       "optimizedBytes": 0,
       "verified": true
+    },
+    {
+      "path": "public/models/characters/Farmer.gltf",
+      "source": "https://github.com/agentkaerf/FreeModels",
+      "license": "CC0-1.0",
+      "role": "NPC",
+      "region": "village",
+      "format": "gltf-embedded",
+      "size": 3063278,
+      "notes": "Quaternius Ultimate Modular Men; 24 separate named clips (Idle, Walk, Run, Run_Left/Right/Back, Death, Interact, Wave, Sword_Slash, Punch_*, Kick_*, Roll, HitRecieve, Gun_*)"
+    },
+    {
+      "path": "public/models/characters/Worker.gltf",
+      "source": "https://github.com/agentkaerf/FreeModels",
+      "license": "CC0-1.0",
+      "role": "NPC",
+      "region": "village",
+      "format": "gltf-embedded",
+      "size": 3032311,
+      "notes": "Quaternius Ultimate Modular Men; 24 separate named clips (Idle, Walk, Run, Run_Left/Right/Back, Death, Interact, Wave, Sword_Slash, Punch_*, Kick_*, Roll, HitRecieve, Gun_*)"
+    },
+    {
+      "path": "public/models/characters/Adventurer.gltf",
+      "source": "https://github.com/agentkaerf/FreeModels",
+      "license": "CC0-1.0",
+      "role": "NPC",
+      "region": "village",
+      "format": "gltf-embedded",
+      "size": 3736881,
+      "notes": "Quaternius Ultimate Modular Men; 24 separate named clips (Idle, Walk, Run, Run_Left/Right/Back, Death, Interact, Wave, Sword_Slash, Punch_*, Kick_*, Roll, HitRecieve, Gun_*)"
+    },
+    {
+      "path": "public/models/characters/Medieval.gltf",
+      "source": "https://github.com/agentkaerf/FreeModels",
+      "license": "CC0-1.0",
+      "role": "NPC",
+      "region": "village",
+      "format": "gltf-embedded",
+      "size": 3271585,
+      "notes": "Quaternius Ultimate Modular Women; 24 separate named clips (Idle, Walk, Run, Run_Left/Right/Back, Death, Interact, Wave, Sword_Slash, Punch_*, Kick_*, Roll, HitRecieve, Gun_*)"
+    },
+    {
+      "path": "public/models/characters/Worker_F.gltf",
+      "source": "https://github.com/agentkaerf/FreeModels",
+      "license": "CC0-1.0",
+      "role": "NPC",
+      "region": "village",
+      "format": "gltf-embedded",
+      "size": 3160202,
+      "notes": "Quaternius Ultimate Modular Women; 24 separate named clips (Idle, Walk, Run, Run_Left/Right/Back, Death, Interact, Wave, Sword_Slash, Punch_*, Kick_*, Roll, HitRecieve, Gun_*)"
+    },
+    {
+      "path": "public/models/wildlife/Deer.gltf",
+      "source": "https://github.com/agentkaerf/FreeModels",
+      "license": "CC0-1.0",
+      "role": "wildlife",
+      "region": "grove",
+      "format": "gltf-embedded",
+      "size": 3332026,
+      "notes": "Quaternius Ultimate Animated Animals; 13 separate named clips (Idle, Idle_2, Idle_Headlow, Walk, Gallop, Gallop_Jump, Jump_toIdle, Attack_Headbutt, Attack_Kick, Eating, Death, Idle_HitReact1/2)"
+    },
+    {
+      "path": "public/models/wildlife/Stag.gltf",
+      "source": "https://github.com/agentkaerf/FreeModels",
+      "license": "CC0-1.0",
+      "role": "wildlife",
+      "region": "grove",
+      "format": "gltf-embedded",
+      "size": 3260399,
+      "notes": "Quaternius Ultimate Animated Animals; 13 separate named clips (Idle, Idle_2, Idle_Headlow, Walk, Gallop, Gallop_Jump, Jump_toIdle, Attack_Headbutt, Attack_Kick, Eating, Death, Idle_HitReact1/2)"
+    },
+    {
+      "path": "public/models/wildlife/Fox.gltf",
+      "source": "https://github.com/agentkaerf/FreeModels",
+      "license": "CC0-1.0",
+      "role": "wildlife",
+      "region": "grove",
+      "format": "gltf-embedded",
+      "size": 3207241,
+      "notes": "Quaternius Ultimate Animated Animals; 12 separate named clips (Idle, Idle_2, Idle_2_HeadLow, Walk, Gallop, Gallop_Jump, Jump_ToIdle, Attack, Eating, Death, Idle_HitReact1/2)"
+    },
+    {
+      "path": "public/models/wildlife/Duck.glb",
+      "source": "https://github.com/Ariescar/gobkit-free-assets",
+      "license": "CC0-1.0",
+      "role": "wildlife",
+      "region": "lake",
+      "format": "glb-baked",
+      "size": 70104,
+      "notes": "Gobkit Animal Pack; single baked clip 'clip' @24fps with frame ranges: idle 0-29, attack 30-59, dead 60-89 (play once, hold last frame), walk 90-119"
+    },
+    {
+      "path": "public/models/wildlife/Bat.glb",
+      "source": "https://github.com/Ariescar/gobkit-free-assets",
+      "license": "CC0-1.0",
+      "role": "wildlife",
+      "region": "spirit",
+      "format": "glb-baked",
+      "size": 63308,
+      "notes": "Gobkit Animal Pack; single baked clip 'clip' @24fps with frame ranges: idle 0-29, attack 30-59, dead 60-89 (play once, hold last frame), walk 90-119"
     }
   ],
   "notes": [

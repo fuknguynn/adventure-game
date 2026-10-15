@@ -71,3 +71,65 @@ describe('save schema', () => {
     expect(JSON.parse(localStorage.getItem(SAVE_KEY)!).settings.muted).toBe(false);
   });
 });
+
+describe('save schema v2 migration', () => {
+  it('migrates a v1 save to v2 with correct defaults', () => {
+    const v1 = {
+      schemaVersion: 1,
+      profile: { displayName: 'Ray', characterId: 'knight' },
+      progress: { regionId: 'forest_village', spawnId: 'village_entrance', completedQuests: [], solvedPuzzles: ['grove'], spiritFragments: 1, worldRestored: false },
+      settings: { quality: 'auto', musicVolume: 0.5, sfxVolume: 0.7, reducedMotion: false, muted: false },
+      updatedAt: '2024-01-01T00:00:00.000Z',
+    };
+    const m = migrateSave(v1);
+    expect(m).not.toBe(null);
+    expect(m!.schemaVersion).toBe(2);
+    expect(m!.progress.miniObjectives).toEqual([]);
+    expect(m!.progress.secrets).toEqual([]);
+    expect(m!.progress.lore).toEqual([]);
+    expect(m!.progress.npcDialogueStage).toBe(1);
+  });
+
+  it('derives npcDialogueStage=4 for worldRestored v1 saves', () => {
+    const v1 = {
+      schemaVersion: 1,
+      profile: { displayName: 'Ray', characterId: 'knight' },
+      progress: { regionId: 'forest_village', spawnId: 'village_entrance', completedQuests: [], solvedPuzzles: ['grove', 'lake', 'ruins'], spiritFragments: 3, worldRestored: true },
+      settings: { quality: 'auto', musicVolume: 0.5, sfxVolume: 0.7, reducedMotion: false, muted: false },
+      updatedAt: '2024-01-01T00:00:00.000Z',
+    };
+    const m = migrateSave(v1);
+    expect(m).not.toBe(null);
+    expect(m!.progress.npcDialogueStage).toBe(4);
+  });
+
+  it('isValidSave accepts both v1 and v2', () => {
+    const v1 = {
+      schemaVersion: 1,
+      profile: { displayName: 'Ray', characterId: 'knight' },
+      progress: { regionId: 'forest_village', spawnId: 'village_entrance', completedQuests: [], solvedPuzzles: [], spiritFragments: 0, worldRestored: false },
+      settings: { quality: 'auto', musicVolume: 0.5, sfxVolume: 0.7, reducedMotion: false, muted: false },
+      updatedAt: '2024-01-01T00:00:00.000Z',
+    };
+    const v2 = { ...v1, schemaVersion: 2, progress: { ...v1.progress, miniObjectives: [], secrets: [], lore: [], npcDialogueStage: 0 } };
+    expect(isValidSave(v1)).toBe(true);
+    expect(isValidSave(v2)).toBe(true);
+  });
+
+  it('v2 save round-trips through write→read', () => {
+    stubStorage();
+    const d = defaultSave();
+    d.progress.miniObjectives = ['grove_trail'];
+    d.progress.secrets = ['secret_1'];
+    d.progress.lore = ['lore_1'];
+    d.progress.npcDialogueStage = 2;
+    writeSave(d);
+    const loaded = loadSave();
+    expect(loaded).not.toBe(null);
+    expect(loaded!.schemaVersion).toBe(2);
+    expect(loaded!.progress.miniObjectives).toEqual(['grove_trail']);
+    expect(loaded!.progress.secrets).toEqual(['secret_1']);
+    expect(loaded!.progress.lore).toEqual(['lore_1']);
+    expect(loaded!.progress.npcDialogueStage).toBe(2);
+  });
+});

@@ -10,12 +10,18 @@ export const useProfile = create<Profile>((set) => ({
 export interface Progress {
   regionId: string; spawnId: string; completedQuests: string[]; solvedPuzzles: string[];
   spiritFragments: number; worldRestored: boolean;
+  miniObjectives: string[]; secrets: string[]; lore: string[]; npcDialogueStage: number;
   setProgress: (p: Partial<Progress>) => void;
   solvePuzzle: (id: string) => void;
+  completeMiniObjective: (id: string) => void;
+  discoverSecret: (id: string) => void;
+  collectLore: (id: string) => void;
+  setNpcDialogueStage: (n: number) => void;
 }
 export const useProgress = create<Progress>((set) => ({
   regionId: 'forest_village', spawnId: 'village_entrance',
   completedQuests: [], solvedPuzzles: [], spiritFragments: 0, worldRestored: false,
+  miniObjectives: [], secrets: [], lore: [], npcDialogueStage: 0,
   setProgress: (p) => set(p),
   solvePuzzle: (id) => set((s) => {
     if (s.solvedPuzzles.includes(id)) return s;
@@ -24,6 +30,10 @@ export const useProgress = create<Progress>((set) => ({
     const worldRestored = solvedPuzzles.length >= 3;
     return { solvedPuzzles, spiritFragments, worldRestored };
   }),
+  completeMiniObjective: (id) => set((s) => s.miniObjectives.includes(id) ? s : { miniObjectives: [...s.miniObjectives, id] }),
+  discoverSecret: (id) => set((s) => s.secrets.includes(id) ? s : { secrets: [...s.secrets, id] }),
+  collectLore: (id) => set((s) => s.lore.includes(id) ? s : { lore: [...s.lore, id] }),
+  setNpcDialogueStage: (n) => set({ npcDialogueStage: n }),
 }));
 
 interface Settings {
