@@ -42,6 +42,8 @@ export function GameCanvas({ onExit, onEnding }: { onExit: () => void; onEnding:
     try { return !localStorage.getItem('eldergrove.hintSeen'); } catch { return true; }
   });
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  useEffect(() => attachKeyboard(), []);
+  useEffect(() => { pausedFlag.v = paused; return () => { pausedFlag.v = false; }; }, [paused]);
 
   // Celebrate pulse: timestamp updated when a puzzle is solved. PuzzlePanels
   // fires the 'recovered' toast on solve, so the re-render it triggers runs
