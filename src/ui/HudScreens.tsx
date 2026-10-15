@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { useProfile, useProgress, useSettings } from '../stores/stores';
 import { useUI } from '../stores/uiStore';
 import { resetSave } from '../systems/SaveSystem';
@@ -76,15 +77,89 @@ export function JournalView() {
   );
 }
 
+// ---- World map (SVG) ----
+const MAP_NODES = [
+  { id: 'village', x: 300, y: 212, label: 'region.village', desc: 'village', labelDy: 38, magical: false, emblem: 'M-9 6V-2l9-7 9 7v8h-6V1h-6v5z', fragmentName: null },
+  { id: 'tree', x: 300, y: 74, label: 'region.tree', desc: 'ancient_tree', labelDy: -44, magical: true, emblem: 'M0 -9C6.4 -3.6 5.6 4 0 9C-5.6 4 -6.4 -3.6 0 -9Z', fragmentName: null },
+  { id: 'ruins', x: 104, y: 152, label: 'region.ruins', desc: 'whispering_ruins', labelDy: -44, magical: true, emblem: 'M-10 -6h4v12h-4zM4 -6h4v12h-4zM-2 -10h4v16h-4zM-11 6h22v4h-22z', fragmentName: 'puzzle.fragment.ruins' },
+  { id: 'lake', x: 496, y: 152, label: 'region.lake', desc: 'crystal_lake', labelDy: -44, magical: false, emblem: 'M0 -8l7 8-7 8-7-8z', fragmentName: 'puzzle.fragment.lake' },
+  { id: 'grove', x: 300, y: 344, label: 'region.grove', desc: 'mushroom_grove', labelDy: 42, magical: false, emblem: 'M-11 -1a11 7.5 0 0 1 22 0zM-3 -1h6v9h-6z', fragmentName: 'puzzle.fragment.grove' },
+  { id: 'spirit', x: 398, y: 262, label: 'region.spirit', desc: 'spirit_clearing', labelDy: 36, magical: true, emblem: 'M0 -8C4.4 -3.4 3.6 3.4 0 8C-3.6 3.4 -4.4 -3.4 0 -8Z', fragmentName: null },
+] as const;
+const MAP_PUZZLE: Record<string, string | undefined> = { village: undefined, tree: undefined, ruins: 'light_reflection', lake: 'rune_sequence', grove: 'spirit_path', spirit: undefined };
+
+function MapNode({ n, state, selected, onSelect, label, ariaNow }: { n: (typeof MAP_NODES)[number]; state: 'current' | 'completed' | 'idle'; selected: boolean; onSelect: () => void; label: string; ariaNow: string }) {
+  const stroke = state === 'current' ? '#5eead4' : state === 'completed' ? '#5eead4' : n.magical ? 'rgba(94,234,212,.6)' : 'rgba(216,187,120,.55)';
+  const fill = n.magical ? 'rgba(94,234,212,.10)' : 'rgba(216,187,120,.08)';
+  return (
+    <g className={`wmap-node wmap-${state}${selected ? ' wmap-selected' : ''}`} transform={`translate(${n.x} ${n.y})`} onClick={onSelect} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onSelect(); } }} tabIndex={0} role="button" aria-pressed={selected} aria-label={`${label} — ${ariaNow}`}>
+      {state === 'current' && <circle r="27" fill="none" stroke="#5eead4" strokeOpacity=".28" strokeWidth="7" />}
+      {selected && <circle r="24.5" fill="none" stroke="#f4e9c9" strokeWidth="1.6" strokeOpacity=".9" strokeDasharray="4 3" />}
+      <circle r="20" fill={fill} stroke={stroke} strokeWidth={state === 'current' ? 2.4 : 1.6} />
+      <path d={n.emblem} transform="translate(0 -1)" fill={stroke} fillOpacity={n.magical ? .95 : .9} />
+      {state === 'completed' && (
+        <g transform="translate(13 -13)">
+          <circle r="7" fill="#1e3027" stroke="#5eead4" strokeWidth="1.2" />
+          <path d="M-3.2 0l2.3 2.4 4.2-4.6" fill="none" stroke="#5eead4" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />
+        </g>
+      )}
+      <text y={n.labelDy} textAnchor="middle" className="wmap-label">{label}</text>
+    </g>
+  );
+}
+
 export function MapView() {
   const t = useT();
   const { showMap, setShowMap } = useUI();
+  const { regionId, solvedPuzzles, spiritFragments } = useProgress();
+  const [selected, setSelected] = useState<string>('village');
+  useEffect(() => {
+    if (!showMap) return;
+    const onKey = (e: KeyboardEvent) => { if (e.code === 'KeyM') setShowMap(false); };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [showMap, setShowMap]);
   if (!showMap) return null;
+  const regionNorm = regionId.replace(/^forest_/, '') || regionId;
+  const current = regionNorm === 'village' || regionNorm === 'spirit' ? regionNorm : MAP_NODES.some((x) => x.id === regionNorm) ? regionNorm : 'village';
+  const stateOf = (id: string): 'current' | 'completed' | 'idle' => id === current ? 'current' : (MAP_PUZZLE[id] && solvedPuzzles.includes(MAP_PUZZLE[id] as string)) ? 'completed' : 'idle';
+  const sel = MAP_NODES.find((n) => n.id === selected) ?? MAP_NODES[0];
+  const selState = stateOf(sel.id);
+  const selLabel = t(sel.label);
+  const stateText = selState === 'current' ? t('hud.map.state.current') : selState === 'completed' ? t('hud.map.state.completed') : t('hud.map.state.discovered');
   return (
     <div className="screen" style={{ position: 'fixed', inset: 0, zIndex: 40, background: 'rgba(10,18,14,.7)' }}>
-      <div className="card">
+      <div className="card wmap-card">
         <h2>{t('hud.map.title')}</h2>
-        <pre style={{ textAlign: 'left', fontSize: 13 }}>{t('hud.map.diagram', { tree: t('region.map.ancient_tree'), lake: t('region.map.crystal_lake'), village: t('region.map.forest_village'), ruins: t('region.map.whispering_ruins'), trail: t('region.map.woodland_trail'), grove: t('region.map.mushroom_grove'), gate: t('region.map.spawn_gate') })}</pre>
+        <div className="wmap-wrap">
+          <svg viewBox="0 0 600 420" className="wmap-svg" role="img" aria-label={t('hud.map.title')}>
+            <defs>
+              <radialGradient id="wmap-bg" cx="50%" cy="42%" r="75%">
+                <stop offset="0%" stopColor="#22362c" />
+                <stop offset="62%" stopColor="#182a22" />
+                <stop offset="100%" stopColor="#111f19" />
+              </radialGradient>
+            </defs>
+            <rect x="4" y="4" width="592" height="412" rx="14" fill="url(#wmap-bg)" stroke="rgba(216,187,120,.25)" />
+            {/* Route lines: village hub → each region */}
+            {MAP_NODES.filter((n) => n.id !== 'village').map((n) => {
+              const active = n.id === current || n.id === selected;
+              return <line key={n.id} x1="300" y1="212" x2={n.x} y2={n.y} className={`wmap-route${active ? ' wmap-route-on' : ''}`} />;
+            })}
+            {MAP_NODES.map((n) => (
+              <MapNode key={n.id} n={n} state={stateOf(n.id)} selected={selected === n.id} onSelect={() => setSelected(n.id)} label={t(n.label)} ariaNow={stateOf(n.id) === 'current' ? t('hud.map.state.current') : stateOf(n.id) === 'completed' ? t('hud.map.state.completed') : t('hud.map.state.discovered')} />
+            ))}
+          </svg>
+        </div>
+        <div className="wmap-detail" aria-live="polite">
+          <div className="wmap-detail-head">
+            <strong>{selLabel}</strong>
+            <span className={`wmap-badge wmap-badge-${selState}`}>{stateText}</span>
+          </div>
+          <p className="wmap-desc">{t(`hud.map.desc.${sel.desc}`)}</p>
+          {selState === 'completed' && sel.fragmentName && <p className="wmap-frag">✦ {t(sel.fragmentName)}</p>}
+          {selState === 'current' && <p className="wmap-frag">✦ {t('hud.fragments', { n: spiritFragments })}</p>}
+        </div>
         <button onClick={() => setShowMap(false)}>{t('hud.map.close')}</button>
       </div>
     </div>
