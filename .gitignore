@@ -7,3 +7,4 @@ shots/
 .tmp-audit/
 
 scripts/walk-current.json
+.qa-profile/
