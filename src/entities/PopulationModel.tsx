@@ -34,6 +34,9 @@ function Inner({ entry }: { entry: PopulationEntry }) {
   const mixerRef = useRef<THREE.AnimationMixer | null>(null);
   const localT = useRef(0);
   const phase = useMemo(() => phaseOf(entry.id), [entry.id]);
+  // Persistent flee displacement (horizontal), reset to 0 when the player is
+  // out of flee range (eases back toward the authored position).
+  const drift = useRef(new THREE.Vector2(0, 0));
 
   const gltf = useLoader(GLTFLoader, entry.model);
 
@@ -101,20 +104,76 @@ function Inner({ entry }: { entry: PopulationEntry }) {
     // Optional small-radius wander: sin/cos (Lissajous) motion, deterministic
     // phase. Angular frequency derived so max horizontal speed == wander.speed.
     // Offsets are relative to the authored position (zero at t=0).
+    let wx = 0, wz = 0, vx = 0, vz = 0, hasWander = false;
     if (entry.wander) {
       const { radius, speed } = entry.wander;
       const w1 = speed / radius; // primary axis: max speed = radius * w1 = speed
       const w2 = w1 * 0.7; // secondary axis: different freq => non-repeating path
       const t = localT.current;
-      const nx = (Math.sin(t * w1 + phase) - Math.sin(phase)) * radius;
-      const nz = (Math.cos(t * w2 + phase * 1.3) - Math.cos(phase * 1.3)) * radius;
+      wx = (Math.sin(t * w1 + phase) - Math.sin(phase)) * radius;
+      wz = (Math.cos(t * w2 + phase * 1.3) - Math.cos(phase * 1.3)) * radius;
       // Face the movement direction (yaw toward velocity).
-      const vx = Math.cos(t * w1 + phase) * w1;
-      const vz = -Math.sin(t * w2 + phase * 1.3) * w2;
-      if (Math.abs(vx) + Math.abs(vz) > 1e-3) {
+      vx = Math.cos(t * w1 + phase) * w1;
+      vz = -Math.sin(t * w2 + phase * 1.3) * w2;
+      hasWander = true;
+    }
+    // Wildlife flee: displace horizontally away from the player while within
+    // flee.dist, clamped so total drift stays within (wander.radius + 2) of
+    // the authored position. Eases back (drift -> 0) when the player is far.
+    // No collider — pure visual displacement.
+    let fleeActive = false;
+    if (entry.flee) {
+      // Distance from the AMBIENT position (authored + wander) to the player,
+      // not g.position — avoids a feedback loop with prior drift.
+      const ax = entry.position[0] + wx;
+      const az = entry.position[2] + wz;
+      const dx = ax - playerPos.x;
+      const dz = az - playerPos.z;
+      const hdist = Math.hypot(dx, dz);
+      if (hdist < entry.flee.dist) {
+        fleeActive = true;
+        const inv = 1 / Math.max(hdist, 1e-3);
+        const awayX = dx * inv, awayZ = dz * inv;
+        drift.current.x += awayX * entry.flee.speed * d;
+        drift.current.y += awayZ * entry.flee.speed * d;
+        const maxDrift = (entry.wander?.radius ?? 0) + 2;
+        const len = Math.hypot(drift.current.x, drift.current.y);
+        if (len > maxDrift) {
+          const s = maxDrift / len;
+          drift.current.x *= s;
+          drift.current.y *= s;
+        }
+        // Facing = direction of flee.
+        g.rotation.y = Math.atan2(awayX, awayZ);
+      } else {
+        // Ease back toward the ambient wander position.
+        const k = 1 - Math.exp(-2.5 * d);
+        drift.current.x *= 1 - k;
+        drift.current.y *= 1 - k;
+      }
+    }
+    // Final position: authored + wander offset + flee drift (Y from authored).
+    g.position.set(
+      entry.position[0] + wx + drift.current.x,
+      entry.position[1],
+      entry.position[2] + wz + drift.current.y,
+    );
+    // Facing: flee already set it; else NPC face-player override; else wander.
+    if (!fleeActive) {
+      if (entry.facePlayer) {
+        const ddx = playerPos.x - g.position.x;
+        const ddz = playerPos.z - g.position.z;
+        if (Math.hypot(ddx, ddz) < entry.facePlayer.dist) {
+          const target = Math.atan2(ddx, ddz);
+          // Smooth wrap-aware lerp toward the player.
+          let diff = (target - g.rotation.y + Math.PI) % (Math.PI * 2);
+          if (diff < 0) diff += Math.PI * 2;
+          diff -= Math.PI;
+          g.rotation.y += diff * (1 - Math.exp(-6 * d));
+        }
+      } else if (hasWander && Math.abs(vx) + Math.abs(vz) > 1e-3) {
         g.rotation.y = Math.atan2(vx, vz);
       }
-      g.position.set(entry.position[0] + nx, entry.position[1], entry.position[2] + nz);
     }
   });
 
