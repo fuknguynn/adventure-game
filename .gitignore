@@ -8,3 +8,6 @@ shots/
 
 scripts/walk-current.json
 .qa-profile/
+
+tmp_chrome_profile*/
+tmp_*.mjs

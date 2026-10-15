@@ -57,10 +57,10 @@ export const POPULATION: PopulationEntry[] = [
     targetHeight: 2.2,
     animation: { clip: 'Idle' },
     interactable: true,
-    label: 'Talk to the villager',
+    label: 'pop.villager',
     dialogue: [
-      'My grandmother used to tell stories about the Tree. She said it dreamed.',
-      "The spirit light follows you, doesn't it? Don't worry — it means well.",
+      'pop.villager.0',
+      'pop.villager.1',
     ],
   },
   {
@@ -71,10 +71,10 @@ export const POPULATION: PopulationEntry[] = [
     targetHeight: 2.2,
     animation: { clip: 'Idle' },
     interactable: true,
-    label: 'Talk to the merchant',
+    label: 'pop.merchant',
     dialogue: [
-      'The forest has been quiet lately. Too quiet.',
-      'I heard the grove mushrooms glow brighter last night. Something is stirring near the Grove.',
+      'pop.merchant.0',
+      'pop.merchant.1',
     ],
   },
   {
@@ -95,10 +95,10 @@ export const POPULATION: PopulationEntry[] = [
     targetHeight: 2.2,
     animation: { clip: 'Idle' },
     interactable: true,
-    label: 'Talk to the vendor',
+    label: 'pop.vendor',
     dialogue: [
-      'I sell forest goods — herbs, dried caps, a little honey. Nothing fancy.',
-      'Have you heard the strange sounds near the grove at night? The elders say the Tree is calling.',
+      'pop.vendor.0',
+      'pop.vendor.1',
     ],
   },
   // ---- Lake ----
@@ -110,10 +110,10 @@ export const POPULATION: PopulationEntry[] = [
     targetHeight: 2.2,
     animation: { clip: 'Idle' },
     interactable: true,
-    label: 'Talk to the fisherman',
+    label: 'pop.fisherman',
     dialogue: [
-      'The crystals under the lake hum when the wind is right.',
-      'The water near the shore glows at night now. Never seen that before.',
+      'pop.fisherman.0',
+      'pop.fisherman.1',
     ],
   },
   {
@@ -178,10 +178,10 @@ export const POPULATION: PopulationEntry[] = [
     targetHeight: 2.2,
     animation: { clip: 'Idle' },
     interactable: true,
-    label: 'Talk to the scholar',
+    label: 'pop.scholar',
     dialogue: [
-      'The ruins predate the village by centuries. The runes are a language I cannot fully read.',
-      'But the sequence — I think it follows the stars. Each rune corresponds to a direction.',
+      'pop.scholar.0',
+      'pop.scholar.1',
     ],
   },
   {

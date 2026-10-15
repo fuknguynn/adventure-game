@@ -2,7 +2,7 @@
 * { box-sizing: border-box; }
 html, body, #root { margin: 0; height: 100%; }
 body { font-family: Georgia, 'Times New Roman', serif; background: #15251e; color: #f4e9c9; overflow: hidden; }
-button { font: inherit; cursor: pointer; border-radius: 10px; border: 1px solid #d8bb78; background: #1e3027; color: #f4e9c9; padding: 10px 16px; min-height: 44px; }
+button { font: inherit; cursor: pointer; border-radius: 10px; border: 1px solid #d8bb78; background: #1e3027; color: #f4e9c9; padding: 10px 16px; min-height: 44px; white-space: normal; overflow-wrap: break-word; }
 button:disabled { opacity: 0.45; cursor: not-allowed; }
 button:focus-visible, input:focus-visible { outline: 3px solid #d8bb78; outline-offset: 2px; }
 input, select { font: inherit; padding: 10px 12px; border-radius: 10px; border: 1px solid #b7c6b8; background: #0f1c17; color: #f4e9c9; min-height: 44px; }
@@ -43,7 +43,7 @@ input, select { font: inherit; padding: 10px 12px; border-radius: 10px; border: 
 @keyframes hint-life { 0% { opacity: 0; } 8% { opacity: 1; } 92% { opacity: 1; } 100% { opacity: 0; } }
 body.touch .kb-hint { display: none; }
 @media (pointer: coarse) { .kb-hint { display: none; } }
-.toast { position: fixed; bottom: 84px; left: 50%; transform: translateX(-50%); background: rgba(15,28,23,.85); border: 1px solid rgba(216,187,120,.3); padding: 8px 14px; border-radius: 10px; z-index: 30; font-size: 14px; }
+.toast { position: fixed; bottom: 84px; left: 50%; transform: translateX(-50%); background: rgba(15,28,23,.85); border: 1px solid rgba(216,187,120,.3); padding: 8px 14px; border-radius: 10px; z-index: 30; font-size: 14px; max-width: min(92vw, 560px); white-space: normal; overflow-wrap: break-word; }
 .touch-ui { display: none; position: absolute; gap: 10px; pointer-events: auto; }
 .touch-ui-left { left: var(--hud-m); bottom: calc(var(--hud-m) + env(safe-area-inset-bottom)); }
 .touch-ui-right { right: var(--hud-m); bottom: calc(var(--hud-m) + env(safe-area-inset-bottom)); }

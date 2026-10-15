@@ -1,39 +1,42 @@
 import { useEffect, useState } from 'react';
 import { loadSave } from '../systems/SaveSystem';
 import { initAudio } from '../systems/AudioSystem';
+import { useT } from '../i18n';
 
 export function Welcome({ onNew, onContinue, onSettings }: { onNew: () => void; onContinue: () => void; onSettings: () => void }) {
+  const t = useT();
   const [hasSave, setHasSave] = useState(false);
   useEffect(() => { setHasSave(!!loadSave()); }, []);
   return (
     <div className="screen">
       <div className="card">
-        <h1 style={{ margin: '4px 0' }}>ELDERGROVE</h1>
-        <p style={{ letterSpacing: 4, margin: 0 }}>THE LOST REALM</p>
-        <p>A stylized forest adventure. Explore, befriend the spirit, recover 3 fragments, restore the Ancient Tree.</p>
+        <h1 style={{ margin: '4px 0' }}>{t('ui.welcome.title')}</h1>
+        <p style={{ letterSpacing: 4, margin: 0 }}>{t('ui.welcome.subtitle')}</p>
+        <p>{t('ui.welcome.description')}</p>
         <div style={{ display: 'flex', gap: 10, justifyContent: 'center', flexWrap: 'wrap' }}>
-          <button onClick={() => { initAudio('village'); onNew(); }}>New Adventure</button>
-          {hasSave && <button onClick={onContinue}>Continue Adventure</button>}
-          <button onClick={onSettings}>Settings</button>
+          <button onClick={() => { initAudio('village'); onNew(); }}>{t('ui.welcome.new')}</button>
+          {hasSave && <button onClick={onContinue}>{t('ui.welcome.continue')}</button>}
+          <button onClick={onSettings}>{t('ui.welcome.settings')}</button>
         </div>
-        <p style={{ fontSize: 13, opacity: 0.8 }}>Free static build · CC0 KayKit assets · progress saves locally</p>
+        <p style={{ fontSize: 13, opacity: 0.8 }}>{t('ui.welcome.footer')}</p>
       </div>
     </div>
   );
 }
 
 export function IntroCinematic({ onDone }: { onDone: () => void }) {
+  const t = useT();
   useEffect(() => {
-    const t = setTimeout(() => { onDone(); }, 6000);
-    return () => clearTimeout(t);
+    const timer = setTimeout(() => { onDone(); }, 6000);
+    return () => clearTimeout(timer);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   return (
     <div className="screen">
       <div className="card">
-        <h2>The forest wakes…</h2>
-        <p>Mosslight stirs. Somewhere west, the Ancient Tree dreams of rain. Follow the spirit. (Skippable)</p>
-        <button onClick={onDone}>Skip — Spawn at Forest Village</button>
+        <h2>{t('ui.cinematic.heading')}</h2>
+        <p>{t('ui.cinematic.text')}</p>
+        <button onClick={onDone}>{t('ui.cinematic.skip')}</button>
       </div>
     </div>
   );

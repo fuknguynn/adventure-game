@@ -3,15 +3,17 @@ import { CHARACTERS } from '../data/gameData';
 import { isValidDisplayName, sanitizeDisplayName } from '../utils/validateName';
 import { useProfile } from '../stores/stores';
 import { CreationStage, ThumbCanvas } from '../game/CreationStage';
+import { useT } from '../i18n';
 import './CharacterCreation.css';
 
 const BLURBS: Record<string, string> = {
-  knight: 'A steadfast warden sworn to the Ancient Tree. First into the mosslight, last to leave it.',
-  mage: 'A gentle keeper of spores and lantern-light. Reads the forest like a slow green sentence.',
-  rogue: 'A quick pathfinder of briar trails. Knows every shortcut the map forgot.',
+  knight: 'ui.creation.class.knight',
+  mage: 'ui.creation.class.mage',
+  rogue: 'ui.creation.class.rogue',
 };
 
 export function CharacterCreation({ onEnter }: { onEnter: () => void }) {
+  const t = useT();
   const { displayName, characterId, setProfile } = useProfile();
   const [sel, setSel] = useState(characterId || 'knight');
   const [name, setName] = useState(displayName || '');
@@ -28,11 +30,11 @@ export function CharacterCreation({ onEnter }: { onEnter: () => void }) {
       </div>
 
       <div className="creation-inner">
-        <aside className="creation-panel" aria-label="Adventurer setup">
-          <p className="creation-kicker">Eldergrove · The Lost Realm</p>
-          <h1 className="creation-title">Create Your Adventurer</h1>
+        <aside className="creation-panel" aria-label={t('ui.creation.setup')}>
+          <p className="creation-kicker">{t('ui.creation.kicker')}</p>
+          <h1 className="creation-title">{t('ui.creation.title')}</h1>
 
-          <label className="name-label" htmlFor="dname">Adventurer name</label>
+          <label className="name-label" htmlFor="dname">{t('ui.creation.nameLabel')}</label>
           <input
             id="dname"
             data-testid="name-input"
@@ -41,16 +43,16 @@ export function CharacterCreation({ onEnter }: { onEnter: () => void }) {
             maxLength={24}
             onChange={(e) => setName(e.target.value)}
             onBlur={() => setTouched(true)}
-            placeholder="e.g. Ray"
+            placeholder={t('ui.creation.namePlaceholder')}
             autoComplete="off"
             aria-invalid={touched && !valid}
             aria-describedby="name-hint"
           />
           <p id="name-hint" className="name-hint" role={touched && !valid ? 'alert' : undefined}>
-            {touched && !valid ? 'Use 1–20 letters — spaces, - _ and \' are welcome.' : '1–20 characters · kept when you switch characters'}
+            {touched && !valid ? t('ui.creation.nameError') : t('ui.creation.nameHint')}
           </p>
 
-          <div className="cards" role="radiogroup" aria-label="Choose a character">
+          <div className="cards" role="radiogroup" aria-label={t('ui.creation.choose')}>
             {CHARACTERS.map((c) => (
               <button
                 key={c.id}
@@ -64,8 +66,8 @@ export function CharacterCreation({ onEnter }: { onEnter: () => void }) {
                   <ThumbCanvas modelUrl={c.file} label={c.name} />
                 </span>
                 <span className="char-meta">
-                  <strong>{c.name}</strong>
-                  <em>{c.title} · cosmetic only</em>
+                  <strong>{t(c.name)}</strong>
+                  <em>{t(c.title)} · {t('ui.creation.cosmeticOnly')}</em>
                 </span>
                 <span className="char-check" aria-hidden="true">✦</span>
               </button>
@@ -73,14 +75,14 @@ export function CharacterCreation({ onEnter }: { onEnter: () => void }) {
           </div>
         </aside>
 
-        <section className="creation-stage" aria-label={`3D preview of ${active.name}. Drag to rotate.`}>
+        <section className="creation-stage" aria-label={t('ui.creation.preview', { name: t(active.name) })}>
           <CreationStage modelUrl={active.file} />
-          <p className="stage-caption">Drag to turn · auto-framed head to feet</p>
+          <p className="stage-caption">{t('ui.creation.stageCaption')}</p>
         </section>
 
         <footer className="creation-bar">
           <p className="char-blurb">
-            <strong>{active.name}</strong> — {BLURBS[active.id] ?? active.description}
+            <strong>{t(active.name)}</strong> — {t(BLURBS[active.id] ?? active.description)}
           </p>
           <button
             data-testid="enter-forest"
@@ -91,7 +93,7 @@ export function CharacterCreation({ onEnter }: { onEnter: () => void }) {
               onEnter();
             }}
           >
-            Enter the Forest →
+            {t('ui.creation.enter')}
           </button>
         </footer>
       </div>

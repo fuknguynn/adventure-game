@@ -1,5 +1,5 @@
 export const SAVE_KEY = 'eldergrove.save.v1';
-export const SCHEMA_VERSION = 2;
+export const SCHEMA_VERSION = 3;
 
 export interface SaveData {
   schemaVersion: number;
@@ -16,7 +16,7 @@ export interface SaveData {
     lore: string[];
     npcDialogueStage: number;
   };
-  settings: { quality: 'auto' | 'low' | 'medium' | 'high'; musicVolume: number; sfxVolume: number; reducedMotion: boolean; muted: boolean };
+  settings: { quality: 'auto' | 'low' | 'medium' | 'high'; musicVolume: number; sfxVolume: number; reducedMotion: boolean; muted: boolean; lang: 'vi' | 'en' };
   updatedAt: string;
 }
 
@@ -33,7 +33,7 @@ export function defaultSave(): SaveData {
       completedQuests: [], solvedPuzzles: [], spiritFragments: 0, worldRestored: false,
       miniObjectives: [], secrets: [], lore: [], npcDialogueStage: 0,
     },
-    settings: { quality: 'auto', musicVolume: 0.5, sfxVolume: 0.7, reducedMotion: false, muted: false },
+    settings: { quality: 'auto', musicVolume: 0.5, sfxVolume: 0.7, reducedMotion: false, muted: false, lang: 'vi' },
     updatedAt: new Date().toISOString(),
   };
 }
@@ -41,7 +41,7 @@ export function defaultSave(): SaveData {
 export function isValidSave(d: unknown): d is SaveData {
   if (!d || typeof d !== 'object') return false;
   const s = d as Record<string, unknown>;
-  if (s.schemaVersion !== 1 && s.schemaVersion !== SCHEMA_VERSION) return false;
+  if (s.schemaVersion !== 1 && s.schemaVersion !== 2 && s.schemaVersion !== SCHEMA_VERSION) return false;
   const p = s.profile as Record<string, unknown> | undefined;
   const g = s.progress as Record<string, unknown> | undefined;
   const st = s.settings as Record<string, unknown> | undefined;
@@ -59,14 +59,17 @@ export function migrateSave(raw: unknown): SaveData | null {
     const s = raw as SaveData;
     // Normalize missing/invalid settings.muted to false
     if (typeof s.settings.muted !== 'boolean') s.settings.muted = false;
-    // v1 → v2: fill new fields with defaults, bump version
-    if (s.schemaVersion === 1) {
+    // v1/v2 → v3: fill settings.lang with default when missing, bump version
+    if (s.schemaVersion < SCHEMA_VERSION) {
+      if (s.schemaVersion === 1) {
+        const p = s.progress as Record<string, unknown>;
+        if (!Array.isArray(p.miniObjectives)) p.miniObjectives = [];
+        if (!Array.isArray(p.secrets)) p.secrets = [];
+        if (!Array.isArray(p.lore)) p.lore = [];
+        if (typeof p.npcDialogueStage !== 'number') p.npcDialogueStage = deriveStageFromProgress(s.progress);
+      }
+      if (s.settings.lang !== 'vi' && s.settings.lang !== 'en') s.settings.lang = 'vi';
       s.schemaVersion = SCHEMA_VERSION;
-      const p = s.progress as Record<string, unknown>;
-      if (!Array.isArray(p.miniObjectives)) p.miniObjectives = [];
-      if (!Array.isArray(p.secrets)) p.secrets = [];
-      if (!Array.isArray(p.lore)) p.lore = [];
-      if (typeof p.npcDialogueStage !== 'number') p.npcDialogueStage = deriveStageFromProgress(s.progress);
     }
     return s;
   }

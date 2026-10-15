@@ -1,3 +1,4 @@
+// User-facing strings are emitted as i18n translation keys (see src/i18n/locales/data.*.ts).
 export interface CharacterDef {
   id: string;
   file: string;
@@ -8,25 +9,25 @@ export interface CharacterDef {
 
 /** Verified real GLBs in public/models/characters (see asset-manifest.json). Cosmetic only. */
 export const CHARACTERS: CharacterDef[] = [
-  { id: 'knight', file: '/models/characters/Knight.glb', name: 'Knight of the Grove', title: 'Warden', description: 'A steadfast warden sworn to the Ancient Tree. Cosmetic choice — same journey for all.' },
-  { id: 'mage', file: '/models/characters/Mage.glb', name: 'Moss Mage', title: 'Keeper', description: 'A gentle keeper of mosslight and spores. Cosmetic choice — same journey for all.' },
-  { id: 'rogue', file: '/models/characters/Rogue.glb', name: 'Thorn Rogue', title: 'Pathfinder', description: 'A quick pathfinder of briar trails. Cosmetic choice — same journey for all.' },
+  { id: 'knight', file: '/models/characters/Knight.glb', name: 'char.name.knight', title: 'char.title.knight', description: 'char.desc.knight' },
+  { id: 'mage', file: '/models/characters/Mage.glb', name: 'char.name.mage', title: 'char.title.mage', description: 'char.desc.mage' },
+  { id: 'rogue', file: '/models/characters/Rogue.glb', name: 'char.name.rogue', title: 'char.title.rogue', description: 'char.desc.rogue' },
 ];
 
 export const QUEST_MAIN = {
   id: 'the_forest_remembers',
-  title: 'The Forest Remembers',
+  title: 'quest.main.title',
   steps: [
-    'Speak with the forest spirit in the Village',
-    'Recover the Grove Fragment (Mushroom Grove — Spirit Path)',
-    'Recover the Lake Fragment (Crystal Lake — Rune Sequence)',
-    'Recover the Ruins Fragment (Whispering Ruins — Light Reflection)',
-    'Restore the Ancient Tree',
+    'quest.main.step.0',
+    'quest.main.step.1',
+    'quest.main.step.2',
+    'quest.main.step.3',
+    'quest.main.step.4',
   ],
 };
 
 export const PUZZLES = {
-  spiritPath: { id: 'spirit_path', target: [0, 2, 1, 3], hint: 'Follow the spirit footprints: stone order glows twice, then try.' },
-  runeSequence: { id: 'rune_sequence', target: [1, 3, 0, 2], hint: 'Listen and watch: the runes sing in order. Replay any time.' },
-  lightReflection: { id: 'light_reflection', targets: [1, 2, 0], hint: 'Turn each crystal until its beam runs straight to the gate.' },
+  spiritPath: { id: 'spirit_path', target: [0, 2, 1, 3], hint: 'puzzle.hint.spirit_path' },
+  runeSequence: { id: 'rune_sequence', target: [1, 3, 0, 2], hint: 'puzzle.hint.rune_sequence' },
+  lightReflection: { id: 'light_reflection', targets: [1, 2, 0], hint: 'puzzle.hint.light_reflection' },
 };

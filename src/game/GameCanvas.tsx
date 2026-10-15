@@ -20,6 +20,8 @@ import { MAIN_NPC_DIALOGUE, REGION_TITLES, MINI_OBJECTIVES, INTERACTABLES } from
 import { attachKeyboard, pausedFlag } from './input';
 import { useEffect } from 'react';
 import { sfx, setRegion, regionAt, updateListener, addPositionalSource, removePositionalSource } from '../systems/AudioSystem';
+import { t } from '../i18n';
+import { useI18n } from '../stores/i18nStore';
 
 export const SPOTS = {
   spirit: new THREE.Vector3(2, 0, 2),
@@ -34,6 +36,7 @@ export function GameCanvas({ onExit, onEnding }: { onExit: () => void; onEnding:
   const { solvedPuzzles, completedQuests, spiritFragments, worldRestored, miniObjectives, setProgress, setNpcDialogueStage } = useProgress();
   const { setDialogue, setToast, photoMode, setPhotoMode } = useUI();
   const { quality, reducedMotion } = useSettings();
+  useI18n((s) => s.lang);
   const [puzzle, setPuzzle] = useState<string | null>(null);
   const [paused, setPaused] = useState(false);
   const [dayT, setDayT] = useState(0.28);
@@ -61,14 +64,14 @@ export function GameCanvas({ onExit, onEnding }: { onExit: () => void; onEnding:
     const tick = () => {
       const popLabel = POPULATION.find((e) => e.interactable && e.label && R(new THREE.Vector3(...e.position)))?.label ?? '';
       const spotLabel =
-        R(SPOTS.npc) || R(SPOTS.spirit) ? 'Talk' :
-        R(SPOTS.grove, 5) || R(SPOTS.lake, 6) || R(SPOTS.ruins, 5) ? 'Inspect' :
-        R(SPOTS.tree, 6) ? 'Touch the Tree' :
+        R(SPOTS.npc) || R(SPOTS.spirit) ? t('hud.prompt.talk') :
+        R(SPOTS.grove, 5) || R(SPOTS.lake, 6) || R(SPOTS.ruins, 5) ? t('hud.prompt.inspect') :
+        R(SPOTS.tree, 6) ? t('hud.prompt.touch_tree') :
         '';
       // SPOTS win, then population, then interactables (same order as interact()).
       const label = spotLabel ||
-        popLabel ||
-        (INTERACTABLES.find((i) => R(new THREE.Vector3(...i.position), 3))?.label ?? '');
+        (popLabel ? t(popLabel) : '') ||
+        (() => { const l = INTERACTABLES.find((i) => R(new THREE.Vector3(...i.position), 3))?.label; return l ? t(l) : ''; })();
       if (label !== last) { last = label; setNear(label || null); }
       raf = requestAnimationFrame(tick);
     };
@@ -132,7 +135,7 @@ export function GameCanvas({ onExit, onEnding }: { onExit: () => void; onEnding:
     // would replay the reward. Inspecting shows a calm confirmation instead.
     const openPuzzle = (id: string, name: string) => {
       if (solvedPuzzles.includes(id)) {
-        setToast(`${name} fragment already recovered ✦`);
+        setToast(t('hud.toast.fragment_recovered', { name: name }));
         setTimeout(() => setToast(null), 2000);
         return;
       }
@@ -142,15 +145,15 @@ export function GameCanvas({ onExit, onEnding }: { onExit: () => void; onEnding:
     // region's objective is complete (DepthDirector completes it via proximity).
     const gated = (id: string, name: string, objectiveId: string) => {
       if (!miniObjectives.includes(objectiveId)) {
-        setToast('The Spirit hasn\'t revealed the puzzle yet. Follow the trail ✦');
+        setToast(t('hud.toast.puzzle_locked'));
         setTimeout(() => setToast(null), 2400);
         return;
       }
       openPuzzle(id, name);
     };
-    if (near(SPOTS.grove, 5)) { gated('spirit_path', 'Grove', 'grove_trail'); return; }
-    if (near(SPOTS.lake, 6)) { gated('rune_sequence', 'Lake', 'lake_crystals'); return; }
-    if (near(SPOTS.ruins, 5)) { gated('light_reflection', 'Ruins', 'ruins_runes'); return; }
+    if (near(SPOTS.grove, 5)) { gated('spirit_path', t('region.name.grove'), 'grove_trail'); return; }
+    if (near(SPOTS.lake, 6)) { gated('rune_sequence', t('region.name.lake'), 'lake_crystals'); return; }
+    if (near(SPOTS.ruins, 5)) { gated('light_reflection', t('region.name.ruins'), 'ruins_runes'); return; }
     if (near(SPOTS.tree, 6)) {
       if (solvedPuzzles.length >= 3) {
         // Reward fires once: re-touching after completion must not replay SFX/ending.
@@ -161,11 +164,11 @@ export function GameCanvas({ onExit, onEnding }: { onExit: () => void; onEnding:
           sfx.treeRestore();
           onEnding();
         } else {
-          setToast('The restored grove hums with light ✦');
+          setToast(t('hud.toast.grove_restored'));
           setTimeout(() => setToast(null), 2200);
         }
       } else {
-        setToast(`The Tree sleeps. Fragments: ${solvedPuzzles.length}/3`);
+        setToast(t('hud.toast.tree_sleeps', { n: solvedPuzzles.length }));
         setTimeout(() => setToast(null), 2200);
       }
       return;
@@ -187,7 +190,7 @@ export function GameCanvas({ onExit, onEnding }: { onExit: () => void; onEnding:
         return;
       }
     }
-    setToast('Nothing here — follow the spirit light ✦');
+    setToast(t('hud.toast.nothing_here'));
     setTimeout(() => setToast(null), 1500);
   }, [paused, puzzle, completedQuests, solvedPuzzles, spiritFragments, worldRestored, miniObjectives, setDialogue, setProgress, setNpcDialogueStage, setToast, onEnding]);
 
@@ -216,19 +219,19 @@ export function GameCanvas({ onExit, onEnding }: { onExit: () => void; onEnding:
       <PuzzlePanels active={puzzle} onClose={() => setPuzzle(null)} />
       {photoMode && (
         <div className="hud photo-bar">
-          <span className="chip">Photo mode — HUD hidden</span>
+          <span className="chip">{t('hud.photo.banner')}</span>
           <span style={{ display: 'flex', gap: 6 }}>
             <button onClick={() => {
               const c = document.querySelector('canvas');
               if (c) { const a = document.createElement('a'); a.download = 'eldergrove.png'; a.href = c.toDataURL('image/png'); a.click(); }
-            }}>Save shot</button>
-            <button onClick={() => setPhotoMode(false)}>Exit</button>
+            }}>{t('hud.photo.save')}</button>
+            <button onClick={() => setPhotoMode(false)}>{t('hud.photo.exit')}</button>
           </span>
         </div>
       )}
       {!photoMode && showHint && (
         <div className="hud kb-hint">
-          <span className="chip">WASD Move · Mouse Look · Space Jump · E Interact</span>
+          <span className="chip">{t('hud.hint.controls')}</span>
         </div>
       )}
       {!photoMode && near && !paused && !puzzle && (
@@ -271,7 +274,7 @@ export function GameCanvas({ onExit, onEnding }: { onExit: () => void; onEnding:
       <TouchControls onInteract={interact} />
       {!photoMode && (
         <div className="hud day-slider">
-          <input aria-label="Time of day" type="range" min={0} max={1} step={0.01} value={dayT} onChange={(e) => setDayT(Number(e.target.value))} style={{ width: 110 }} />
+          <input aria-label={t('hud.aria.timeOfDay')} type="range" min={0} max={1} step={0.01} value={dayT} onChange={(e) => setDayT(Number(e.target.value))} style={{ width: 110 }} />
         </div>
       )}
     </div>
@@ -327,7 +330,7 @@ function AudioDirector() {
       if (title && !TOASTED_REGIONS.has(region)) {
         TOASTED_REGIONS.add(region);
         const ui = useUI.getState();
-        ui.setToast(title);
+        ui.setToast(t(title));
         setTimeout(() => useUI.getState().setToast(null), 2000);
       }
     }

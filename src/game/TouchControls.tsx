@@ -1,7 +1,9 @@
 import { useEffect, useRef } from 'react';
 import { joyMove, touchFlags, camOrbit, JOY_ZONE, pausedFlag } from '../game/input';
+import { useT } from '../i18n';
 
 export function TouchControls({ onInteract }: { onInteract: () => void }) {
+  const t = useT();
   const baseRef = useRef<HTMLDivElement>(null);
   const knobRef = useRef<HTMLDivElement>(null);
   const stick = (x: number, y: number, dx: number, dy: number, show: boolean) => {
@@ -67,12 +69,12 @@ export function TouchControls({ onInteract }: { onInteract: () => void }) {
   return (
     <div id="touchzone" style={{ position: 'fixed', inset: 0, zIndex: 5, pointerEvents: 'none' }}>
       <div className="touch-ui touch-ui-left">
-        <button className="touch-btn" aria-label="Jump" onTouchStart={() => { if (!pausedFlag.v) touchFlags.jump = true; }} onClick={() => { if (!pausedFlag.v) touchFlags.jump = true; }}>⤒</button>
-        <button className="touch-btn" aria-label="Sprint toggle" onClick={() => { touchFlags.sprint = !touchFlags.sprint; }}>»</button>
+        <button className="touch-btn" aria-label={t('touch.jump')} onTouchStart={() => { if (!pausedFlag.v) touchFlags.jump = true; }} onClick={() => { if (!pausedFlag.v) touchFlags.jump = true; }}>⤒</button>
+        <button className="touch-btn" aria-label={t('touch.sprint')} onClick={() => { touchFlags.sprint = !touchFlags.sprint; }}>»</button>
       </div>
       <div className="touch-ui touch-ui-right">
-        <button className="touch-btn" aria-label="Spirit ability" onClick={onInteract}>✦</button>
-        <button className="touch-btn" aria-label="Interact" onClick={onInteract}>E</button>
+        <button className="touch-btn" aria-label={t('touch.ability')} onClick={onInteract}>✦</button>
+        <button className="touch-btn" aria-label={t('touch.interact')} onClick={onInteract}>E</button>
       </div>
       <div ref={baseRef} aria-hidden style={{ display: 'none', position: 'fixed', width: 100, height: 100, borderRadius: '50%', border: '2px solid rgba(255,255,255,0.35)', pointerEvents: 'none' }} />
       <div ref={knobRef} aria-hidden style={{ display: 'none', position: 'fixed', left: 0, top: 0, width: 44, height: 44, borderRadius: '50%', background: 'rgba(255,255,255,0.4)', pointerEvents: 'none' }} />

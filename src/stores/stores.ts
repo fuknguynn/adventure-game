@@ -39,9 +39,10 @@ export const useProgress = create<Progress>((set) => ({
 interface Settings {
   quality: 'auto' | 'low' | 'medium' | 'high';
   musicVolume: number; sfxVolume: number; reducedMotion: boolean; muted: boolean;
+  lang: 'vi' | 'en';
   setSettings: (s: Partial<Settings>) => void;
 }
 export const useSettings = create<Settings>((set) => ({
-  quality: 'auto', musicVolume: 0.5, sfxVolume: 0.7, reducedMotion: false, muted: false,
+  quality: 'auto', musicVolume: 0.5, sfxVolume: 0.7, reducedMotion: false, muted: false, lang: 'vi',
   setSettings: (s) => set(s),
 }));

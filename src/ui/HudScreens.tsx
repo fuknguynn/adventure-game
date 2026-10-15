@@ -4,6 +4,7 @@ import { resetSave } from '../systems/SaveSystem';
 import { QUEST_MAIN } from '../data/gameData';
 import { currentObjective } from '../data/depthData';
 import { ui, sfx } from '../systems/AudioSystem';
+import { useT, t, useI18n } from '../i18n';
 
 function Icon({ d }: { d: string }) {
   return (
@@ -21,20 +22,21 @@ const ICONS = {
 };
 
 export function HUD({ onPause }: { onPause: () => void }) {
+  const t = useT();
   const { spiritFragments, solvedPuzzles, miniObjectives } = useProgress();
   const { setShowJournal, setShowMap, setPhotoMode, toast, showJournal, showMap, photoMode } = useUI();
   const objective = currentObjective(solvedPuzzles, miniObjectives);
   return (
     <>
-      <div className="hud quest-tracker" aria-label="current objective">
-        <div className="qt-line"><span className="qt-icon" aria-hidden>◈</span><span>{objective}</span></div>
-        <div className="qt-frag" aria-label="fragment counter"><Icon d={ICONS.gem} />{spiritFragments}/3 Spirit Fragments</div>
+      <div className="hud quest-tracker" aria-label={t('hud.aria.objective')}>
+        <div className="qt-line"><span className="qt-icon" aria-hidden>◈</span><span>{t(objective)}</span></div>
+        <div className="qt-frag" aria-label={t('hud.aria.fragments')}><Icon d={ICONS.gem} />{t('hud.fragments', { n: spiritFragments })}</div>
       </div>
       <div className="hud hud-tools">
-        <button className={`tool-btn${showJournal ? ' on' : ''}`} onClick={() => { ui.click(); sfx.journalOpen(); setShowJournal(true); }} onMouseEnter={() => ui.hover()} aria-label="Open quest journal (J)" title="Journal (J)"><Icon d={ICONS.book} /></button>
-        <button className={`tool-btn${showMap ? ' on' : ''}`} onClick={() => { ui.click(); sfx.mapOpen(); setShowMap(true); }} onMouseEnter={() => ui.hover()} aria-label="Open world map (M)" title="Map (M)"><Icon d={ICONS.map} /></button>
-        <button className={`tool-btn${photoMode ? ' on' : ''}`} onClick={() => { ui.click(); sfx.photoMode(); setPhotoMode(true); }} onMouseEnter={() => ui.hover()} aria-label="Open photo mode" title="Photo"><Icon d={ICONS.cam} /></button>
-        <button className="tool-btn" onClick={() => { ui.click(); onPause(); }} onMouseEnter={() => ui.hover()} aria-label="Pause game (Esc)" title="Pause (Esc)"><Icon d={ICONS.pause} /></button>
+        <button className={`tool-btn${showJournal ? ' on' : ''}`} onClick={() => { ui.click(); sfx.journalOpen(); setShowJournal(true); }} onMouseEnter={() => ui.hover()} aria-label={t('hud.tool.journal_aria')} title={t('hud.tool.journal_title')}><Icon d={ICONS.book} /></button>
+        <button className={`tool-btn${showMap ? ' on' : ''}`} onClick={() => { ui.click(); sfx.mapOpen(); setShowMap(true); }} onMouseEnter={() => ui.hover()} aria-label={t('hud.tool.map_aria')} title={t('hud.tool.map_title')}><Icon d={ICONS.map} /></button>
+        <button className={`tool-btn${photoMode ? ' on' : ''}`} onClick={() => { ui.click(); sfx.photoMode(); setPhotoMode(true); }} onMouseEnter={() => ui.hover()} aria-label={t('hud.tool.photo_aria')} title={t('hud.tool.photo_title')}><Icon d={ICONS.cam} /></button>
+        <button className="tool-btn" onClick={() => { ui.click(); onPause(); }} onMouseEnter={() => ui.hover()} aria-label={t('hud.tool.pause_aria')} title={t('hud.tool.pause_title')}><Icon d={ICONS.pause} /></button>
       </div>
       {toast && <div className="toast" role="status">{toast}</div>}
     </>
@@ -42,60 +44,64 @@ export function HUD({ onPause }: { onPause: () => void }) {
 }
 
 export function DialogueView() {
+  const t = useT();
   const { dialogue, setDialogue } = useUI();
   if (!dialogue) return null;
   return (
     <div className="hud" style={{ bottom: 90, left: '50%', transform: 'translateX(-50%)', width: 'min(92vw,560px)' }}>
       <div className="card panel">
-        {dialogue.map((l, i) => <p key={i}>{l}</p>)}
-        <button onClick={() => setDialogue(null)}>Continue</button>
+        {dialogue.map((l, i) => <p key={i}>{t(l)}</p>)}
+        <button onClick={() => setDialogue(null)}>{t('ui.dialogue.continue')}</button>
       </div>
     </div>
   );
 }
 
 export function JournalView() {
+  const t = useT();
   const { showJournal, setShowJournal } = useUI();
   const { completedQuests, solvedPuzzles } = useProgress();
   if (!showJournal) return null;
   return (
     <div className="screen" style={{ position: 'fixed', inset: 0, zIndex: 40, background: 'rgba(10,18,14,.7)' }}>
       <div className="card">
-        <h2>{QUEST_MAIN.title}</h2>
+        <h2>{t(QUEST_MAIN.title)}</h2>
         <ol style={{ textAlign: 'left' }}>
-          {QUEST_MAIN.steps.map((s, i) => <li key={i} style={{ opacity: i <= solvedPuzzles.length ? 1 : 0.55 }}>{s}</li>)}
+          {QUEST_MAIN.steps.map((s, i) => <li key={i} style={{ opacity: i <= solvedPuzzles.length ? 1 : 0.55 }}>{t(s)}</li>)}
         </ol>
-        <p>Completed quests: {completedQuests.join(', ') || '—'}</p>
-        <button onClick={() => setShowJournal(false)}>Close</button>
+        <p>{t('hud.journal.completed', { list: completedQuests.join(', ') || '—' })}</p>
+        <button onClick={() => setShowJournal(false)}>{t('ui.common.close')}</button>
       </div>
     </div>
   );
 }
 
 export function MapView() {
+  const t = useT();
   const { showMap, setShowMap } = useUI();
   if (!showMap) return null;
   return (
     <div className="screen" style={{ position: 'fixed', inset: 0, zIndex: 40, background: 'rgba(10,18,14,.7)' }}>
       <div className="card">
-        <h2>Eldergrove Map</h2>
-        <pre style={{ textAlign: 'left', fontSize: 13 }}>{`              [ANCIENT TREE]\n                    |\n[CRYSTAL LAKE]--[FOREST VILLAGE]--[WHISPERING RUINS]\n                    |\n            [WOODLAND TRAIL]---[MUSHROOM GROVE]\n                    |\n              [SPAWN GATE]`}</pre>
-        <button onClick={() => setShowMap(false)}>Close (M)</button>
+        <h2>{t('hud.map.title')}</h2>
+        <pre style={{ textAlign: 'left', fontSize: 13 }}>{t('hud.map.diagram', { tree: t('region.map.ancient_tree'), lake: t('region.map.crystal_lake'), village: t('region.map.forest_village'), ruins: t('region.map.whispering_ruins'), trail: t('region.map.woodland_trail'), grove: t('region.map.mushroom_grove'), gate: t('region.map.spawn_gate') })}</pre>
+        <button onClick={() => setShowMap(false)}>{t('hud.map.close')}</button>
       </div>
     </div>
   );
 }
 
 export function PauseView({ onResume, onQuit }: { onResume: () => void; onQuit: () => void }) {
+  const t = useT();
   const { setShowJournal } = useUI();
   return (
     <div className="screen" style={{ position: 'fixed', inset: 0, zIndex: 40, background: 'rgba(10,18,14,.7)' }}>
       <div className="card">
-        <h2>Paused</h2>
+        <h2>{t('hud.pause.title')}</h2>
         <div style={{ display: 'flex', gap: 8, justifyContent: 'center', flexWrap: 'wrap' }}>
-          <button onClick={onResume}>Resume (Esc)</button>
-          <button onClick={() => setShowJournal(true)}>Quest Journal</button>
-          <button onClick={onQuit}>Save & Title</button>
+          <button onClick={onResume}>{t('hud.pause.resume')}</button>
+          <button onClick={() => setShowJournal(true)}>{t('hud.pause.journal')}</button>
+          <button onClick={onQuit}>{t('hud.pause.quit')}</button>
         </div>
       </div>
     </div>
@@ -103,21 +109,26 @@ export function PauseView({ onResume, onQuit }: { onResume: () => void; onQuit: 
 }
 
 export function SettingsView({ onClose }: { onClose: () => void }) {
+  const t = useT();
   const s = useSettings();
   const { setProfile } = useProfile();
+  const lang = useI18n((st) => st.lang);
+  const { setLang } = useI18n();
+  const pickLang = (l: 'vi' | 'en') => { setLang(l); s.setSettings({ lang: l }); };
   return (
     <div className="screen" style={{ position: 'fixed', inset: 0, zIndex: 40, background: 'rgba(10,18,14,.85)' }}>
       <div className="card">
-        <h2>Settings</h2>
-        <label>Quality <select value={s.quality} onChange={(e) => s.setSettings({ quality: e.target.value as typeof s.quality })}><option value="auto">Auto</option><option value="low">Low</option><option value="medium">Medium</option><option value="high">High</option></select></label>
-        <label style={{ display: 'block', marginTop: 8 }}>Music <input type="range" min={0} max={1} step={0.05} value={s.musicVolume} onChange={(e) => s.setSettings({ musicVolume: Number(e.target.value) })} /></label>
-        <label style={{ display: 'block', marginTop: 8 }}>SFX <input type="range" min={0} max={1} step={0.05} value={s.sfxVolume} onChange={(e) => s.setSettings({ sfxVolume: Number(e.target.value) })} /></label>
-        <label style={{ display: 'block', marginTop: 8 }}><input type="checkbox" checked={s.reducedMotion} onChange={(e) => s.setSettings({ reducedMotion: e.target.checked })} /> Reduced motion</label>
-        <label style={{ display: 'block', marginTop: 8 }}><input type="checkbox" checked={s.muted} onChange={(e) => s.setSettings({ muted: e.target.checked })} /> Mute all</label>
-        <label style={{ display: 'block', marginTop: 8 }}>Display name <input value={useProfile.getState().displayName} onChange={(e) => setProfile({ displayName: e.target.value.slice(0, 20) })} /></label>
+        <h2>{t('settings.title')}</h2>
+        <label>{t('settings.quality')} <select value={s.quality} onChange={(e) => s.setSettings({ quality: e.target.value as typeof s.quality })}><option value="auto">{t('settings.quality.auto')}</option><option value="low">{t('settings.quality.low')}</option><option value="medium">{t('settings.quality.medium')}</option><option value="high">{t('settings.quality.high')}</option></select></label>
+        <label style={{ display: 'block', marginTop: 8 }}>{t('settings.music')} <input type="range" min={0} max={1} step={0.05} value={s.musicVolume} onChange={(e) => s.setSettings({ musicVolume: Number(e.target.value) })} /></label>
+        <label style={{ display: 'block', marginTop: 8 }}>{t('settings.sfx')} <input type="range" min={0} max={1} step={0.05} value={s.sfxVolume} onChange={(e) => s.setSettings({ sfxVolume: Number(e.target.value) })} /></label>
+        <label style={{ display: 'block', marginTop: 8 }}><input type="checkbox" checked={s.reducedMotion} onChange={(e) => s.setSettings({ reducedMotion: e.target.checked })} /> {t('settings.reducedMotion')}</label>
+        <label style={{ display: 'block', marginTop: 8 }}><input type="checkbox" checked={s.muted} onChange={(e) => s.setSettings({ muted: e.target.checked })} /> {t('settings.muted')}</label>
+        <label style={{ display: 'block', marginTop: 8 }}>{t('settings.language')} <select value={lang} onChange={(e) => pickLang(e.target.value as 'vi' | 'en')}><option value="vi">{t('settings.lang.vi')}</option><option value="en">{t('settings.lang.en')}</option></select></label>
+        <label style={{ display: 'block', marginTop: 8 }}>{t('settings.displayName')} <input value={useProfile.getState().displayName} onChange={(e) => setProfile({ displayName: e.target.value.slice(0, 20) })} /></label>
         <div style={{ display: 'flex', gap: 8, marginTop: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
-          <button onClick={() => { if (confirm('Reset saved adventure? This cannot be undone.')) { resetSave(); location.reload(); } }}>Reset Save</button>
-          <button onClick={onClose}>Close</button>
+          <button onClick={() => { if (confirm(t('settings.reset_confirm'))) { resetSave(); location.reload(); } }}>{t('settings.reset_save')}</button>
+          <button onClick={onClose}>{t('ui.common.close')}</button>
         </div>
       </div>
     </div>
@@ -125,13 +136,14 @@ export function SettingsView({ onClose }: { onClose: () => void }) {
 }
 
 export function EndingView({ onRestart }: { onRestart: () => void }) {
+  const t = useT();
   const { displayName } = useProfile();
   return (
     <div className="screen">
       <div className="card">
-        <h2>The Tree Remembers {displayName}</h2>
-        <p>Lanterns brighten. Mosslight returns. The grove, the lake, the ruins — all breathing again. Thank you for restoring Eldergrove.</p>
-        <button onClick={onRestart}>Keep Exploring</button>
+        <h2>{t('ending.heading', { name: displayName })}</h2>
+        <p>{t('ending.text')}</p>
+        <button onClick={onRestart}>{t('ending.keep_exploring')}</button>
       </div>
     </div>
   );

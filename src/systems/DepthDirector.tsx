@@ -10,6 +10,7 @@ import { regionAt } from '../systems/AudioSystem';
 import { useProgress } from '../stores/stores';
 import { useUI } from '../stores/uiStore';
 import { MINI_OBJECTIVES, SECRETS, LORE_FRAGMENTS } from '../data/depthData';
+import { t } from '../i18n';
 
 const TICK = 0.1; // 10 Hz
 
@@ -60,7 +61,7 @@ export function DepthDirector() {
           visited.current |= 1 << i;
           if (visited.current === (1 << obj.steps.length) - 1) {
             p.completeMiniObjective(obj.id);
-            toast(obj.reward.toast);
+            toast(t(obj.reward.toast));
           }
         }
       }
@@ -76,7 +77,7 @@ export function DepthDirector() {
       if (s.reward.kind === 'flag') {
         p.setProgress({ completedQuests: p.completedQuests.includes('secret_' + s.id) ? p.completedQuests : [...p.completedQuests, 'secret_' + s.id] });
       }
-      toast(`${s.label}: ${s.reward.text}`);
+      toast(`${t(s.label)}: ${t(s.reward.text)}`);
     }
 
     // Lore collection: proximity, one-shot.
@@ -84,7 +85,7 @@ export function DepthDirector() {
       if (l.region !== region || p.lore.includes(l.id)) continue;
       if (!inRadius(l.position[0], l.position[2], 3)) continue;
       p.collectLore(l.id);
-      toast(l.title);
+      toast(t(l.title));
     }
   });
 

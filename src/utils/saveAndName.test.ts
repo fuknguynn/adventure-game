@@ -83,11 +83,33 @@ describe('save schema v2 migration', () => {
     };
     const m = migrateSave(v1);
     expect(m).not.toBe(null);
-    expect(m!.schemaVersion).toBe(2);
+    expect(m!.schemaVersion).toBe(3);
     expect(m!.progress.miniObjectives).toEqual([]);
     expect(m!.progress.secrets).toEqual([]);
     expect(m!.progress.lore).toEqual([]);
     expect(m!.progress.npcDialogueStage).toBe(1);
+    expect(m!.settings.lang).toBe('vi');
+  });
+
+  it('fills settings.lang=vi for v2 saves missing lang', () => {
+    const v2 = {
+      schemaVersion: 2,
+      profile: { displayName: 'Ray', characterId: 'knight' },
+      progress: { regionId: 'forest_village', spawnId: 'village_entrance', completedQuests: [], solvedPuzzles: [], spiritFragments: 0, worldRestored: false, miniObjectives: [], secrets: [], lore: [], npcDialogueStage: 0 },
+      settings: { quality: 'auto', musicVolume: 0.5, sfxVolume: 0.7, reducedMotion: false, muted: false },
+      updatedAt: '2024-01-01T00:00:00.000Z',
+    };
+    const m = migrateSave(v2);
+    expect(m).not.toBe(null);
+    expect(m!.schemaVersion).toBe(3);
+    expect(m!.settings.lang).toBe('vi');
+  });
+
+  it('keeps an explicit v3 lang', () => {
+    const v3 = { ...defaultSave(), settings: { quality: 'auto' as const, musicVolume: 0.5, sfxVolume: 0.7, reducedMotion: false, muted: false, lang: 'en' as const } };
+    const m = migrateSave(v3);
+    expect(m).not.toBe(null);
+    expect(m!.settings.lang).toBe('en');
   });
 
   it('derives npcDialogueStage=4 for worldRestored v1 saves', () => {
@@ -103,7 +125,7 @@ describe('save schema v2 migration', () => {
     expect(m!.progress.npcDialogueStage).toBe(4);
   });
 
-  it('isValidSave accepts both v1 and v2', () => {
+  it('isValidSave accepts v1, v2 and v3', () => {
     const v1 = {
       schemaVersion: 1,
       profile: { displayName: 'Ray', characterId: 'knight' },
@@ -112,8 +134,10 @@ describe('save schema v2 migration', () => {
       updatedAt: '2024-01-01T00:00:00.000Z',
     };
     const v2 = { ...v1, schemaVersion: 2, progress: { ...v1.progress, miniObjectives: [], secrets: [], lore: [], npcDialogueStage: 0 } };
+    const v3 = { ...v2, schemaVersion: 3, settings: { ...v2.settings, lang: 'en' } };
     expect(isValidSave(v1)).toBe(true);
     expect(isValidSave(v2)).toBe(true);
+    expect(isValidSave(v3)).toBe(true);
   });
 
   it('v2 save round-trips through write→read', () => {
@@ -126,7 +150,7 @@ describe('save schema v2 migration', () => {
     writeSave(d);
     const loaded = loadSave();
     expect(loaded).not.toBe(null);
-    expect(loaded!.schemaVersion).toBe(2);
+    expect(loaded!.schemaVersion).toBe(3);
     expect(loaded!.progress.miniObjectives).toEqual(['grove_trail']);
     expect(loaded!.progress.secrets).toEqual(['secret_1']);
     expect(loaded!.progress.lore).toEqual(['lore_1']);

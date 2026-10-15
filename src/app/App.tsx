@@ -1,7 +1,9 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useProfile, useProgress, useSettings } from '../stores/stores';
+import { useI18n } from '../stores/i18nStore';
 import { useUI } from '../stores/uiStore';
 import { loadSave, writeSave, collectSave } from '../systems/SaveSystem';
+import { useT } from '../i18n';
 import { setAudioPrefs, initAudio, stopAllAudio, setRegion } from '../systems/AudioSystem';
 import { Welcome, IntroCinematic } from '../ui/Onboarding';
 import { CharacterCreation } from '../ui/CharacterCreation';
@@ -10,6 +12,7 @@ import { GameCanvas } from '../game/GameCanvas';
 
 export function App() {
   const { phase, setPhase } = useUI();
+  const t = useT();
   const profile = useProfile();
   const progress = useProgress();
   const settings = useSettings();
@@ -24,6 +27,7 @@ export function App() {
       useProgress.setState({ ...s.progress, setProgress: useProgress.getState().setProgress, solvePuzzle: useProgress.getState().solvePuzzle });
       // `muted` is normalized by loadSave/migrateSave (missing → false).
       useSettings.setState({ ...s.settings, setSettings: useSettings.getState().setSettings });
+      useI18n.setState({ lang: s.settings.lang === 'en' ? 'en' : 'vi' });
     }
     setPhase(s && s.profile.displayName ? 'WELCOME' : 'WELCOME');
     setBooted(true);
@@ -47,7 +51,7 @@ export function App() {
       writeSave(collectSave(
         { displayName: profile.displayName, characterId: profile.characterId },
         { regionId: progress.regionId, spawnId: progress.spawnId, completedQuests: progress.completedQuests, solvedPuzzles: progress.solvedPuzzles, spiritFragments: progress.spiritFragments, worldRestored: progress.worldRestored, miniObjectives: progress.miniObjectives, secrets: progress.secrets, lore: progress.lore, npcDialogueStage: progress.npcDialogueStage },
-        { quality: settings.quality, musicVolume: settings.musicVolume, sfxVolume: settings.sfxVolume, reducedMotion: settings.reducedMotion, muted: settings.muted },
+        { quality: settings.quality, musicVolume: settings.musicVolume, sfxVolume: settings.sfxVolume, reducedMotion: settings.reducedMotion, muted: settings.muted, lang: useI18n.getState().lang },
       ));
     }, 400);
     return () => clearTimeout(t);
@@ -69,11 +73,11 @@ export function App() {
     writeSave(collectSave(
       { displayName: useProfile.getState().displayName, characterId: useProfile.getState().characterId },
       { regionId: useProgress.getState().regionId, spawnId: useProgress.getState().spawnId, completedQuests: useProgress.getState().completedQuests, solvedPuzzles: useProgress.getState().solvedPuzzles, spiritFragments: useProgress.getState().spiritFragments, worldRestored: useProgress.getState().worldRestored, miniObjectives: useProgress.getState().miniObjectives, secrets: useProgress.getState().secrets, lore: useProgress.getState().lore, npcDialogueStage: useProgress.getState().npcDialogueStage },
-      { quality: useSettings.getState().quality, musicVolume: useSettings.getState().musicVolume, sfxVolume: useSettings.getState().sfxVolume, reducedMotion: useSettings.getState().reducedMotion, muted: useSettings.getState().muted },
+      { quality: useSettings.getState().quality, musicVolume: useSettings.getState().musicVolume, sfxVolume: useSettings.getState().sfxVolume, reducedMotion: useSettings.getState().reducedMotion, muted: useSettings.getState().muted, lang: useI18n.getState().lang },
     ));
   }, []);
 
-  if (!booted || phase === 'BOOT') return <div className="screen"><div className="card"><p>Waking the forest…</p></div></div>;
+  if (!booted || phase === 'BOOT') return <div className="screen"><div className="card"><p>{t('ui.boot.loading')}</p></div></div>;
 
   return (
     <>
