@@ -59,7 +59,11 @@ export function Player({ onInteract }: { onInteract: () => void }) {
     const wz = (iz * cy - ix * sy) * speed;
     const v = body.linvel();
     const vy = v.y;
-    body.setLinvel({ x: wx, y: vy, z: wz }, true);
+    // Inertial movement: ease horizontal velocity toward the target instead of
+    // snapping (smooth start/turn, fast snappy stop) — Rapier body stays authoritative.
+    const dv = Math.hypot(wx - v.x, wz - v.z);
+    const k = 1 - Math.exp(-(dv < 0.75 ? 18 : 11) * step);
+    body.setLinvel({ x: v.x + (wx - v.x) * k, y: vy, z: v.z + (wz - v.z) * k }, true);
     const p = body.translation();
     playerPos.set(p.x, p.y, p.z);
     // locomotion signals from ACTUAL physics state (stalls read as idle).

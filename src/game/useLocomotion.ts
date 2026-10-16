@@ -100,3 +100,32 @@ export function useLocomotion(model: THREE.Object3D | null) {
 
   return state;
 }
+
+/**
+ * Plays the Idle_A clip on a standalone KayKit-rig character (NPC). Unlike
+ * useLocomotion, never reads the shared `loco` signal — the NPC stays idle
+ * regardless of player movement. Clips load from the same verified files.
+ */
+export function useIdleAnimation(model: THREE.Object3D | null) {
+  const gen = useLoader(GLTFLoader, ANIM_GENERAL);
+  const rig = useMemo(() => {
+    if (!model) return null;
+    const mixer = new THREE.AnimationMixer(model);
+    const clip = THREE.AnimationClip.findByName(gen.animations, 'Idle_A');
+    const action = clip ? mixer.clipAction(clip) : null;
+    if (action) {
+      action.setLoop(THREE.LoopRepeat, Infinity);
+      action.reset().play();
+    }
+    return { mixer, action };
+  }, [model, gen]);
+  useEffect(() => {
+    if (!rig) return;
+    return () => { rig.mixer.stopAllAction(); };
+  }, [rig]);
+  useFrame((_, rawDt) => {
+    if (!rig) return;
+    const dt = Math.min(Math.max(rawDt, 0), 0.25);
+    rig.mixer.update(dt);
+  });
+}

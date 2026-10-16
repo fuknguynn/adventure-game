@@ -1,7 +1,12 @@
-import { useRef } from 'react';
-import { useFrame } from '@react-three/fiber';
+import { useMemo, useRef, Suspense } from 'react';
+import { useFrame, useLoader } from '@react-three/fiber';
+import { GLTFLoader, SkeletonUtils } from 'three-stdlib';
 import * as THREE from 'three';
 import { playerPos } from '../game/Player';
+import { ModelErrorBoundary } from '../game/Model';
+import { useIdleAnimation } from '../game/useLocomotion';
+import { CHARACTERS } from '../data/gameData';
+import { useProfile } from '../stores/stores';
 import { regionAt } from '../systems/AudioSystem';
 import { useProgress } from '../stores/stores';
 
@@ -126,11 +131,15 @@ export function Spirit({ guideTarget, hintTarget = null, hintDone = false, celeb
   );
 }
 
-/** Village NPC (uses verified spare Ranger GLB would need vendor; placeholder-free: robed marker + name). */
-export function NPC({ position, onTalk }: { position: [number, number, number]; onTalk: () => void }) {
-  void onTalk;
+/** Village elder (quest-giver). Renders the player's other available
+ *  character GLB (verified KayKit rig, 100% bone-match) with the shared
+ *  Idle_A clip so the elder breathes/bobs instead of standing dead still,
+ *  and slowly faces the player when they approach. Deterministic: the NPC
+ *  is always the first character in the roster that the player did NOT pick.
+ *  Falls back to the robed marker if the model fails to load. */
+function NpcFallback() {
   return (
-    <group position={position}>
+    <group>
       <mesh position={[0, 0.9, 0]}>
         <capsuleGeometry args={[0.32, 0.9, 6, 12]} />
         <meshStandardMaterial color="#7a5c9e" emissive="#3d2b5c" emissiveIntensity={0.4} />
@@ -139,6 +148,50 @@ export function NPC({ position, onTalk }: { position: [number, number, number]; 
         <sphereGeometry args={[0.26, 16, 16]} />
         <meshStandardMaterial color="#f4e9c9" />
       </mesh>
+    </group>
+  );
+}
+
+export function NPC({ position }: { position: [number, number, number] }) {
+  return (
+    <ModelErrorBoundary url="npc" fallback={<group position={position}><NpcFallback /></group>}>
+      <Suspense fallback={null}>
+        <Inner position={position} />
+      </Suspense>
+    </ModelErrorBoundary>
+  );
+}
+
+function Inner({ position }: { position: [number, number, number] }) {
+  const { characterId } = useProfile();
+  const def = CHARACTERS.find((c) => c.id !== characterId) ?? CHARACTERS[0];
+  const gltf = useLoader(GLTFLoader, def.file);
+  const model = useMemo(() => {
+    // SkeletonUtils (not Object3D.clone): plain clones leave SkinnedMeshes
+    // bound to the template skeleton — mixer-driven bones never reach the mesh.
+    const s = SkeletonUtils.clone(gltf.scene);
+    s.traverse((o) => { if ((o as THREE.Mesh).isMesh) o.castShadow = true; });
+    return s;
+  }, [gltf]);
+  const face = useRef<THREE.Group>(null);
+  useIdleAnimation(model);
+  useFrame((_, dt) => {
+    if (!face.current) return;
+    // Face the player when they are near (else hold the spawn-facing yaw).
+    const dx = playerPos.x - position[0], dz = playerPos.z - position[2];
+    const d = Math.hypot(dx, dz);
+    const target = d < 5 ? Math.atan2(dx, dz) : 0;
+    let cur = face.current.rotation.y;
+    let diff = target - cur;
+    while (diff > Math.PI) diff -= Math.PI * 2;
+    while (diff < -Math.PI) diff += Math.PI * 2;
+    face.current.rotation.y = cur + diff * (1 - Math.exp(-4 * Math.min(dt, 0.05)));
+  });
+  return (
+    <group position={position}>
+      <group ref={face}>
+        <primitive object={model} position={[0, -0.9, 0]} />
+      </group>
     </group>
   );
 }

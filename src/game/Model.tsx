@@ -4,14 +4,15 @@ import { useLoader } from '@react-three/fiber';
 import { GLTFLoader } from 'three-stdlib';
 
 /** One bad scenery file must never crash the game: isolate load failures per model. */
-export class ModelErrorBoundary extends React.Component<{ url: string; children: React.ReactNode }, { failed: boolean }> {
+export class ModelErrorBoundary extends React.Component<{ url: string; fallback?: React.ReactNode; children: React.ReactNode }, { failed: boolean }> {
   state = { failed: false };
   static getDerivedStateFromError() { return { failed: true }; }
   componentDidCatch(err: unknown) {
-    console.warn(`[Eldergrove] scenery model failed, skipped: ${this.props.url}`, err);
+    console.warn(`[Eldergrove] model failed, using fallback: ${this.props.url}`, err);
   }
   render() {
-    return this.state.failed ? null : this.props.children;
+    if (this.state.failed) return this.props.fallback ?? null;
+    return this.props.children;
   }
 }
 

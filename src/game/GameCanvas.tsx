@@ -260,7 +260,7 @@ export function GameCanvas({ onExit, onEnding }: { onExit: () => void; onEnding:
             <Player onInteract={interact} />
             <Regions />
           </Physics>
-          <NPC position={[-3, 0, 0]} onTalk={interact} />
+          <NPC position={[-3, 0, 0]} />
           <Spirit guideTarget={guideTarget} hintTarget={spiritHint} hintDone={spiritHintDone} celebratePulse={celebrateRef.current} worldLevel={Math.min(3, spiritFragments)} />
           <Population />
           <DepthDirector />
