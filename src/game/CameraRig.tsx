@@ -1,7 +1,7 @@
 import { useRef } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
 import * as THREE from 'three';
-import { camOrbit, JOY_ZONE } from './input';
+import { camOrbit } from './input';
 import { playerPos } from './Player';
 import { useSettings } from '../stores/stores';
 
@@ -22,8 +22,9 @@ export function CameraRig() {
   if (!(gl.domElement as HTMLCanvasElement).dataset.orbitBound) {
     (gl.domElement as HTMLCanvasElement).dataset.orbitBound = '1';
     gl.domElement.addEventListener('pointerdown', (e) => {
-      // Left-zone touches belong to the virtual joystick (TouchControls), not orbit.
-      if (e.pointerType === 'touch' && e.clientX < window.innerWidth * JOY_ZONE) return;
+      // Touch orbit is owned by TouchControls (multi-touch with the joystick);
+      // handling touch here too double-drives camOrbit and causes jitter.
+      if (e.pointerType === 'touch') return;
       dragging.current = true; last.current = [e.clientX, e.clientY]; (e.target as Element).setPointerCapture?.(e.pointerId);
     });
     gl.domElement.addEventListener('pointermove', (e) => {

@@ -67,6 +67,10 @@ body.touch .kb-hint { display: none; }
 .touch-ui-right { right: var(--hud-m); bottom: calc(var(--hud-m) + env(safe-area-inset-bottom)); }
 body.touch .touch-ui { display: flex; }
 .touch-btn { width: 56px; height: 56px; min-height: 56px; border-radius: 50%; font-size: 18px; background: rgba(15,28,23,.45); border: 1px solid rgba(216,187,120,.3); }
+/* Fixed virtual stick: always visible on touch, pivot at base center. */
+.touch-stick { display: none; position: fixed; left: 28px; bottom: calc(100px + env(safe-area-inset-bottom)); width: 100px; height: 100px; border-radius: 50%; border: 2px solid rgba(255, 255, 255, 0.28); background: rgba(15, 28, 23, 0.25); pointer-events: none; }
+.touch-knob { display: none; position: fixed; left: 0; top: 0; width: 44px; height: 44px; border-radius: 50%; background: rgba(255, 255, 255, 0.4); pointer-events: none; }
+body.touch .touch-stick, body.touch .touch-knob { display: block; }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
 /* World map (SVG) */
 .wmap-card { display: flex; flex-direction: column; gap: 10px; }

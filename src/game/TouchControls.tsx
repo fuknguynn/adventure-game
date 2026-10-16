@@ -6,26 +6,34 @@ export function TouchControls({ onInteract }: { onInteract: () => void }) {
   const t = useT();
   const baseRef = useRef<HTMLDivElement>(null);
   const knobRef = useRef<HTMLDivElement>(null);
-  const stick = (x: number, y: number, dx: number, dy: number, show: boolean) => {
-    const b = baseRef.current, k = knobRef.current;
-    if (!b || !k) return;
-    b.style.display = k.style.display = show ? 'block' : 'none';
-    if (!show) return;
-    b.style.left = `${x - 50}px`; b.style.top = `${y - 50}px`;
-    k.style.transform = `translate(${x - 22 + dx}px, ${y - 22 + dy}px)`;
-  };
   useEffect(() => {
     let joyId: number | null = null;
     let camId: number | null = null;
-    let ox = 0, oy = 0, lx = 0, ly = 0;
+    let lx = 0, ly = 0;
+    let cx = 0, cy = 0;
+    const stick = (dx: number, dy: number) => {
+      const k = knobRef.current;
+      if (!k || !cx || !cy) return;
+      k.style.transform = `translate(${cx - 22 + dx * 28}px, ${cy - 22 + dy * 28}px)`;
+    };
+    const cacheCenter = () => {
+      const b = baseRef.current;
+      if (!b) return;
+      const r = b.getBoundingClientRect();
+      cx = r.left + r.width / 2; cy = r.top + r.height / 2;
+    };
+    const rs = () => { cacheCenter(); if (joyId === null) stick(0, 0); };
     const ds = (e: TouchEvent) => {
       for (const t of Array.from(e.changedTouches)) {
         // World touches only: HUD buttons, DOM panels and overlays must never
         // capture the virtual joystick or camera (ghost movement / blocked
         // scrolling in puzzle and journal UI).
         if (!(t.target instanceof HTMLCanvasElement)) continue;
-        if (t.clientX < innerWidth * JOY_ZONE && joyId === null) { joyId = t.identifier; ox = t.clientX; oy = t.clientY; stick(ox, oy, 0, 0, true); }
-        else if (camId === null) { camId = t.identifier; lx = t.clientX; ly = t.clientY; }
+        if (t.clientX < innerWidth * JOY_ZONE && joyId === null) {
+          joyId = t.identifier;
+          cacheCenter();
+          stick(0, 0);
+        } else if (camId === null) { camId = t.identifier; lx = t.clientX; ly = t.clientY; }
       }
     };
     let consumed = false;
@@ -37,9 +45,9 @@ export function TouchControls({ onInteract }: { onInteract: () => void }) {
           // Paused: don't feed shared input (Player.tsx also gates; touchend
           // below always resets, so no stale joystick value survives).
           if (pausedFlag.v) break;
-          joyMove.x = Math.max(-1, Math.min(1, (t.clientX - ox) / 50));
-          joyMove.z = Math.max(-1, Math.min(1, (t.clientY - oy) / 50));
-          stick(ox, oy, joyMove.x * 28, joyMove.z * 28, true);
+          joyMove.x = Math.max(-1, Math.min(1, (t.clientX - cx) / 50));
+          joyMove.z = Math.max(-1, Math.min(1, (t.clientY - cy) / 50));
+          stick(joyMove.x, joyMove.z);
         } else if (t.identifier === camId) {
           consumed = true;
           camOrbit.yaw -= (t.clientX - lx) * 0.008;
@@ -51,7 +59,7 @@ export function TouchControls({ onInteract }: { onInteract: () => void }) {
     };
     const up = (e: TouchEvent) => {
       for (const t of Array.from(e.changedTouches)) {
-        if (t.identifier === joyId) { joyId = null; joyMove.x = 0; joyMove.z = 0; stick(0, 0, 0, 0, false); }
+        if (t.identifier === joyId) { joyId = null; joyMove.x = 0; joyMove.z = 0; stick(0, 0); }
         if (t.identifier === camId) camId = null;
       }
     };
@@ -63,7 +71,16 @@ export function TouchControls({ onInteract }: { onInteract: () => void }) {
     window.addEventListener('touchmove', mv, { passive: false });
     window.addEventListener('touchend', up);
     window.addEventListener('touchcancel', up);
-    return () => { window.removeEventListener('touchstart', ds); window.removeEventListener('touchmove', mv); window.removeEventListener('touchend', up); window.removeEventListener('touchcancel', up); };
+    window.addEventListener('resize', rs);
+    cacheCenter();
+    stick(0, 0);
+    return () => {
+      window.removeEventListener('touchstart', ds);
+      window.removeEventListener('touchmove', mv);
+      window.removeEventListener('touchend', up);
+      window.removeEventListener('touchcancel', up);
+      window.removeEventListener('resize', rs);
+    };
   }, []);
 
   return (
@@ -76,8 +93,8 @@ export function TouchControls({ onInteract }: { onInteract: () => void }) {
         <button className="touch-btn" aria-label={t('touch.ability')} onClick={onInteract}>✦</button>
         <button className="touch-btn" aria-label={t('touch.interact')} onClick={onInteract}>E</button>
       </div>
-      <div ref={baseRef} aria-hidden style={{ display: 'none', position: 'fixed', width: 100, height: 100, borderRadius: '50%', border: '2px solid rgba(255,255,255,0.35)', pointerEvents: 'none' }} />
-      <div ref={knobRef} aria-hidden style={{ display: 'none', position: 'fixed', left: 0, top: 0, width: 44, height: 44, borderRadius: '50%', background: 'rgba(255,255,255,0.4)', pointerEvents: 'none' }} />
+      <div ref={baseRef} className="touch-stick" aria-hidden />
+      <div ref={knobRef} className="touch-knob" aria-hidden />
     </div>
   );
 }
