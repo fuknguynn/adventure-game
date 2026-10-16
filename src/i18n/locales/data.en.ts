@@ -40,6 +40,7 @@ export const dataEn: Record<string, string> = {
   'obj.search_ruins': 'Search the Ruins for rune clues',
   'obj.investigate_lake': 'Investigate the Crystal Lake',
   'obj.follow_spirit_grove': 'Follow the Spirit into the Grove',
+  'obj.grove_riddle': 'Solve the Spirit\'s Riddle at the Grove',
   'obj.speak_keeper': 'Speak with the Forest Keeper',
 
   // ---- Mini-objectives ----

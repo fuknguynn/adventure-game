@@ -40,6 +40,7 @@ export const dataVi: Record<string, string> = {
   'obj.search_ruins': 'Tìm manh mối phù văn trong Phế Tích',
   'obj.investigate_lake': 'Điều tra Hồ Pha Lê',
   'obj.follow_spirit_grove': 'Đi theo Linh Hồn vào Rừng Nấm',
+  'obj.grove_riddle': 'Giải câu đố của Linh Hồn ở Rừng Nấm',
   'obj.speak_keeper': 'Trò chuyện với Người Canh Giữ Rừng',
 
   // ---- Mini-objectives ----

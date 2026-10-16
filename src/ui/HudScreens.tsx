@@ -24,9 +24,9 @@ const ICONS = {
 
 export function HUD({ onPause }: { onPause: () => void }) {
   const t = useT();
-  const { spiritFragments, solvedPuzzles, miniObjectives } = useProgress();
+  const { spiritFragments, solvedPuzzles, miniObjectives, completedQuests } = useProgress();
   const { setShowJournal, setShowMap, setPhotoMode, toast, showJournal, showMap, photoMode } = useUI();
-  const objective = currentObjective(solvedPuzzles, miniObjectives);
+  const objective = currentObjective(solvedPuzzles, miniObjectives, completedQuests.includes('met_spirit'));
   return (
     <>
       <div className="hud quest-tracker" aria-label={t('hud.aria.objective')}>

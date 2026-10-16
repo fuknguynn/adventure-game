@@ -63,11 +63,12 @@ export const REGION_TITLES: Record<string, string> = {
 };
 
 // ---- Current objective text based on progress ----
-export function currentObjective(solvedPuzzles: string[], miniObjectives: string[]): string {
+export function currentObjective(solvedPuzzles: string[], miniObjectives: string[], metSpirit: boolean): string {
   if (solvedPuzzles.length >= 3) return 'obj.return_fragments';
   if (solvedPuzzles.length === 2) return 'obj.search_ruins';
   if (solvedPuzzles.length === 1) return 'obj.investigate_lake';
-  if (miniObjectives.includes('grove_trail')) return 'obj.follow_spirit_grove';
+  if (miniObjectives.includes('grove_trail')) return 'obj.grove_riddle';
+  if (metSpirit) return 'obj.follow_spirit_grove';
   return 'obj.speak_keeper';
 }
 
