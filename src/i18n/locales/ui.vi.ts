@@ -51,6 +51,7 @@ export const uiVi: Record<string, string> = {
   'hud.tool.photo_title': 'Chụp ảnh',
   'hud.tool.pause_aria': 'Tạm dừng game (Esc)',
   'hud.tool.pause_title': 'Tạm dừng (Esc)',
+  'ui.dialogue.speaker': 'Bà Già Làng',
   'ui.dialogue.continue': 'Tiếp tục',
   'hud.journal.completed': 'Nhiệm vụ hoàn thành: {list}',
   'ui.common.close': 'Đóng',

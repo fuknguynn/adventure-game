@@ -34,7 +34,7 @@ export const SPOTS = {
 
 export function GameCanvas({ onExit, onEnding }: { onExit: () => void; onEnding: () => void }) {
   const { solvedPuzzles, completedQuests, spiritFragments, worldRestored, miniObjectives, setProgress, setNpcDialogueStage } = useProgress();
-  const { setDialogue, setToast, photoMode, setPhotoMode } = useUI();
+  const { setDialogue, setToast, photoMode, setPhotoMode, showJournal, showMap } = useUI();
   const { quality, reducedMotion } = useSettings();
   useI18n((s) => s.lang);
   const [puzzle, setPuzzle] = useState<string | null>(null);
@@ -46,7 +46,12 @@ export function GameCanvas({ onExit, onEnding }: { onExit: () => void; onEnding:
   });
   const canvasRef = useRef<HTMLCanvasElement>(null);
   useEffect(() => attachKeyboard(), []);
-  useEffect(() => { pausedFlag.v = paused; return () => { pausedFlag.v = false; }; }, [paused]);
+  // Inert while the pause menu OR the Journal/Map overlay is open: the player
+  // is reading UI, not playing — movement/jump/interact must not leak through.
+  useEffect(() => {
+    pausedFlag.v = paused || showJournal || showMap;
+    return () => { pausedFlag.v = false; };
+  }, [paused, showJournal, showMap]);
 
   // Celebrate pulse: timestamp updated when a puzzle is solved. PuzzlePanels
   // fires the 'recovered' toast on solve, so the re-render it triggers runs

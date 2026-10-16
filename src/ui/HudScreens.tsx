@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useProfile, useProgress, useSettings } from '../stores/stores';
 import { useUI } from '../stores/uiStore';
 import { resetSave } from '../systems/SaveSystem';
@@ -47,12 +47,28 @@ export function HUD({ onPause }: { onPause: () => void }) {
 export function DialogueView() {
   const t = useT();
   const { dialogue, setDialogue } = useUI();
+  const idxRef = useRef(0);
+  const [idx, setIdx] = useState(0);
+  useEffect(() => { idxRef.current = 0; setIdx(0); }, [dialogue]);
   if (!dialogue) return null;
+  const last = dialogue.length - 1;
+  // advance via a ref (not the render-closure idx) so multiple rapid clicks
+  // on the same mounted button each see the current line — no stale skip,
+  // no corruption. On the last line it closes.
+  const advance = () => {
+    const next = idxRef.current + 1;
+    if (next > last) setDialogue(null);
+    else { idxRef.current = next; setIdx(next); }
+  };
   return (
-    <div className="hud" style={{ bottom: 90, left: '50%', transform: 'translateX(-50%)', width: 'min(92vw,560px)' }}>
-      <div className="card panel">
-        {dialogue.map((l, i) => <p key={i}>{t(l)}</p>)}
-        <button onClick={() => setDialogue(null)}>{t('ui.dialogue.continue')}</button>
+    <div className="dialogue">
+      <div className="card dialogue-card">
+        <p className="dialogue-speaker">{t('ui.dialogue.speaker')}</p>
+        <p className="dialogue-line" aria-live="polite">{t(dialogue[idx])}</p>
+        <button className="dialogue-continue" onClick={advance} aria-label={t('ui.dialogue.continue')}>
+          <span className="dialogue-continue-text">{t('ui.dialogue.continue')}</span>
+          <span aria-hidden>▾</span>
+        </button>
       </div>
     </div>
   );
@@ -64,7 +80,7 @@ export function JournalView() {
   const { completedQuests, solvedPuzzles } = useProgress();
   if (!showJournal) return null;
   return (
-    <div className="screen" style={{ position: 'fixed', inset: 0, zIndex: 40, background: 'rgba(10,18,14,.7)' }}>
+    <div className="overlay">
       <div className="card">
         <h2>{t(QUEST_MAIN.title)}</h2>
         <ol style={{ textAlign: 'left' }}>
@@ -128,7 +144,7 @@ export function MapView() {
   const selLabel = t(sel.label);
   const stateText = selState === 'current' ? t('hud.map.state.current') : selState === 'completed' ? t('hud.map.state.completed') : t('hud.map.state.discovered');
   return (
-    <div className="screen" style={{ position: 'fixed', inset: 0, zIndex: 40, background: 'rgba(10,18,14,.7)' }}>
+    <div className="overlay">
       <div className="card wmap-card">
         <h2>{t('hud.map.title')}</h2>
         <div className="wmap-wrap">
@@ -170,7 +186,7 @@ export function PauseView({ onResume, onQuit }: { onResume: () => void; onQuit: 
   const t = useT();
   const { setShowJournal } = useUI();
   return (
-    <div className="screen" style={{ position: 'fixed', inset: 0, zIndex: 40, background: 'rgba(10,18,14,.7)' }}>
+    <div className="overlay">
       <div className="card">
         <h2>{t('hud.pause.title')}</h2>
         <div style={{ display: 'flex', gap: 8, justifyContent: 'center', flexWrap: 'wrap' }}>
@@ -191,7 +207,7 @@ export function SettingsView({ onClose }: { onClose: () => void }) {
   const { setLang } = useI18n();
   const pickLang = (l: 'vi' | 'en') => { setLang(l); s.setSettings({ lang: l }); };
   return (
-    <div className="screen" style={{ position: 'fixed', inset: 0, zIndex: 40, background: 'rgba(10,18,14,.85)' }}>
+    <div className="overlay">
       <div className="card">
         <h2>{t('settings.title')}</h2>
         <label>{t('settings.quality')} <select value={s.quality} onChange={(e) => s.setSettings({ quality: e.target.value as typeof s.quality })}><option value="auto">{t('settings.quality.auto')}</option><option value="low">{t('settings.quality.low')}</option><option value="medium">{t('settings.quality.medium')}</option><option value="high">{t('settings.quality.high')}</option></select></label>

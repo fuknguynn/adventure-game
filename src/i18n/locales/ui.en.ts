@@ -51,6 +51,7 @@ export const uiEn: Record<string, string> = {
   'hud.tool.photo_title': 'Photo',
   'hud.tool.pause_aria': 'Pause game (Esc)',
   'hud.tool.pause_title': 'Pause (Esc)',
+  'ui.dialogue.speaker': 'The Elder',
   'ui.dialogue.continue': 'Continue',
   'hud.journal.completed': 'Completed quests: {list}',
   'ui.common.close': 'Close',

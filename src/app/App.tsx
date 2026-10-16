@@ -57,18 +57,6 @@ export function App() {
     return () => clearTimeout(t);
   }, [booted, phase, profile.displayName, profile.characterId, progress, settings]);
 
-  // Esc / M shortcuts
-  useEffect(() => {
-    const h = (e: KeyboardEvent) => {
-      if (e.code === 'Escape' && phase === 'PLAYING') setPhase('PAUSED');
-      else if (e.code === 'Escape' && phase === 'PAUSED') setPhase('PLAYING');
-      if (e.code === 'KeyM' && phase === 'PLAYING') useUI.getState().setShowMap(!useUI.getState().showMap);
-      if (e.code === 'KeyJ' && phase === 'PLAYING') useUI.getState().setShowJournal(true);
-    };
-    window.addEventListener('keydown', h);
-    return () => window.removeEventListener('keydown', h);
-  }, [phase, setPhase]);
-
   const persistAll = useCallback(() => {
     writeSave(collectSave(
       { displayName: useProfile.getState().displayName, characterId: useProfile.getState().characterId },
@@ -77,6 +65,26 @@ export function App() {
     ));
   }, []);
 
+  // Esc / M shortcuts. ESC closes the topmost open overlay first (Settings →
+  // Journal/Map → pause toggle) — one overlay per press, no double-fire, no
+  // stacked invisible overlays.
+  useEffect(() => {
+    const h = (e: KeyboardEvent) => {
+      if (e.code === 'Escape') {
+        if (showSettings) { persistAll(); setShowSettings(false); return; }
+        const ui = useUI.getState();
+        if (ui.showJournal) { ui.setShowJournal(false); return; }
+        if (ui.showMap) { ui.setShowMap(false); return; }
+        if (phase === 'PLAYING') setPhase('PAUSED');
+        else if (phase === 'PAUSED') setPhase('PLAYING');
+        return;
+      }
+      if (e.code === 'KeyM' && phase === 'PLAYING') useUI.getState().setShowMap(!useUI.getState().showMap);
+      if (e.code === 'KeyJ' && phase === 'PLAYING') useUI.getState().setShowJournal(true);
+    };
+    window.addEventListener('keydown', h);
+    return () => window.removeEventListener('keydown', h);
+  }, [phase, setPhase, showSettings, persistAll]);
   if (!booted || phase === 'BOOT') return <div className="screen"><div className="card"><p>{t('ui.boot.loading')}</p></div></div>;
 
   return (
