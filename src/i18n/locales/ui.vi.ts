@@ -5,8 +5,8 @@ export const uiVi: Record<string, string> = {
   'ui.webgl.text': 'Eldergrove cần WebGL. Hãy dùng Chrome, Edge, Firefox hoặc Safari phiên bản mới với gia tốc phần cứng.',
   // Welcome
   'ui.welcome.title': 'ELDERGROVE',
-  'ui.welcome.subtitle': 'VỰC CŨNG ĐẤT MẤT TÍCH',
-  'ui.welcome.description': 'Cuộc phiêu lưu trong khu rừng phong cách hóa. Khám phá, kết giao cùng linh hồn, thu hồi 3 Mảnh Linh Hôn, đánh thức Cổ Thụ.',
+  'ui.welcome.subtitle': 'CỔ LÂM',
+  'ui.welcome.description': 'Bước vào khu rừng huyền bí. Khám phá những vùng đất bị lãng quên, kết giao với các linh hồn, thu thập 3 Mảnh Linh Hồn và đánh thức Cổ Thụ.',
   'ui.welcome.new': 'Cuộc Phiêu Lưu Mới',
   'ui.welcome.continue': 'Tiếp Tục Hành Trình',
   'ui.welcome.settings': 'Cài Đặt',
